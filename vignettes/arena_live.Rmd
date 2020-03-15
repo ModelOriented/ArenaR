@@ -1,0 +1,97 @@
+---
+title: "Live Arena"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{arena_live}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE
+)
+```
+
+## Setup
+```{r}
+library(arenar)
+
+apartments <- DALEX::apartments
+head(apartments)
+```
+
+## Prepare models
+Let's compare three models: GLM and GBMs with 100 and 500 trees. For each we
+create explainer from DALEX package.
+```{r, results = "hide"}
+library(gbm)
+library(DALEX)
+library(dplyr)
+
+model_gbm100 <- gbm(m2.price ~ ., data = apartments, n.trees = 100)
+expl_gbm100 <- explain(
+  model_gbm100,
+  data = apartments,
+  y = apartments$m2.price,
+  label = "gbm [100 trees]"
+)
+
+model_gbm500 <- gbm(m2.price ~ ., data = apartments, n.trees = 500)
+expl_gbm500 <- explain(
+  model_gbm500,
+  data = apartments,
+  y = apartments$m2.price,
+  label = "gbm [500 trees]"
+)
+
+model_glm <- glm(m2.price ~ ., data = apartments)
+expl_glm <- explain(model_glm, data = apartments, y = apartments$m2.price)
+```
+
+## Run arena
+It is not necessary to use dplyr's pipes, but it's designed to use pipes.
+```{r, eval = FALSE}
+arena <- new_arena(live = TRUE) %>%
+  # Pushing explainers for each models
+  arena_push_model(expl_gbm100) %>%
+  arena_push_model(expl_gbm500) %>%
+  arena_push_model(expl_glm) %>%
+  # Push dataframe of observations
+  arena_push_observations(apartments) %>%
+  # Run server of default port and ip
+  arena_run()
+```
+
+## Custom observation names
+Oservations' names are taken from rownames. For example let's put district and
+surface as observation name.
+```{r, eval = FALSE}
+apartments2 <- apartments
+rownames(apartments2) <- paste0(
+  1:nrow(apartments2),
+  ". ",
+  apartments2$surface,
+  "m2 ",
+  apartments2$district
+)
+
+new_arena(live = TRUE) %>%
+  arena_push_model(expl_glm) %>%
+  arena_push_observations(apartments2) %>%
+  arena_run()
+```
+![Example of observation name](./custom_observation.png)
+
+## Appending data
+Sometimes you have already opened Arena session with static data, different live
+server or other data source. You can add new data without closing that window.
+Just use argument `append_data`.
+```{r, results = "hide", eval = FALSE}
+new_arena(live = TRUE) %>%
+  arena_push_model(expl_glm) %>%
+  arena_run(append_data = TRUE)
+```
+

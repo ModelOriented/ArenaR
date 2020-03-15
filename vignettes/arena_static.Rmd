@@ -1,0 +1,119 @@
+---
+title: "Static Arena"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{arena_static}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE
+)
+```
+
+## Setup
+```{r}
+library(arenar)
+
+apartments <- DALEX::apartments
+head(apartments)
+```
+
+## Prepare models
+Let's compare three models: GLM and GBMs with 100 and 500 trees. For each we
+create explainer from DALEX package.
+```{r, results = "hide"}
+library(gbm)
+library(DALEX)
+library(dplyr)
+
+model_gbm100 <- gbm(m2.price ~ ., data = apartments, n.trees = 100)
+expl_gbm100 <- explain(
+  model_gbm100,
+  data = apartments,
+  y = apartments$m2.price,
+  label = "gbm [100 trees]"
+)
+
+model_gbm500 <- gbm(m2.price ~ ., data = apartments, n.trees = 500)
+expl_gbm500 <- explain(
+  model_gbm500,
+  data = apartments,
+  y = apartments$m2.price,
+  label = "gbm [500 trees]"
+)
+
+model_glm <- glm(m2.price ~ ., data = apartments)
+expl_glm <- explain(model_glm, data = apartments, y = apartments$m2.price)
+```
+
+## Prepare observations
+Plots for static Arena are pre-caluclated and it takes time and file size. For
+example we will take only apartments from 2009 or newer. Random
+sample is also good.
+```{r}
+observations <- apartments %>% filter(construction.year >= 2009)
+# Observations' names are taken from rownames
+rownames(observations) <- paste0(
+  observations$district,
+  " ",
+  observations$surface,
+  "m2 "
+)
+```
+
+
+## Create arena
+```{r, eval = FALSE}
+arena <- new_arena() %>%
+  # Pushing explainers for each models
+  arena_push_model(expl_gbm100) %>%
+  arena_push_model(expl_gbm500) %>%
+  arena_push_model(expl_glm) %>%
+  # Push dataframe of observations
+  arena_push_observations(observations) %>%
+  # Upload calculated arena files to Gist and open Arena in browser
+  arena_upload()
+```
+
+## Appending data
+There are two ways of add new observations or new models without recalcualating
+already generated plots. Let's add apartments built in 2008. It's similar for
+models.
+```{r}
+observations2 <- apartments %>% filter(construction.year == 2008)
+# Observations' names are taken from rownames
+rownames(observations2) <- paste0(
+  observations2$district,
+  " ",
+  observations2$surface,
+  "m2 "
+)
+```
+
+### New Arena session
+We can add observations to already existing arena object and call
+`arena_upload()`.
+```{r, eval = FALSE}
+arena %>%
+  arena_push_observations(observations2) %>%
+  arena_upload()
+```
+
+### Append to already existing session
+Sometimes we don't want to close Arena session and just add data. There is
+argument in `arena_upload` function to do that. Remember to append new arena
+object and to push all models and all observations that are required to plots
+you want to append.
+```{r, eval = FALSE}
+new_arena() %>%
+  arena_push_observations(arena_push_observations2) %>%
+  arena_push_model(expl_glm) %>%
+  arena_push_model(expl_gbm100) %>%
+  arena_push_model(expl_gbm500) %>%
+  arena_upload(append_data = TRUE)
+```
