@@ -6,7 +6,7 @@
 ## How to use it
 
 # Live version - fast for testing on huge data frames
-```
+```r
 library(arenar)
 library(gbm)
 library(DALEX)
@@ -40,7 +40,7 @@ new_arena(live = TRUE) %>%
 ```
 
 # Generating static files - easy to share
-```
+```r
 library(arenar)
 library(gbm)
 library(DALEX)
