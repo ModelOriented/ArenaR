@@ -1,6 +1,12 @@
 #' Creates arena object
 #'
 #' @param live Defines if arena should start live server or generate static json
+#' @param N number of observations used to calculate dependence profiles
+#' @param fi_B Number of permutation rounds to perform each variable
+#' in feature importance
+#' @param fi_N number of observations used in feature importance
+#' @param grid_points number of points for profile
+#' @param shap_B Numer of random paths in SHAP
 #' @return Empty \code{arena_static} of \code{arena_live} class object
 #' @examples
 #' library(dplyr)
@@ -10,13 +16,28 @@
 #'   arena_push_observations(df[1:10, ])
 #'   arena_run()
 #' @export
-new_arena <- function(live = FALSE) {
+new_arena <- function(live = FALSE,
+                      N = 500,
+                      fi_N = NULL,
+                      fi_B = 10,
+                      grid_points = 101,
+                      shap_B = 25){
   if (live) return(
     structure(
       list(
         explainers = list(),
         # batch = one data frame of observations
         observations_batches = list(),
+        params = list(
+          cp_grid_points = grid_points,
+          ad_grid_points = grid_points,
+          ad_N = N,
+          pd_grid_points = grid_points,
+          pd_N = N,
+          fi_B = fi_B,
+          fi_n_samples = fi_N,
+          shap_B = shap_B
+        ),
         timestamp = as.numeric(Sys.time())
       ),
       class = "arena_live"
@@ -28,6 +49,16 @@ new_arena <- function(live = FALSE) {
         explainers = list(),
         # batch = one data frame of observations
         observations_batches = list(),
+        params = list(
+          cp_grid_points = grid_points,
+          ad_grid_points = grid_points,
+          ad_N = N,
+          pd_grid_points = grid_points,
+          pd_N = N,
+          fi_B = fi_B,
+          fi_n_samples = fi_N,
+          shap_B = shap_B
+        ),
         plots_data = list()
       ),
       class = "arena_static"
@@ -80,13 +111,15 @@ arena_push_model.arena_static <- function(arena, explainer) {
     stop("Invalid arena argument")
   }
   validate_new_model(arena, explainer)
-  
+ 
+  params <- arena$params
+
   # calculate global plots and append to list
-  arena$plots_data <- c(arena$plots_data, get_global_plots(explainer))
+  arena$plots_data <- c(arena$plots_data, get_global_plots(explainer, params))
   # for each observations data frame calculate local plots
   local_plots <- lapply(
     arena$observations_batches,
-    function(observations) get_local_plots(explainer, observations)
+    function(observations) get_local_plots(explainer, observations, params)
   )
   # flatten result and add to plots
   arena$plots_data <- c(
@@ -134,7 +167,7 @@ arena_push_observations.arena_static <- function(arena, observations) {
   validate_new_observations(arena, observations)
 
   # helper function get local plots for fixed observations
-  get_local <- function(expl) get_local_plots(expl, observations)
+  get_local <- function(expl) get_local_plots(expl, observations, arena$params)
 
   arena$plots_data <- c(
     arena$plots_data,

@@ -4,10 +4,28 @@
 \alias{new_arena}
 \title{Creates arena object}
 \usage{
-new_arena(live = FALSE)
+new_arena(
+  live = FALSE,
+  N = 500,
+  fi_N = NULL,
+  fi_B = 10,
+  grid_points = 101,
+  shap_B = 25
+)
 }
 \arguments{
 \item{live}{Defines if arena should start live server or generate static json}
+
+\item{N}{number of observations used to calculate dependence profiles}
+
+\item{fi_N}{number of observations used in feature importance}
+
+\item{fi_B}{Number of permutation rounds to perform each variable
+in feature importance}
+
+\item{grid_points}{number of points for profile}
+
+\item{shap_B}{Numer of random paths in SHAP}
 }
 \value{
 Empty \code{arena_static} of \code{arena_live} class object

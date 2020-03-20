@@ -32,7 +32,7 @@ arena_run <- function(arena, port = 8181, host = "127.0.0.1",
     if (is.null(explainer)) return(res$status <- 404)
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
     vars <- names(is_y[!is_y])
-    get_feature_importance(explainer, vars)
+    get_feature_importance(explainer, vars, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
   pr$handle("GET", "/PartialDependence",
@@ -42,7 +42,7 @@ arena_run <- function(arena, port = 8181, host = "127.0.0.1",
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
     vars <- names(is_y[!is_y])
     if (!(variable %in% vars)) return(res$status <- 404)
-    get_partial_dependence(explainer, variable)
+    get_partial_dependence(explainer, variable, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
 
   pr$handle("GET", "/AccumulatedDependence",
@@ -52,7 +52,7 @@ arena_run <- function(arena, port = 8181, host = "127.0.0.1",
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
     vars <- names(is_y[!is_y])
     if (!(variable %in% vars)) return(res$status <- 404)
-    get_accumulated_dependence(explainer, variable)
+    get_accumulated_dependence(explainer, variable, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
   pr$handle("GET", "/Breakdown",
@@ -62,7 +62,7 @@ arena_run <- function(arena, port = 8181, host = "127.0.0.1",
     if (is.null(explainer) || is.null(observation)) return(res$status <- 404)
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
     vars <- intersect(names(is_y[!is_y]), colnames(observation))
-    get_break_down(explainer, observation[, vars])
+    get_break_down(explainer, observation[, vars], arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
   pr$handle("GET", "/CeterisParibus",
@@ -73,7 +73,7 @@ arena_run <- function(arena, port = 8181, host = "127.0.0.1",
       !(variable %in% colnames(observation))) return(res$status <- 404)
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
     vars <- intersect(names(is_y[!is_y]), colnames(observation))
-    get_ceteris_paribus(explainer, observation[, vars], variable)
+    get_ceteris_paribus(explainer, observation[, vars], variable, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
   pr$filter("cors", function(req, res){

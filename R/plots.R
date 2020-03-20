@@ -1,4 +1,4 @@
-get_local_plots <- function(explainer, observations) {
+get_local_plots <- function(explainer, observations, params) {
   is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
   vars <- intersect(names(is_y[!is_y]), colnames(observations))
   plots <- list()
@@ -6,11 +6,11 @@ get_local_plots <- function(explainer, observations) {
   # observations was validated and have min 1 row
   obs_list <- lapply(1:nrow(observations), function(i) observations[i, vars])
 
-  bd <- lapply(obs_list, function(o) get_break_down(explainer, o))
+  bd <- lapply(obs_list, function(o) get_break_down(explainer, o, params))
   plots <- c(plots, bd[!sapply(bd, is.null)])
 
   cp <- lapply(obs_list, function(o) {
-    lapply(vars, function(v) get_ceteris_paribus(explainer, o, v))
+    lapply(vars, function(v) get_ceteris_paribus(explainer, o, v, params))
   })
   cp <- unlist(cp, recursive = FALSE)
   plots <- c(plots, cp[!sapply(cp, is.null)])
@@ -18,28 +18,31 @@ get_local_plots <- function(explainer, observations) {
   plots
 }
 
-get_global_plots <- function(explainer) {
+get_global_plots <- function(explainer, params) {
   is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
   vars <- names(is_y[!is_y])
   plots <- list()
 
-  fi <- get_feature_importance(explainer, vars)
+  fi <- get_feature_importance(explainer, vars, params)
   if (!is.null(fi)) plots[[length(plots) + 1]] <- fi
 
-  pd <- lapply(vars, function(v) get_partial_dependence(explainer, v))
-  ad <- lapply(vars, function(v) get_accumulated_dependence(explainer, v))
+  pd <- lapply(vars, function(v) get_partial_dependence(explainer, v, params))
+  ad <- lapply(vars, function(v) {
+    get_accumulated_dependence(explainer, v, params)
+  })
   plots <- c(plots, pd[!sapply(pd, is.null)], ad[!sapply(ad, is.null)])
   
   plots
 }
 
-get_ceteris_paribus <- function(explainer, observation, variable) {
+get_ceteris_paribus <- function(explainer, observation, variable, params) {
   output <- NULL
   tryCatch({
     cp <- ingredients::ceteris_paribus(
       explainer,
       observation, 
-      variables = variable
+      variables = variable,
+      grid_points = params$cp_grid_points
     )
     cp <- cp[cp$`_vname_` == variable,]
     is_num <- is.numeric(explainer$data[, variable])
@@ -70,7 +73,7 @@ get_ceteris_paribus <- function(explainer, observation, variable) {
   })
   output
 }
-get_break_down <- function(explainer, observation) {
+get_break_down <- function(explainer, observation, params) {
   output <- NULL
   tryCatch({
     bd <- iBreakDown::local_attributions(explainer, observation)
@@ -100,14 +103,16 @@ get_break_down <- function(explainer, observation) {
   output
 }
 
-get_accumulated_dependence <- function(explainer, variable) {
+get_accumulated_dependence <- function(explainer, variable, params) {
   output <- NULL
   tryCatch({
     is_num <- is.numeric(explainer$data[, variable])
     pd <- ingredients::accumulated_dependence(
       explainer,
       variables = variable,
-      variable_type = ifelse(is_num, "numerical", "categorical")
+      variable_type = ifelse(is_num, "numerical", "categorical"),
+      grid_points = params$ad_grid_points,
+      N = params$ad_N
     )
     pd <- pd[pd$`_vname_` == variable, ]
     output <- list(
@@ -132,14 +137,17 @@ get_accumulated_dependence <- function(explainer, variable) {
   output
 }
 
-get_partial_dependence <- function(explainer, variable) {
+get_partial_dependence <- function(explainer, variable, params) {
   output <- NULL
+  params
   tryCatch({
     is_num <- is.numeric(explainer$data[, variable])
     pd <- ingredients::partial_dependence(
       explainer,
       variables = variable,
-      variable_type = ifelse(is_num, "numerical", "categorical")
+      variable_type = ifelse(is_num, "numerical", "categorical"),
+      grid_points = params$pd_grid_points,
+      N = params$pd_N
     )
     pd <- pd[pd$`_vname_` == variable, ]
     output <- list(
@@ -164,10 +172,16 @@ get_partial_dependence <- function(explainer, variable) {
   output
 }
 
-get_feature_importance <- function(explainer, vars) {
+get_feature_importance <- function(explainer, vars, params) {
   output <- NULL
+  params
   tryCatch({
-    fi <- ingredients::feature_importance(explainer, variables = vars)
+    fi <- ingredients::feature_importance(
+      explainer,
+      variables = vars,
+      B = params$fi_B,
+      n_sample = params$fi_n_sample
+    )
     stats <- data.frame(
       min = tapply(fi$dropout_loss, fi$variable, min, na.rm = TRUE),
       q1 = tapply(fi$dropout_loss, fi$variable, quantile, 0.25, na.rm = TRUE),
