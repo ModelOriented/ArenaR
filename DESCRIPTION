@@ -19,7 +19,8 @@ Imports:
     iBreakDown,
     gistr,
     jsonlite,
-    plumber
+    plumber,
+    parallel
 Suggests: 
     testthat,
     knitr,

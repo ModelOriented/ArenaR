@@ -6,12 +6,14 @@ get_local_plots <- function(explainer, observations, params) {
   # observations was validated and have min 1 row
   obs_list <- lapply(1:nrow(observations), function(i) observations[i, vars])
 
-  bd <- lapply(obs_list, function(o) get_break_down(explainer, o, params))
+  bd <- parallel::mclapply(obs_list, function(o) {
+    get_break_down(explainer, o, params)
+  }, mc.cores = params$mc.cores)
   plots <- c(plots, bd[!sapply(bd, is.null)])
 
-  cp <- lapply(obs_list, function(o) {
+  cp <- parallel::mclapply(obs_list, function(o) {
     lapply(vars, function(v) get_ceteris_paribus(explainer, o, v, params))
-  })
+  }, mc.cores = params$mc.cores)
   cp <- unlist(cp, recursive = FALSE)
   plots <- c(plots, cp[!sapply(cp, is.null)])
 
@@ -26,10 +28,12 @@ get_global_plots <- function(explainer, params) {
   fi <- get_feature_importance(explainer, vars, params)
   if (!is.null(fi)) plots[[length(plots) + 1]] <- fi
 
-  pd <- lapply(vars, function(v) get_partial_dependence(explainer, v, params))
-  ad <- lapply(vars, function(v) {
+  pd <- parallel::mclapply(vars, function(v) {
+    get_partial_dependence(explainer, v, params)
+  }, mc.cores = params$mc.cores)
+  ad <- parallel::mclapply(vars, function(v) {
     get_accumulated_dependence(explainer, v, params)
-  })
+  }, mc.cores = params$mc.cores)
   plots <- c(plots, pd[!sapply(pd, is.null)], ad[!sapply(ad, is.null)])
   
   plots

@@ -10,7 +10,8 @@ new_arena(
   fi_N = NULL,
   fi_B = 10,
   grid_points = 101,
-  shap_B = 25
+  shap_B = 25,
+  mc.cores = 1
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ in feature importance}
 \item{grid_points}{number of points for profile}
 
 \item{shap_B}{Numer of random paths in SHAP}
+
+\item{mc.cores}{Number of cores used in calculating static arena}
 }
 \value{
 Empty \code{arena_static} of \code{arena_live} class object

@@ -7,6 +7,7 @@
 #' @param fi_N number of observations used in feature importance
 #' @param grid_points number of points for profile
 #' @param shap_B Numer of random paths in SHAP
+#' @param mc.cores Number of cores used in calculating static arena
 #' @return Empty \code{arena_static} of \code{arena_live} class object
 #' @examples
 #' library(dplyr)
@@ -21,7 +22,8 @@ new_arena <- function(live = FALSE,
                       fi_N = NULL,
                       fi_B = 10,
                       grid_points = 101,
-                      shap_B = 25){
+                      shap_B = 25,
+                      mc.cores = 1){
   if (live) return(
     structure(
       list(
@@ -57,7 +59,8 @@ new_arena <- function(live = FALSE,
           pd_N = N,
           fi_B = fi_B,
           fi_n_samples = fi_N,
-          shap_B = shap_B
+          shap_B = shap_B,
+          mc.cores = mc.cores
         ),
         plots_data = list()
       ),
