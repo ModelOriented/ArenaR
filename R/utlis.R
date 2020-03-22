@@ -73,6 +73,12 @@ get_json_structure.arena_live <- function(arena) {
         requiredParams = list("model", "observation", "variable")
       ),
       list(
+        name = "SHAP Values",
+        plotType = "SHAPValues",
+        plotCategory = "Local",
+        requiredParams = list("model", "observation")
+      ),
+      list(
         name = "Partial Dependence",
         plotType = "PartialDependence",
         plotCategory = "Global",

@@ -10,6 +10,11 @@ get_local_plots <- function(explainer, observations, params) {
     get_break_down(explainer, o, params)
   }, mc.cores = params$mc.cores)
   plots <- c(plots, bd[!sapply(bd, is.null)])
+  
+  sp <- parallel::mclapply(obs_list, function(o) {
+    get_shap_values(explainer, o, params)
+  }, mc.cores = params$mc.cores)
+  plots <- c(plots, sp[!sapply(sp, is.null)])
 
   cp <- parallel::mclapply(obs_list, function(o) {
     lapply(vars, function(v) get_ceteris_paribus(explainer, o, v, params))
@@ -192,7 +197,6 @@ get_feature_importance <- function(explainer, vars, params) {
       q3 = tapply(fi$dropout_loss, fi$variable, quantile, 0.75, na.rm = TRUE),
       max = tapply(fi$dropout_loss, fi$variable, max, na.rm = TRUE)
     )
-    
 
     perm0 <- merge(
       fi[fi$permutation == 0,],
@@ -224,6 +228,61 @@ get_feature_importance <- function(explainer, vars, params) {
     )
   }, error = function(e) {
     warning("Failed to calculate feature importance")
+  })
+  output
+}
+
+get_shap_values <- function(explainer, observation, params) {
+  output <- NULL
+  params
+  tryCatch({
+    sp <- iBreakDown::shap(
+      explainer,
+      observation,
+      B = params$shap_B
+    )
+    perm0 <- sp[sp$B == 0, ]
+    sp <- sp[sp$B != 0, ]
+
+    stats <- data.frame(
+      min = tapply(sp$contribution, sp$variable, min, na.rm = TRUE),
+      q1 = tapply(sp$contribution, sp$variable, quantile, 0.25, na.rm = TRUE),
+      q3 = tapply(sp$contribution, sp$variable, quantile, 0.75, na.rm = TRUE),
+      max = tapply(sp$contribution, sp$variable, max, na.rm = TRUE)
+    )
+
+    perm0 <- merge(
+      perm0,
+      cbind(rownames(stats), stats),
+      by.x = "variable",
+      by.y = "rownames(stats)"
+    )
+    # rm permutation column
+    perm0 <- subset(perm0, select = -B)
+    perm0 <- perm0[order(abs(perm0$contribution), decreasing = TRUE), ]
+
+    output <- list(
+      data = list(
+        intercept = attr(sp, "intercept"),
+        variables = as.character(perm0$variable_name),
+        variables_value = perm0$variable_value,
+        mean = perm0$contribution,
+        min = perm0$min,
+        max = perm0$max,
+        q1 = perm0$q1,
+        q3 = perm0$q3
+      ),
+      plotType = "SHAPValues",
+      plotCategory = "Local",
+      plotComponent = "SHAPValues",
+      name = "SHAP Values",
+      params = list(
+        model = explainer$label,
+        observation = rownames(observation)
+      )
+    )
+  }, error = function(e) {
+    warning("Failed to calculate SHAP Values")
   })
   output
 }

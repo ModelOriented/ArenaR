@@ -22,7 +22,7 @@ new_arena <- function(live = FALSE,
                       fi_N = NULL,
                       fi_B = 10,
                       grid_points = 101,
-                      shap_B = 25,
+                      shap_B = 10,
                       mc.cores = 1){
   if (live) return(
     structure(

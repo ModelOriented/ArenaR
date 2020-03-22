@@ -65,6 +65,16 @@ arena_run <- function(arena, port = 8181, host = "127.0.0.1",
     get_break_down(explainer, observation[, vars], arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
+  pr$handle("GET", "/SHAPValues",
+            function(req, res, model = "", observation = "") {
+    explainer <- get_explainer(model)
+    observation <- get_observation(observation)
+    if (is.null(explainer) || is.null(observation)) return(res$status <- 404)
+    is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
+    vars <- intersect(names(is_y[!is_y]), colnames(observation))
+    get_shap_values(explainer, observation[, vars], arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+  
   pr$handle("GET", "/CeterisParibus",
             function(req, res, model = "", observation = "", variable = "") {
     explainer <- get_explainer(model)
