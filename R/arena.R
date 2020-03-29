@@ -230,10 +230,10 @@ arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE) {
   print(paste("Data url: ", url))
   if (append_data) {
     # append data to already existing session
-    browseURL(paste0("https://piotrpiatyszek.github.io/arena/?append=", url))
+    browseURL(paste0("https://arena.drwhy.ai/?append=", url))
   } else if (open_browser) {
     # open new session
-    browseURL(paste0("https://piotrpiatyszek.github.io/arena/?data=", url))
+    browseURL(paste0("https://arena.drwhy.ai/?data=", url))
   }
   arena
 }

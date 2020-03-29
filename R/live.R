@@ -93,9 +93,9 @@ arena_run <- function(arena, port = 8181, host = "127.0.0.1",
 
   url <- paste0('http://', host, ':', port, "/")
   if (append_data) {
-    browseURL(paste0("https://piotrpiatyszek.github.io/arena/?append=", url))
+    browseURL(paste0("https://arena.drwhy.ai/?append=", url))
   } else if (open_browser) {
-    browseURL(paste0("https://piotrpiatyszek.github.io/arena/?data=", url))
+    browseURL(paste0("https://arena.drwhy.ai/?data=", url))
   }
   pr$run(port = port, host = host, swagger = FALSE, debug = FALSE)
 }

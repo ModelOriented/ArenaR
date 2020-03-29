@@ -275,14 +275,14 @@ get_shap_values <- function(explainer, observation, params) {
       plotType = "SHAPValues",
       plotCategory = "Local",
       plotComponent = "SHAPValues",
-      name = "SHAP Values",
+      name = "Shapley Values",
       params = list(
         model = explainer$label,
         observation = rownames(observation)
       )
     )
   }, error = function(e) {
-    warning("Failed to calculate SHAP Values")
+    warning("Failed to calculate Shapley Values")
   })
   output
 }
