@@ -4,5 +4,6 @@ pkgdown_sha: 0eb8b5107beccb57e21086748a44e4fafddbba8e
 articles:
   arena_live: arena_live.html
   arena_static: arena_static.html
-last_built: 2020-04-03T00:09Z
+  classification: classification.html
+last_built: 2020-04-03T17:54Z
 

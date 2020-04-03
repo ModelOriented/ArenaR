@@ -1,0 +1,91 @@
+---
+title: "Using Arena with classifiers"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using Arena with classifiers}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Preface
+Classifiers are not supported by default. You need to create `explainer` for each class you want to explain.
+Result of this example is available at [link](https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/d56bae7c2721e4202eba8454b6d9e5f6/raw/413cecf098f953fc46ca6c4087112b5e73bda505/data.json).
+
+## Load data & libraries
+```{r setup}
+library(arenar)
+library(DALEX)
+library(dplyr)
+library(MASS)
+library(gbm)
+
+#data set
+HR <- DALEX::HR
+
+# Get random 10 samples to explain it
+observations <- HR[sample(1:nrow(HR), size=10), ]
+# Name observations
+rownames(observations) <- paste0(
+  toupper(substr(observations$gender, 0, 1)),
+  substr(observations$gender, 2, 100),
+  " ",
+  round(observations$age),
+  "yr",
+  " Grade: ",
+  observations$evaluation
+)
+```
+
+## Models
+```{r}
+model_gbm <- gbm(status ~ ., data=HR, n.trees=100, interaction.depth = 3)
+model_lda <- lda(status ~ ., data=HR)
+```
+
+## Create Explainers & Arena
+```{r}
+# Create new arena and add prepared observations
+arena <- arena_new() %>% arena_push_observations(observations)
+
+# Levels of target variable
+levels(HR$status)
+# [1] "fired"    "ok"       "promoted"
+
+# For each target level create explainers
+for (status in levels(HR$status)) {
+  # Explainer for gbm
+  explainer_gbm <- explain(
+    model_gbm,
+    # Target variable as 0,1 for each level
+    y = as.numeric(HR$status == status),
+    data = HR[, -6], # Remove target variable
+    label = paste0("GBM [", status, "]"),
+    # In predict function we need to extract class probability
+    predict_function = function(m, x) predict(m, x, n.trees=100, type="response")[,status,]
+  )
+  # Explainer for lda
+  explainer_lda <- explain(
+    model_lda,
+    # Target variable as 0,1 for each level
+    y = as.numeric(HR$status == status),
+    data = HR[, -6], # Remove target variable
+    label = paste0("LDA [", status, "]"),
+    # In predict function we need to extract class probability
+    predict_function = function(m, x) predict(m, x)$posterior[,status]
+  )
+  # Add explainers
+  arena <- arena_push_model(arena, explainer_gbm)
+  arena <- arena_push_model(arena, explainer_lda)
+
+  # Upload arena
+  arena_upload(arena)
+}
+```
