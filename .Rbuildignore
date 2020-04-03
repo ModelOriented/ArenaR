@@ -2,3 +2,6 @@
 ^Meta$
 ^README.MD$
 ^LICENSE$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

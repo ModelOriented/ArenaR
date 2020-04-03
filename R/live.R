@@ -1,6 +1,22 @@
+#' Run server providing data for live Arena
+#'
+#' By default function opens browser with new arena session. Appending data to
+#' already existing session is also possible usign argument \code{append_data}
+#'
+#' @param arena Live arena object
+#' @param port server port
+#' @param host server ip address (hostnames do not work yet)
+#' @param open_browser Whether to open browser with new session
+#' @param append_data Whether to append data to already existing session
+#' @param arena_url URL of Arena dashboard instance
+#' @return not modified arena object
 #' @export
 arena_run <- function(arena, port = 8181, host = "127.0.0.1",
-                      open_browser = TRUE, append_data = FALSE) {
+                      open_browser = TRUE, append_data = FALSE,
+                      arena_url = "https://arena.drwhy.ai/") {
+  if (is.null(arena) || !is(arena, "arena_live")) {
+    stop("Invalid arena argument")
+  }
   pr <- plumber::plumber$new()
   json_structure <- get_json_structure(arena)
 
@@ -93,9 +109,9 @@ arena_run <- function(arena, port = 8181, host = "127.0.0.1",
 
   url <- paste0('http://', host, ':', port, "/")
   if (append_data) {
-    browseURL(paste0("https://arena.drwhy.ai/?append=", url))
+    browseURL(paste0(arena_url, "?append=", url))
   } else if (open_browser) {
-    browseURL(paste0("https://arena.drwhy.ai/?data=", url))
+    browseURL(paste0(arena_url, "?data=", url))
   }
   pr$run(port = port, host = host, swagger = FALSE, debug = FALSE)
 }

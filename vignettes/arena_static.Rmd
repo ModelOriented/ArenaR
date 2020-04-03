@@ -69,7 +69,7 @@ rownames(observations) <- paste0(
 
 ## Create arena
 ```{r, eval = FALSE}
-arena <- new_arena() %>%
+arena <- arena_new() %>%
   # Pushing explainers for each models
   arena_push_model(expl_gbm100) %>%
   arena_push_model(expl_gbm500) %>%
@@ -110,7 +110,7 @@ argument in `arena_upload` function to do that. Remember to append new arena
 object and to push all models and all observations that are required to plots
 you want to append.
 ```{r, eval = FALSE}
-new_arena() %>%
+arena_new() %>%
   arena_push_observations(arena_push_observations2) %>%
   arena_push_model(expl_glm) %>%
   arena_push_model(expl_gbm100) %>%

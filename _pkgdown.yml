@@ -1,0 +1,21 @@
+destination: docs
+template:
+  package: DrWhyTemplate
+  default_assets: false
+reference:
+  - title: Live Arena
+    desc: Functions used to create and run live version of Arena
+    contents:
+      - arena_new
+      - arena_push_model
+      - arena_push_observations
+      - print.arena_live
+      - arena_run
+  - title: Static Arena
+    desc: Functions used to create and upload JSON file for Arena
+    contents:
+      - arena_new
+      - arena_push_model
+      - arena_push_observations
+      - print.arena_static
+      - arena_upload

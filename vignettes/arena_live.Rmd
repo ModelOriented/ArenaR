@@ -54,7 +54,7 @@ expl_glm <- explain(model_glm, data = apartments, y = apartments$m2.price)
 ## Run arena
 It is not necessary to use dplyr's pipes, but it's designed to use pipes.
 ```{r, eval = FALSE}
-arena <- new_arena(live = TRUE) %>%
+arena <- arena_new(live = TRUE) %>%
   # Pushing explainers for each models
   arena_push_model(expl_gbm100) %>%
   arena_push_model(expl_gbm500) %>%
@@ -78,7 +78,7 @@ rownames(apartments2) <- paste0(
   apartments2$district
 )
 
-new_arena(live = TRUE) %>%
+arena_new(live = TRUE) %>%
   arena_push_model(expl_glm) %>%
   arena_push_observations(apartments2) %>%
   arena_run()
@@ -90,7 +90,7 @@ Sometimes you have already opened Arena session with static data, different live
 server or other data source. You can add new data without closing that window.
 Just use argument `append_data`.
 ```{r, results = "hide", eval = FALSE}
-new_arena(live = TRUE) %>%
+arena_new(live = TRUE) %>%
   arena_push_model(expl_glm) %>%
   arena_run(append_data = TRUE)
 ```

@@ -9,15 +9,8 @@
 #' @param shap_B Numer of random paths in SHAP
 #' @param mc.cores Number of cores used in calculating static arena
 #' @return Empty \code{arena_static} of \code{arena_live} class object
-#' @examples
-#' library(dplyr)
-#' explainer <- DALEX::explain(model, data = df, y = df$y)
-#' arena <- new_arena(live = TRUE) %>%
-#'   arena_push_model(explainer) %>%
-#'   arena_push_observations(df[1:10, ])
-#'   arena_run()
 #' @export
-new_arena <- function(live = FALSE,
+arena_new <- function(live = FALSE,
                       N = 500,
                       fi_N = NULL,
                       fi_B = 10,
@@ -206,9 +199,11 @@ arena_push_observations.arena_live <- function(arena, observations) {
 #' @param arena Static arena object
 #' @param open_browser Whether to open browser with new session
 #' @param append_data Whether to append data to already existing session
+#' @param arena_url URL of Arena dashboard instance
 #' @return not modified arena object
 #' @export
-arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE) {
+arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE,
+                          arena_url = "https://arena.drwhy.ai/") {
   if (is.null(arena) || !is(arena, "arena_static")) {
     stop("Invalid arena argument")
   }
@@ -230,10 +225,10 @@ arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE) {
   print(paste("Data url: ", url))
   if (append_data) {
     # append data to already existing session
-    browseURL(paste0("https://arena.drwhy.ai/?append=", url))
+    browseURL(paste0(arena_url, "?append=", url))
   } else if (open_browser) {
     # open new session
-    browseURL(paste0("https://arena.drwhy.ai/?data=", url))
+    browseURL(paste0(arena_url, "?data=", url))
   }
   arena
 }
