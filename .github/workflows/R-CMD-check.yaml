@@ -2,9 +2,9 @@ on:
   push:
     branches:
       - master
-      - dev-*
-      - fix*
-      - !doc
+      - 'dev-*'
+      - 'fix*'
+      - '!doc'
     paths:
       - '**.R'
       - 'DESCRIPTION'
