@@ -8,7 +8,8 @@ arena_upload(
   arena,
   open_browser = TRUE,
   append_data = FALSE,
-  arena_url = "https://arena.drwhy.ai/"
+  arena_url = "https://arena.drwhy.ai/",
+  pretty = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ arena_upload(
 \item{append_data}{Whether to append data to already existing session}
 
 \item{arena_url}{URL of Arena dashboard instance}
+
+\item{pretty}{whether to generate pretty and easier to debug JSON}
 }
 \value{
 not modified arena object

@@ -207,11 +207,12 @@ arena_push_observations.arena_live <- function(arena, observations) {
 #' @param open_browser Whether to open browser with new session
 #' @param append_data Whether to append data to already existing session
 #' @param arena_url URL of Arena dashboard instance
+#' @param pretty whether to generate pretty and easier to debug JSON
 #' @return not modified arena object
 #' @export
 #' @importFrom methods is
 arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE,
-                          arena_url = "https://arena.drwhy.ai/") {
+                          arena_url = "https://arena.drwhy.ai/", pretty=FALSE) {
   if (is.null(arena) || !is(arena, "arena_static")) {
     stop("Invalid arena argument")
   }
@@ -219,7 +220,7 @@ arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE,
   json <- jsonlite::toJSON(
     get_json_structure(arena),
     auto_unbox=TRUE,
-    pretty=TRUE
+    pretty=pretty
   )
   # upload json to gist
   gist <- gistr::gist_create(
