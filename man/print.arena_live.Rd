@@ -4,10 +4,12 @@
 \alias{print.arena_live}
 \title{Prints live arena summary}
 \usage{
-\method{print}{arena_live}(arena)
+\method{print}{arena_live}(x, ...)
 }
 \arguments{
-\item{arena}{\code{arena_live} object}
+\item{x}{\code{arena_live} object}
+
+\item{...}{other parameters}
 }
 \description{
 Prints live arena summary

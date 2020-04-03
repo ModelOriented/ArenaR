@@ -1,12 +1,12 @@
 Package: arenar
-Title: Interactive models explainations generator
+Title: Interactive Models Explainations Generator
 Version: 0.1.5
 Authors@R: 
     person(given = "Piotr",
            family = "Piątyszek",
            role = c("aut", "cre"),
            email = "piotrp@wektor.xyz")
-Description: This package generates data for challenging models in Arena -
+Description: Generates data for challenging models in Arena -
     an interactive web application. You can start the server with XAI plots
     being generated on-demand or create an auto-uploaded static JSON file
     and easy do share Arena URL.
@@ -21,14 +21,18 @@ Imports:
     gistr,
     jsonlite,
     plumber,
-    parallel
+    parallel,
+    utils,
+    stats,
+    methods
 Suggests: 
     testthat,
     knitr,
     rmarkdown,
     dplyr,
     pkgdown,
-    covr
+    covr,
+    DALEX
 VignetteBuilder: knitr
 URL: https://arenar.drwhy.ai, https://github.com/ModelOriented/ArenaR
 BugReports: https://github.com/ModelOriented/ArenaR/issues

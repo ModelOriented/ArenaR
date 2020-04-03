@@ -2,10 +2,13 @@
 % Please edit documentation in R/utlis.R
 \name{get_json_structure}
 \alias{get_json_structure}
-\title{Get object ready to change into json}
+\title{Prepare object ready to change into json}
 \usage{
 get_json_structure(arena)
 }
+\arguments{
+\item{arena}{live or static arena object}
+}
 \description{
-Get object ready to change into json
+Prepare object ready to change into json
 }

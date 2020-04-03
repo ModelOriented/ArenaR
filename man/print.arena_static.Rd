@@ -4,10 +4,12 @@
 \alias{print.arena_static}
 \title{Prints static arena summary}
 \usage{
-\method{print}{arena_static}(arena)
+\method{print}{arena_static}(x, ...)
 }
 \arguments{
-\item{arena}{\code{arena_static} object}
+\item{x}{\code{arena_static} object}
+
+\item{...}{other parameters}
 }
 \description{
 Prints static arena summary

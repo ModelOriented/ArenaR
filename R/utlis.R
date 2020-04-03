@@ -1,3 +1,10 @@
+#' Checks if it is safe do add new observations to arena object
+#'
+#' Function checks if rowname of each row is not alreadyused
+#'
+#' @param arena live or static arena object
+#' @param observations data frame of new observations
+#' @importFrom methods is
 validate_new_observations <- function(arena, observations) {
   if (is.null(observations) || !is(observations, "data.frame")) {
     stop("Invalid observations argument")
@@ -7,6 +14,12 @@ validate_new_observations <- function(arena, observations) {
   }
 }
 
+#' Checks if it is safe do add new model to arena object
+#'
+#' Function checks if label is not already used
+#' @param arena live or static arena object
+#' @param explainer Explainer created usign \code{DALEX::explain}
+#' @importFrom methods is
 validate_new_model <- function(arena, explainer) {
   if (is.null(explainer) || !is(explainer, "explainer")) {
     stop("Invalid explainer argument")
@@ -17,12 +30,16 @@ validate_new_model <- function(arena, explainer) {
   }
 }
 
-#' List of rownames of each observation from each batch
+#' Genarates list of rownames of each observation from each batch
+#'
+#' @param arena live or static arena object
 get_observations_list <- function(arena) {
   as.list(unlist(lapply(arena$observations_batches, rownames)))
 }
 
-#' List of unique variables(without y) from each explainer
+#' Generates list of unique variables(without y) from each explainer
+#'
+#' @param arena live or static arena object
 get_variables_list <- function(arena) {
   as.list(unique(unlist(lapply(arena$explainers, function(expl) {
     is_y <- sapply(expl$data, function(column) { identical(column, expl$y) })
@@ -30,11 +47,15 @@ get_variables_list <- function(arena) {
   }))))
 }
 
-#' Get object ready to change into json
+#' Prepare object ready to change into json
+#'
+#' @param arena live or static arena object
+#' @importFrom methods is
 get_json_structure <- function(arena) {
   UseMethod("get_json_structure")
 }
 
+#' @importFrom methods is
 get_json_structure.arena_static <- function(arena) {
   if (is.null(arena) || !is(arena, "arena_static")) {
     stop("Invalid arena argument")
@@ -48,6 +69,7 @@ get_json_structure.arena_static <- function(arena) {
   )
 }
 
+#' @importFrom methods is
 get_json_structure.arena_live <- function(arena) {
   if (is.null(arena) || !is(arena, "arena_live")) {
     stop("Invalid arena argument")

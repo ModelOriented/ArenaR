@@ -64,11 +64,12 @@ arena_new <- function(live = FALSE,
 
 #' Prints static arena summary
 #'
-#' @param arena \code{arena_static} object
+#' @param x \code{arena_static} object
+#' @param ... other parameters
 #' @export
-print.arena_static <- function(arena) {
+print.arena_static <- function(x, ...) {
   cat("===== Static Arena Summary =====\n")
-  jstr <- get_json_structure(arena)
+  jstr <- get_json_structure(x)
   cat(paste("Models:", paste(jstr$models, collapse = ", "), "\n"))
   cat(paste("Observations:", paste(jstr$observations, collapse = ", "), "\n"))
   cat(paste("Variables:", paste(jstr$variables, collapse = ", "), "\n"))
@@ -77,10 +78,12 @@ print.arena_static <- function(arena) {
 
 #' Prints live arena summary
 #'
-#' @param arena \code{arena_live} object
-print.arena_live <- function(arena) {
+#' @param x \code{arena_live} object
+#' @param ... other parameters
+#' @export
+print.arena_live <- function(x, ...) {
   cat("===== Live Arena Summary =====\n")
-  jstr <- get_json_structure(arena)
+  jstr <- get_json_structure(x)
   cat(paste("Models:", paste(jstr$models, collapse = ", "), "\n"))
   cat(paste("Observations:", paste(jstr$observations, collapse = ", "), "\n"))
   cat(paste("Variables:", paste(jstr$variables, collapse = ", "), "\n"))
@@ -102,6 +105,7 @@ arena_push_model <- function(arena, explainer) {
 }
 
 #' @export
+#' @importFrom methods is
 arena_push_model.arena_static <- function(arena, explainer) {
   if (is.null(arena) || !is(arena, "arena_static")) {
     stop("Invalid arena argument")
@@ -128,6 +132,7 @@ arena_push_model.arena_static <- function(arena, explainer) {
 }
 
 #' @export
+#' @importFrom methods is
 arena_push_model.arena_live <- function(arena, explainer) {
   if (is.null(arena) || !is(arena, "arena_live")) {
     stop("Invalid arena argument")
@@ -156,6 +161,7 @@ arena_push_observations <- function(arena, observations) {
 }
 
 #' @export
+#' @importFrom methods is
 arena_push_observations.arena_static <- function(arena, observations) {
   if (is.null(arena) || !is(arena, "arena_static")) {
     stop("Invalid arena argument")
@@ -177,6 +183,7 @@ arena_push_observations.arena_static <- function(arena, observations) {
 }
 
 #' @export
+#' @importFrom methods is
 arena_push_observations.arena_live <- function(arena, observations) {
   if (is.null(arena) || !is(arena, "arena_live")) {
     stop("Invalid arena argument")
@@ -202,6 +209,7 @@ arena_push_observations.arena_live <- function(arena, observations) {
 #' @param arena_url URL of Arena dashboard instance
 #' @return not modified arena object
 #' @export
+#' @importFrom methods is
 arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE,
                           arena_url = "https://arena.drwhy.ai/") {
   if (is.null(arena) || !is(arena, "arena_static")) {
@@ -225,10 +233,10 @@ arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE,
   print(paste("Data url: ", url))
   if (append_data) {
     # append data to already existing session
-    browseURL(paste0(arena_url, "?append=", url))
+    utils::browseURL(paste0(arena_url, "?append=", url))
   } else if (open_browser) {
     # open new session
-    browseURL(paste0(arena_url, "?data=", url))
+    utils::browseURL(paste0(arena_url, "?data=", url))
   }
   arena
 }

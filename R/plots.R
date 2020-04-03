@@ -181,6 +181,12 @@ get_partial_dependence <- function(explainer, variable, params) {
   output
 }
 
+#' Internal function for calculating feature importance
+#'
+#' @param explainer Explainer created usign \code{DALEX::explain}
+#' @param vars Variables names for which feature importance should be calculated
+#' @param params Params from arena object 
+#' @importFrom stats quantile
 get_feature_importance <- function(explainer, vars, params) {
   output <- NULL
   params
@@ -232,6 +238,12 @@ get_feature_importance <- function(explainer, vars, params) {
   output
 }
 
+#' Internal function for calculating Shapley Values
+#'
+#' @param explainer Explainer created usign \code{DALEX::explain}
+#' @param observation One row data frame observation to calculate Shapley Values
+#' @param params Params from arena object
+#' @importFrom stats quantile
 get_shap_values <- function(explainer, observation, params) {
   output <- NULL
   params

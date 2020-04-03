@@ -2,10 +2,13 @@
 % Please edit documentation in R/utlis.R
 \name{get_variables_list}
 \alias{get_variables_list}
-\title{List of unique variables(without y) from each explainer}
+\title{Generates list of unique variables(without y) from each explainer}
 \usage{
 get_variables_list(arena)
 }
+\arguments{
+\item{arena}{live or static arena object}
+}
 \description{
-List of unique variables(without y) from each explainer
+Generates list of unique variables(without y) from each explainer
 }

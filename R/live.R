@@ -11,6 +11,7 @@
 #' @param arena_url URL of Arena dashboard instance
 #' @return not modified arena object
 #' @export
+#' @importFrom methods is
 arena_run <- function(arena, port = 8181, host = "127.0.0.1",
                       open_browser = TRUE, append_data = FALSE,
                       arena_url = "https://arena.drwhy.ai/") {
@@ -109,9 +110,9 @@ arena_run <- function(arena, port = 8181, host = "127.0.0.1",
 
   url <- paste0('http://', host, ':', port, "/")
   if (append_data) {
-    browseURL(paste0(arena_url, "?append=", url))
+    utils::browseURL(paste0(arena_url, "?append=", url))
   } else if (open_browser) {
-    browseURL(paste0(arena_url, "?data=", url))
+    utils::browseURL(paste0(arena_url, "?data=", url))
   }
   pr$run(port = port, host = host, swagger = FALSE, debug = FALSE)
 }
