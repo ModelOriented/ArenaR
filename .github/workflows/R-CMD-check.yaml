@@ -5,10 +5,6 @@ on:
       - 'dev-*'
       - 'fix*'
       - '!doc'
-    paths:
-      - '**.R'
-      - 'DESCRIPTION'
-      - '**.Rmd'
   pull_request:
     branches:
       - master
@@ -26,8 +22,9 @@ jobs:
       matrix:
         config:
           - {os: windows-latest, r: '3.6'}
+          - {os: windows-latest, r: '3.5'}
           - {os: macOS-latest, r: '3.6'}
-          - {os: macOS-latest, r: 'devel'}
+          - {os: macOS-latest, r: '3.5'}
           - {os: ubuntu-16.04, r: '3.5', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
           - {os: ubuntu-16.04, r: '3.6', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
 
