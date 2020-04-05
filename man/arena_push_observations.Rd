@@ -7,9 +7,9 @@
 arena_push_observations(arena, observations)
 }
 \arguments{
-\item{arena}{live or static areana object}
+\item{arena}{live or static arena object}
 
-\item{observations}{dataframe of new observations}
+\item{observations}{data frame of new observations}
 }
 \value{
 Updated arena object

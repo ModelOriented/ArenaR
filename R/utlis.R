@@ -1,6 +1,6 @@
-#' Checks if it is safe do add new observations to arena object
+#' Checks if it is safe do add new observations to the arena object
 #'
-#' Function checks if rowname of each row is not alreadyused
+#' Function checks if rowname of each row is not already used
 #'
 #' @param arena live or static arena object
 #' @param observations data frame of new observations
@@ -14,11 +14,11 @@ validate_new_observations <- function(arena, observations) {
   }
 }
 
-#' Checks if it is safe do add new model to arena object
+#' Checks if it is safe do add a new model to the arena object
 #'
 #' Function checks if label is not already used
 #' @param arena live or static arena object
-#' @param explainer Explainer created usign \code{DALEX::explain}
+#' @param explainer Explainer created using \code{DALEX::explain}
 #' @importFrom methods is
 validate_new_model <- function(arena, explainer) {
   if (is.null(explainer) || !is(explainer, "explainer")) {
@@ -30,7 +30,7 @@ validate_new_model <- function(arena, explainer) {
   }
 }
 
-#' Genarates list of rownames of each observation from each batch
+#' Generates list of rownames of each observation from each batch
 #'
 #' @param arena live or static arena object
 get_observations_list <- function(arena) {

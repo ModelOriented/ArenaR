@@ -3,7 +3,7 @@ get_local_plots <- function(explainer, observations, params) {
   vars <- intersect(names(is_y[!is_y]), colnames(observations))
   plots <- list()
 
-  # observations was validated and have min 1 row
+  # observations were validated and have min 1 row
   obs_list <- lapply(1:nrow(observations), function(i) observations[i, vars])
 
   bd <- parallel::mclapply(obs_list, function(o) {
@@ -82,11 +82,12 @@ get_ceteris_paribus <- function(explainer, observation, variable, params) {
   })
   output
 }
+
 get_break_down <- function(explainer, observation, params) {
   output <- NULL
   tryCatch({
     bd <- iBreakDown::local_attributions(explainer, observation)
-    # Remove intercept and prediction row
+    # remove rows: intercept and prediction 
     vars_index <- 2:(length(bd$variable) - 1)
     output <- list(
       plotComponent = "Breakdown",
@@ -183,7 +184,7 @@ get_partial_dependence <- function(explainer, variable, params) {
 
 #' Internal function for calculating feature importance
 #'
-#' @param explainer Explainer created usign \code{DALEX::explain}
+#' @param explainer Explainer created using \code{DALEX::explain}
 #' @param vars Variables names for which feature importance should be calculated
 #' @param params Params from arena object 
 #' @importFrom stats quantile
@@ -240,7 +241,7 @@ get_feature_importance <- function(explainer, vars, params) {
 
 #' Internal function for calculating Shapley Values
 #'
-#' @param explainer Explainer created usign \code{DALEX::explain}
+#' @param explainer Explainer created using \code{DALEX::explain}
 #' @param observation One row data frame observation to calculate Shapley Values
 #' @param params Params from arena object
 #' @importFrom stats quantile

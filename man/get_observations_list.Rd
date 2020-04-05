@@ -2,7 +2,7 @@
 % Please edit documentation in R/utlis.R
 \name{get_observations_list}
 \alias{get_observations_list}
-\title{Genarates list of rownames of each observation from each batch}
+\title{Generates list of rownames of each observation from each batch}
 \usage{
 get_observations_list(arena)
 }
@@ -10,5 +10,5 @@ get_observations_list(arena)
 \item{arena}{live or static arena object}
 }
 \description{
-Genarates list of rownames of each observation from each batch
+Generates list of rownames of each observation from each batch
 }
