@@ -7,3 +7,5 @@
 ^pkgdown$
 ^codecov\.yml$
 ^\.github$
+^.*\.Rproj$
+^\.Rproj\.user$
