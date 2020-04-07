@@ -61,7 +61,7 @@ get_ceteris_paribus <- function(explainer, observation, variable, params) {
         "CategoricalCeterisParibus"
       ),
       plotType = "CeterisParibus",
-      plotCategory = "Local",
+      plotCategory = "Observation Level",
       name = "Ceteris Paribus",
       params = list(
         model = explainer$label,
@@ -90,9 +90,9 @@ get_break_down <- function(explainer, observation, params) {
     vars_index <- 2:(length(bd$variable) - 1)
     output <- list(
       plotComponent = "Breakdown",
-      plotCategory = "Local",
+      plotCategory = "Observation Level",
       plotType = "Breakdown",
-      name = "Break down",
+      name = "Break Down",
       params = list(
         model = explainer$label,
         observation = rownames(observation)
@@ -132,7 +132,7 @@ get_accumulated_dependence <- function(explainer, variable, params) {
         base = 0
       ),
       plotType = "AccumulatedDependence",
-      plotCategory = "Global",
+      plotCategory = "Dataset Level",
       plotComponent = ifelse(is_num,
         "LinearDependence",
         "CategoricalDependence"
@@ -167,7 +167,7 @@ get_partial_dependence <- function(explainer, variable, params) {
         base = attr(pd, "mean_prediction")
       ),
       plotType = "PartialDependence",
-      plotCategory = "Global",
+      plotCategory = "Dataset Level",
       plotComponent = ifelse(is_num,
         "LinearDependence",
         "CategoricalDependence"
@@ -227,9 +227,9 @@ get_feature_importance <- function(explainer, vars, params) {
         q3 = vars_only$q3
       ),
       plotType = "FeatureImportance",
-      plotCategory = "Global",
+      plotCategory = "Dataset Level",
       plotComponent = "FeatureImportance",
-      name = "Feature Importance",
+      name = "Variable Importance",
       params = list(model = explainer$label)
     )
   }, error = function(e) {
@@ -285,7 +285,7 @@ get_shap_values <- function(explainer, observation, params) {
         q3 = perm0$q3
       ),
       plotType = "SHAPValues",
-      plotCategory = "Local",
+      plotCategory = "Observation Level",
       plotComponent = "SHAPValues",
       name = "Shapley Values",
       params = list(
