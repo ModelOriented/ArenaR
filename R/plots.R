@@ -78,7 +78,7 @@ get_ceteris_paribus <- function(explainer, observation, variable, params) {
       )
     )
   }, error = function(e) {
-    warning("Failed to calculate ceteris paribus")
+    warning("Failed to calculate ceteris paribus\n", e)
   })
   output
 }
@@ -106,8 +106,7 @@ get_break_down <- function(explainer, observation, params) {
       )
     )
   }, error = function(e) {
-    warning(e)
-    warning("Failed to calculate break down")
+    warning("Failed to calculate break down\n", e)
   })
   output
 }
@@ -141,7 +140,7 @@ get_accumulated_dependence <- function(explainer, variable, params) {
       params = list(model = explainer$label, variable = variable)
     )
   }, error = function(e) {
-    warning("Failed to calculate accumulated dependence")
+    warning("Failed to calculate accumulated dependence\n", e)
   })
   output
 }
@@ -176,7 +175,7 @@ get_partial_dependence <- function(explainer, variable, params) {
       params = list(model = explainer$label, variable = variable)
     )
   }, error = function(e) {
-    warning("Failed to calculate partial dependence")
+    warning("Failed to calculate partial dependence\n", e)
   })
   output
 }
@@ -233,7 +232,7 @@ get_feature_importance <- function(explainer, vars, params) {
       params = list(model = explainer$label)
     )
   }, error = function(e) {
-    warning("Failed to calculate feature importance")
+    warning("Failed to calculate feature importance\n", e)
   })
   output
 }
@@ -294,7 +293,7 @@ get_shap_values <- function(explainer, observation, params) {
       )
     )
   }, error = function(e) {
-    warning("Failed to calculate Shapley Values")
+    warning("Failed to calculate Shapley Values\n", e)
   })
   output
 }
