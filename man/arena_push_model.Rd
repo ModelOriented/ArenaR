@@ -9,7 +9,7 @@ arena_push_model(arena, explainer)
 \arguments{
 \item{arena}{live or static arena object}
 
-\item{explainer}{Explainer created usign \code{DALEX::explain}}
+\item{explainer}{Explainer created using \code{DALEX::explain}}
 }
 \value{
 Updated arena object

@@ -28,5 +28,5 @@ not modified arena object
 }
 \description{
 By default function opens browser with new arena session. Appending data to
-already existing session is also possible usign argument \code{append_data}
+already existing session is also possible using argument \code{append_data}
 }

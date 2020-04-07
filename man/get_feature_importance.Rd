@@ -7,7 +7,7 @@
 get_feature_importance(explainer, vars, params)
 }
 \arguments{
-\item{explainer}{Explainer created usign \code{DALEX::explain}}
+\item{explainer}{Explainer created using \code{DALEX::explain}}
 
 \item{vars}{Variables names for which feature importance should be calculated}
 

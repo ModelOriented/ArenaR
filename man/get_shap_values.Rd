@@ -7,7 +7,7 @@
 get_shap_values(explainer, observation, params)
 }
 \arguments{
-\item{explainer}{Explainer created usign \code{DALEX::explain}}
+\item{explainer}{Explainer created using \code{DALEX::explain}}
 
 \item{observation}{One row data frame observation to calculate Shapley Values}
 

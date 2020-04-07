@@ -2,14 +2,14 @@
 % Please edit documentation in R/utlis.R
 \name{validate_new_model}
 \alias{validate_new_model}
-\title{Checks if it is safe do add new model to arena object}
+\title{Checks if it is safe do add a new model to the arena object}
 \usage{
 validate_new_model(arena, explainer)
 }
 \arguments{
 \item{arena}{live or static arena object}
 
-\item{explainer}{Explainer created usign \code{DALEX::explain}}
+\item{explainer}{Explainer created using \code{DALEX::explain}}
 }
 \description{
 Function checks if label is not already used

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utlis.R
 \name{validate_new_observations}
 \alias{validate_new_observations}
-\title{Checks if it is safe do add new observations to arena object}
+\title{Checks if it is safe do add new observations to the arena object}
 \usage{
 validate_new_observations(arena, observations)
 }
@@ -12,5 +12,5 @@ validate_new_observations(arena, observations)
 \item{observations}{data frame of new observations}
 }
 \description{
-Function checks if rowname of each row is not alreadyused
+Function checks if rowname of each row is not already used
 }

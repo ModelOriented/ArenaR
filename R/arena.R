@@ -97,7 +97,7 @@ print.arena_live <- function(x, ...) {
 #' calculated on demand, after calling \code{arena_run}.
 #' 
 #' @param arena live or static arena object
-#' @param explainer Explainer created usign \code{DALEX::explain}
+#' @param explainer Explainer created using \code{DALEX::explain}
 #' @return Updated arena object
 #' @export
 arena_push_model <- function(arena, explainer) {
@@ -152,8 +152,8 @@ arena_push_model.arena_live <- function(arena, explainer) {
 #' models. If arena is live, then plots will be calculated on demand,
 #' after calling \code{arena_run}.
 #'
-#' @param arena live or static areana object
-#' @param observations dataframe of new observations
+#' @param arena live or static arena object
+#' @param observations data frame of new observations
 #' @return Updated arena object
 #' @export
 arena_push_observations <- function(arena, observations) {
@@ -201,7 +201,7 @@ arena_push_observations.arena_live <- function(arena, observations) {
 #' Upload generated json file from static arena
 #'
 #' By default function opens browser with new arena session. Appending data to
-#' already existing session is also possible usign argument \code{append_data}
+#' already existing session is also possible using argument \code{append_data}
 #'
 #' @param arena Static arena object
 #' @param open_browser Whether to open browser with new session
