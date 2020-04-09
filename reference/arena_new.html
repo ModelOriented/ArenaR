@@ -160,7 +160,7 @@
   <span class='kw'>fi_B</span> <span class='kw'>=</span> <span class='fl'>10</span>,
   <span class='kw'>grid_points</span> <span class='kw'>=</span> <span class='fl'>101</span>,
   <span class='kw'>shap_B</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>
+  <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -192,8 +192,8 @@ in feature importance</p></td>
       <td><p>Numer of random paths in SHAP</p></td>
     </tr>
     <tr>
-      <th>mc.cores</th>
-      <td><p>Number of cores used in calculating static arena</p></td>
+      <th>cl</th>
+      <td><p>Cluster used to run parallel computations (Do not work in live Arena)</p></td>
     </tr>
     </table>
 
