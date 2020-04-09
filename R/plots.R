@@ -17,8 +17,15 @@ get_local_plots <- function(explainer, observations, params) {
     cp <- lapply(obs_list, get_cp)
     cp <- unlist(cp, recursive = FALSE)
   } else {
-    # Export variables to cluster
-    to_export <- c("explainer", "params", "vars")
+    # Export variables and functions to cluster
+    to_export <- c(
+      "explainer",
+      "params",
+      "vars",
+      "get_break_down",
+      "get_shap_values",
+      "get_ceteris_paribus"
+    )
     parallel::clusterExport(params$cl, to_export, envir=environment())
     # Load model's library to access predict function
     parallel::clusterEvalQ(
@@ -53,8 +60,13 @@ get_global_plots <- function(explainer, params) {
     pd <- lapply(vars, get_pd)
     ad <- lapply(vars, get_ad)
   } else {
-    # Export variables to cluster
-    to_export <- c("explainer", "params")
+    # Export variables and functions to cluster
+    to_export <- c(
+      "explainer",
+      "params",
+      "get_partial_dependence",
+      "get_accumulated_dependence"
+    )
     parallel::clusterExport(params$cl, to_export, envir=environment())
     # Load model's library to access predict function
     parallel::clusterEvalQ(
