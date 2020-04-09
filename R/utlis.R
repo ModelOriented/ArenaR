@@ -83,39 +83,39 @@ get_json_structure.arena_live <- function(arena) {
     models = lapply(arena$explainers, function(x) { x$label }),
     availablePlots = list(
       list(
-        name = "Break down",
+        name = "Break Down",
         plotType = "Breakdown",
-        plotCategory = "Local",
+        plotCategory = "Observation Level",
         requiredParams = list("model", "observation")
       ),
       list(
         name = "Ceteris Paribus",
         plotType = "CeterisParibus",
-        plotCategory = "Local",
+        plotCategory = "Observation Level",
         requiredParams = list("model", "observation", "variable")
       ),
       list(
-        name = "SHAP Values",
+        name = "Shapley Values",
         plotType = "SHAPValues",
-        plotCategory = "Local",
+        plotCategory = "Observation Level",
         requiredParams = list("model", "observation")
       ),
       list(
         name = "Partial Dependence",
         plotType = "PartialDependence",
-        plotCategory = "Global",
+      plotCategory = "Dataset Level",
         requiredParams = list("model", "variable")
       ),
       list(
         name = "Accumulated Dependence",
         plotType = "AccumulatedDependence",
-        plotCategory = "Global",
+      plotCategory = "Dataset Level",
         requiredParams = list("model", "variable")
       ),
       list(
-        name = "Feature Importance",
+        name = "Variable Importance",
         plotType = "FeatureImportance",
-        plotCategory = "Global",
+      plotCategory = "Dataset Level",
         requiredParams = list("model")
       )
     )
