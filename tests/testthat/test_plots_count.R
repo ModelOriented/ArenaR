@@ -1,6 +1,7 @@
 context("Plots count")
 library(arenar)
 library(DALEX)
+library(parallel)
 
 set.seed(1313)
 model <- glm(Petal.Length ~ . , data = iris)
@@ -21,3 +22,14 @@ correct_len <- 1 + # FI
 test_that("plots count is correct", {
   expect_equal(length(arena$plots_data), correct_len)
 })
+
+cl <- makeCluster(2)
+arena_cluster <- arena_new(cl = cl)
+arena_cluster <- arena_push_model(arena_cluster, explainer_rf)
+arena_cluster <- arena_push_observations(arena_cluster, new_observation)
+
+test_that("plots count is correct using cluster", {
+  expect_equal(length(arena_cluster$plots_data), correct_len)
+})
+
+stopCluster(cl)

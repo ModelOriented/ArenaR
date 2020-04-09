@@ -1,47 +1,76 @@
 get_local_plots <- function(explainer, observations, params) {
   is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
   vars <- intersect(names(is_y[!is_y]), colnames(observations))
-  plots <- list()
 
   # observations were validated and have min 1 row
   obs_list <- lapply(1:nrow(observations), function(i) observations[i, vars])
 
-  bd <- parallel::mclapply(obs_list, function(o) {
-    get_break_down(explainer, o, params)
-  }, mc.cores = params$mc.cores)
-  plots <- c(plots, bd[!sapply(bd, is.null)])
+  get_bd <- function(obs) get_break_down(explainer, obs, params)
+  get_shap <- function(obs) get_shap_values(explainer, obs, params)
+  get_cp <- function(obs) lapply(vars, function(v) {
+    get_ceteris_paribus(explainer, obs, v, params)
+  })
+
+  if (is.null(params$cl)) { # single thread if cluster was not provided
+    bd <- lapply(obs_list, get_bd)
+    sp <- lapply(obs_list, get_shap)
+    cp <- lapply(obs_list, get_cp)
+    cp <- unlist(cp, recursive = FALSE)
+  } else {
+    # Export variables to cluster
+    to_export <- c("explainer", "params", "vars")
+    parallel::clusterExport(params$cl, to_export, envir=environment())
+    # Load model's library to access predict function
+    parallel::clusterEvalQ(
+      params$cl,
+      library(explainer$model_info$package, character.only=TRUE)
+    )
+    bd <- parallel::parLapply(params$cl, obs_list, get_bd)
+    sp <- parallel::parLapply(params$cl, obs_list, get_shap)
+    cp <- parallel::parLapply(params$cl, obs_list, get_cp)
+    cp <- unlist(cp, recursive = FALSE)
+  }
   
-  sp <- parallel::mclapply(obs_list, function(o) {
-    get_shap_values(explainer, o, params)
-  }, mc.cores = params$mc.cores)
-  plots <- c(plots, sp[!sapply(sp, is.null)])
-
-  cp <- parallel::mclapply(obs_list, function(o) {
-    lapply(vars, function(v) get_ceteris_paribus(explainer, o, v, params))
-  }, mc.cores = params$mc.cores)
-  cp <- unlist(cp, recursive = FALSE)
-  plots <- c(plots, cp[!sapply(cp, is.null)])
-
-  plots
+  # Join results into one list
+  c(
+    bd[!sapply(bd, is.null)],
+    sp[!sapply(sp, is.null)],
+    cp[!sapply(cp, is.null)]
+  )
 }
 
 get_global_plots <- function(explainer, params) {
   is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
   vars <- names(is_y[!is_y])
-  plots <- list()
 
   fi <- get_feature_importance(explainer, vars, params)
-  if (!is.null(fi)) plots[[length(plots) + 1]] <- fi
+  fi <- list(fi)
 
-  pd <- parallel::mclapply(vars, function(v) {
-    get_partial_dependence(explainer, v, params)
-  }, mc.cores = params$mc.cores)
-  ad <- parallel::mclapply(vars, function(v) {
-    get_accumulated_dependence(explainer, v, params)
-  }, mc.cores = params$mc.cores)
-  plots <- c(plots, pd[!sapply(pd, is.null)], ad[!sapply(ad, is.null)])
-  
-  plots
+  get_pd <- function(v) get_partial_dependence(explainer, v, params)
+  get_ad <- function(v) get_accumulated_dependence(explainer, v, params)
+
+  if (is.null(params$cl)) { # single thread if cluster was not provided
+    pd <- lapply(vars, get_pd)
+    ad <- lapply(vars, get_ad)
+  } else {
+    # Export variables to cluster
+    to_export <- c("explainer", "params")
+    parallel::clusterExport(params$cl, to_export, envir=environment())
+    # Load model's library to access predict function
+    parallel::clusterEvalQ(
+      params$cl,
+      library(explainer$model_info$package, character.only=TRUE)
+    )
+    pd <- parallel::parLapply(params$cl, vars, get_pd)
+    ad <- parallel::parLapply(params$cl, vars, get_ad)
+  }
+
+  # Join results into one list
+  c(
+    fi[!sapply(fi, is.null)],
+    pd[!sapply(pd, is.null)],
+    ad[!sapply(ad, is.null)]
+  )
 }
 
 get_ceteris_paribus <- function(explainer, observation, variable, params) {
@@ -78,7 +107,7 @@ get_ceteris_paribus <- function(explainer, observation, variable, params) {
       )
     )
   }, error = function(e) {
-    warning("Failed to calculate ceteris paribus\n", e)
+    stop("Failed to calculate ceteris paribus\n", e)
   })
   output
 }
@@ -107,7 +136,7 @@ get_break_down <- function(explainer, observation, params) {
       )
     )
   }, error = function(e) {
-    warning("Failed to calculate break down\n", e)
+    stop("Failed to calculate break down\n", e)
   })
   output
 }
@@ -141,14 +170,13 @@ get_accumulated_dependence <- function(explainer, variable, params) {
       params = list(model = explainer$label, variable = variable)
     )
   }, error = function(e) {
-    warning("Failed to calculate accumulated dependence\n", e)
+    stop("Failed to calculate accumulated dependence\n", e)
   })
   output
 }
 
 get_partial_dependence <- function(explainer, variable, params) {
   output <- NULL
-  params
   tryCatch({
     is_num <- is.numeric(explainer$data[, variable])
     pd <- ingredients::partial_dependence(
@@ -176,7 +204,7 @@ get_partial_dependence <- function(explainer, variable, params) {
       params = list(model = explainer$label, variable = variable)
     )
   }, error = function(e) {
-    warning("Failed to calculate partial dependence\n", e)
+    stop("Failed to calculate partial dependence\n", e)
   })
   output
 }
@@ -233,7 +261,7 @@ get_feature_importance <- function(explainer, vars, params) {
       params = list(model = explainer$label)
     )
   }, error = function(e) {
-    warning("Failed to calculate feature importance\n", e)
+    stop("Failed to calculate feature importance\n", e)
   })
   output
 }
@@ -294,7 +322,7 @@ get_shap_values <- function(explainer, observation, params) {
       )
     )
   }, error = function(e) {
-    warning("Failed to calculate Shapley Values\n", e)
+    stop("Failed to calculate Shapley Values\n", e)
   })
   output
 }

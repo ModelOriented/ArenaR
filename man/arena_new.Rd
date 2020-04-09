@@ -11,7 +11,7 @@ arena_new(
   fi_B = 10,
   grid_points = 101,
   shap_B = 10,
-  mc.cores = 1
+  cl = NULL
 )
 }
 \arguments{
@@ -28,7 +28,7 @@ in feature importance}
 
 \item{shap_B}{Numer of random paths in SHAP}
 
-\item{mc.cores}{Number of cores used in calculating static arena}
+\item{cl}{Cluster used to run parallel computations (Do not work in live Arena)}
 }
 \value{
 Empty \code{arena_static} of \code{arena_live} class object

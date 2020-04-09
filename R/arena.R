@@ -7,7 +7,7 @@
 #' @param fi_N number of observations used in feature importance
 #' @param grid_points number of points for profile
 #' @param shap_B Numer of random paths in SHAP
-#' @param mc.cores Number of cores used in calculating static arena
+#' @param cl Cluster used to run parallel computations (Do not work in live Arena)
 #' @return Empty \code{arena_static} of \code{arena_live} class object
 #' @export
 arena_new <- function(live = FALSE,
@@ -16,7 +16,7 @@ arena_new <- function(live = FALSE,
                       fi_B = 10,
                       grid_points = 101,
                       shap_B = 10,
-                      mc.cores = 1){
+                      cl = NULL) {
   if (live) return(
     structure(
       list(
@@ -53,7 +53,7 @@ arena_new <- function(live = FALSE,
           fi_B = fi_B,
           fi_n_samples = fi_N,
           shap_B = shap_B,
-          mc.cores = mc.cores
+          cl = cl
         ),
         plots_data = list()
       ),
