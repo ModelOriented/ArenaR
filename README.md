@@ -44,14 +44,14 @@ expl_gbm500 <- explain(
   label = "gbm [500 trees]"
 )
 
-arena_new(live = TRUE) %>%
+create_arena(live = TRUE) %>%
   # Pushing explainers for each models
-  arena_push_model(expl_gbm100) %>%
-  arena_push_model(expl_gbm500) %>%
+  push_model(expl_gbm100) %>%
+  push_model(expl_gbm500) %>%
   # Push dataframe of observations
-  arena_push_observations(apartments) %>%
+  push_observations(apartments) %>%
   # Run server of default port and ip
-  arena_run()
+  run_server()
 ```
 
 ### Generating static files - easy to share
@@ -88,12 +88,12 @@ rownames(observations) <- paste0(
   "m2 "
 )
 
-arena_new() %>%
+create_arena() %>%
   # Pushing explainers for each models
-  arena_push_model(expl_gbm100) %>%
-  arena_push_model(expl_gbm500) %>%
+  push_model(expl_gbm100) %>%
+  push_model(expl_gbm500) %>%
   # Push dataframe of observations
-  arena_push_observations(observations) %>%
+  push_observations(observations) %>%
   # Upload calculated arena files to Gist and open Arena in browser
-  arena_upload()
+  upload_arena()
 ```
