@@ -70,15 +70,15 @@ rownames(observations) <- paste0(
 
 ## Create arena
 ```{r, eval = FALSE}
-arena <- arena_new() %>%
+arena <- create_arena() %>%
   # Pushing explainers for each models
-  arena_push_model(expl_gbm100) %>%
-  arena_push_model(expl_gbm500) %>%
-  arena_push_model(expl_glm) %>%
+  push_model(expl_gbm100) %>%
+  push_model(expl_gbm500) %>%
+  push_model(expl_glm) %>%
   # Push dataframe of observations
-  arena_push_observations(observations) %>%
+  push_observations(observations) %>%
   # Upload calculated arena files to Gist and open Arena in browser
-  arena_upload()
+  upload_arena()
 ```
 
 ## Appending data
@@ -101,8 +101,8 @@ We can add observations to already existing arena object and call
 `arena_upload()`.
 ```{r, eval = FALSE}
 arena %>%
-  arena_push_observations(observations2) %>%
-  arena_upload()
+  push_observations(observations2) %>%
+  upload_arena()
 ```
 
 ### Append to already existing session
@@ -111,10 +111,10 @@ argument in `arena_upload` function to do that. Remember to append new arena
 object and to push all models and all observations that are required to plots
 you want to append.
 ```{r, eval = FALSE}
-arena_new() %>%
-  arena_push_observations(arena_push_observations2) %>%
-  arena_push_model(expl_glm) %>%
-  arena_push_model(expl_gbm100) %>%
-  arena_push_model(expl_gbm500) %>%
-  arena_upload(append_data = TRUE)
+create_arena() %>%
+  push_observations(arena_push_observations2) %>%
+  push_model(expl_glm) %>%
+  push_model(expl_gbm100) %>%
+  push_model(expl_gbm500) %>%
+  upload_arena(append_data = TRUE)
 ```
