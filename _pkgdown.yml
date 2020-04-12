@@ -6,16 +6,26 @@ reference:
   - title: Live Arena
     desc: Functions used to create and run live version of Arena
     contents:
-      - arena_new
-      - arena_push_model
-      - arena_push_observations
+      - create_arena
+      - push_model
+      - push_observations
       - print.arena_live
-      - arena_run
+      - run_server
   - title: Static Arena
     desc: Functions used to create and upload JSON file for Arena
     contents:
-      - arena_new
-      - arena_push_model
-      - arena_push_observations
+      - create_arena
+      - push_model
+      - push_observations
       - print.arena_static
-      - arena_upload
+      - upload_arena
+  - title: Misc
+    desc: Supplementary functions
+    contents:
+      - get_feature_importance
+      - get_json_structure
+      - get_observations_list
+      - get_shap_values
+      - get_variables_list
+      - validate_new_model
+      - validate_new_observations

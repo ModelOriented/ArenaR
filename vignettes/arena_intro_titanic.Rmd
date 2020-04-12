@@ -146,6 +146,7 @@ The browser will open an interactive tool for model exploration.
 
 ![Intermediate use of the AreaR](arena02.gif)
 
+
 # Advanced use of Arena - Multiple Models, Global and Local Explanations
 
 The most important feature of the `Arena` is the ability to compare any number of ML models regardless of their complexity and internal structure.
@@ -198,6 +199,7 @@ run_server(titanic_ar)
 The browser will open an interactive tool for model exploration.
 
 ![Advanced use of the AreaR](arena03.gif)
+
 
 # Serverless version of the Arena
 
