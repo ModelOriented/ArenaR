@@ -1,6 +1,6 @@
 Package: arenar
 Title: Interactive Models Explainations Generator
-Version: 0.1.5
+Version: 0.1.6
 Authors@R: 
     person(given = "Piotr",
            family = "Piątyszek",
