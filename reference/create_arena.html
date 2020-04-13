@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare object ready to change into json — get_json_structure • arenar</title>
+<title>Creates arena object — create_arena • arenar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -52,8 +52,8 @@
 
 
 
-<meta property="og:title" content="Prepare object ready to change into json — get_json_structure" />
-<meta property="og:description" content="Prepare object ready to change into json" />
+<meta property="og:title" content="Creates arena object — create_arena" />
+<meta property="og:description" content="Creates arena object" />
 
 
 
@@ -147,26 +147,62 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prepare object ready to change into json</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/utlis.R'><code>R/utlis.R</code></a></small>
-    <div class="hidden name"><code>get_json_structure.Rd</code></div>
+    <h1>Creates arena object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/arena.R'><code>R/arena.R</code></a></small>
+    <div class="hidden name"><code>create_arena.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prepare object ready to change into json</p>
+    <p>Creates arena object</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_json_structure</span>(<span class='no'>arena</span>)</pre>
+    <pre class="usage"><span class='fu'>create_arena</span>(
+  <span class='kw'>live</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>N</span> <span class='kw'>=</span> <span class='fl'>500</span>,
+  <span class='kw'>fi_N</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>fi_B</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>grid_points</span> <span class='kw'>=</span> <span class='fl'>101</span>,
+  <span class='kw'>shap_B</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>cl</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>arena</th>
-      <td><p>live or static arena object</p></td>
+      <th>live</th>
+      <td><p>Defines if arena should start live server or generate static json</p></td>
+    </tr>
+    <tr>
+      <th>N</th>
+      <td><p>number of observations used to calculate dependence profiles</p></td>
+    </tr>
+    <tr>
+      <th>fi_N</th>
+      <td><p>number of observations used in feature importance</p></td>
+    </tr>
+    <tr>
+      <th>fi_B</th>
+      <td><p>Number of permutation rounds to perform each variable
+in feature importance</p></td>
+    </tr>
+    <tr>
+      <th>grid_points</th>
+      <td><p>number of points for profile</p></td>
+    </tr>
+    <tr>
+      <th>shap_B</th>
+      <td><p>Numer of random paths in SHAP</p></td>
+    </tr>
+    <tr>
+      <th>cl</th>
+      <td><p>Cluster used to run parallel computations (Do not work in live Arena)</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Empty <code>arena_static</code> of <code>arena_live</code> class object</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

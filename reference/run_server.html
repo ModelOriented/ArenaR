@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare object ready to change into json — get_json_structure • arenar</title>
+<title>Run server providing data for live Arena — run_server • arenar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -52,8 +52,9 @@
 
 
 
-<meta property="og:title" content="Prepare object ready to change into json — get_json_structure" />
-<meta property="og:description" content="Prepare object ready to change into json" />
+<meta property="og:title" content="Run server providing data for live Arena — run_server" />
+<meta property="og:description" content="By default function opens browser with new arena session. Appending data to
+already existing session is also possible using argument append_data" />
 
 
 
@@ -147,26 +148,57 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prepare object ready to change into json</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/utlis.R'><code>R/utlis.R</code></a></small>
-    <div class="hidden name"><code>get_json_structure.Rd</code></div>
+    <h1>Run server providing data for live Arena</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/live.R'><code>R/live.R</code></a></small>
+    <div class="hidden name"><code>run_server.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prepare object ready to change into json</p>
+    <p>By default function opens browser with new arena session. Appending data to
+already existing session is also possible using argument <code>append_data</code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_json_structure</span>(<span class='no'>arena</span>)</pre>
+    <pre class="usage"><span class='fu'>run_server</span>(
+  <span class='no'>arena</span>,
+  <span class='kw'>port</span> <span class='kw'>=</span> <span class='fl'>8181</span>,
+  <span class='kw'>host</span> <span class='kw'>=</span> <span class='st'>"127.0.0.1"</span>,
+  <span class='kw'>open_browser</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>append_data</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>arena_url</span> <span class='kw'>=</span> <span class='st'>"https://arena.drwhy.ai/"</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>arena</th>
-      <td><p>live or static arena object</p></td>
+      <td><p>Live arena object</p></td>
+    </tr>
+    <tr>
+      <th>port</th>
+      <td><p>server port</p></td>
+    </tr>
+    <tr>
+      <th>host</th>
+      <td><p>server ip address (hostnames do not work yet)</p></td>
+    </tr>
+    <tr>
+      <th>open_browser</th>
+      <td><p>Whether to open browser with new session</p></td>
+    </tr>
+    <tr>
+      <th>append_data</th>
+      <td><p>Whether to append data to already existing session</p></td>
+    </tr>
+    <tr>
+      <th>arena_url</th>
+      <td><p>URL of Arena dashboard instance</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>not modified arena object</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -88,7 +88,7 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.5</span>
+          <span class="version version-default">0.1.6</span>
         </div>
       </div>
     </div>
@@ -110,6 +110,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/arena_intro_titanic.html">Introduction to the Arena with the Titanic</a>
+    </li>
     <li>
       <a href="../articles/arena_live.html">Live Arena</a>
     </li>
@@ -169,19 +172,19 @@
       <tr>
         
         <td>
-          <p><code><a href="arena_new.html">arena_new()</a></code> </p>
+          <p><code><a href="create_arena.html">create_arena()</a></code> </p>
         </td>
         <td><p>Creates arena object</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="arena_push_model.html">arena_push_model()</a></code> </p>
+          <p><code><a href="push_model.html">push_model()</a></code> </p>
         </td>
         <td><p>Adds model to arena</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="arena_push_observations.html">arena_push_observations()</a></code> </p>
+          <p><code><a href="push_observations.html">push_observations()</a></code> </p>
         </td>
         <td><p>Adds new observations to arena</p></td>
       </tr><tr>
@@ -193,7 +196,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="arena_run.html">arena_run()</a></code> </p>
+          <p><code><a href="run_server.html">run_server()</a></code> </p>
         </td>
         <td><p>Run server providing data for live Arena</p></td>
       </tr>
@@ -212,19 +215,19 @@
       <tr>
         
         <td>
-          <p><code><a href="arena_new.html">arena_new()</a></code> </p>
+          <p><code><a href="create_arena.html">create_arena()</a></code> </p>
         </td>
         <td><p>Creates arena object</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="arena_push_model.html">arena_push_model()</a></code> </p>
+          <p><code><a href="push_model.html">push_model()</a></code> </p>
         </td>
         <td><p>Adds model to arena</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="arena_push_observations.html">arena_push_observations()</a></code> </p>
+          <p><code><a href="push_observations.html">push_observations()</a></code> </p>
         </td>
         <td><p>Adds new observations to arena</p></td>
       </tr><tr>
@@ -236,9 +239,64 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="arena_upload.html">arena_upload()</a></code> </p>
+          <p><code><a href="upload_arena.html">upload_arena()</a></code> </p>
         </td>
         <td><p>Upload generated json file from static arena</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-misc" class="hasAnchor"><a href="#section-misc" class="anchor"></a>Misc</h2>
+          <p class="section-desc"><p>Supplementary functions</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="get_feature_importance.html">get_feature_importance()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating feature importance</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_json_structure.html">get_json_structure()</a></code> </p>
+        </td>
+        <td><p>Prepare object ready to change into json</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_observations_list.html">get_observations_list()</a></code> </p>
+        </td>
+        <td><p>Generates list of rownames of each observation from each batch</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_shap_values.html">get_shap_values()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating Shapley Values</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_variables_list.html">get_variables_list()</a></code> </p>
+        </td>
+        <td><p>Generates list of unique variables(without y) from each explainer</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="validate_new_model.html">validate_new_model()</a></code> </p>
+        </td>
+        <td><p>Checks if it is safe do add a new model to the arena object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="validate_new_observations.html">validate_new_observations()</a></code> </p>
+        </td>
+        <td><p>Checks if it is safe do add new observations to the arena object</p></td>
       </tr>
     </tbody>
     </table>

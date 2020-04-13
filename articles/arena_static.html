@@ -43,7 +43,7 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.5</span>
+          <span class="version version-default">0.1.6</span>
         </div>
       </div>
     </div>
@@ -66,6 +66,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/arena_intro_titanic.html">Introduction to the Arena with the Titanic</a>
+    </li>
+    <li>
       <a href="../articles/arena_live.html">Live Arena</a>
     </li>
     <li>
@@ -159,15 +162,15 @@
 <div id="create-arena" class="section level2">
 <h2 class="hasAnchor">
 <a href="#create-arena" class="anchor"></a>Create arena</h2>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">arena</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/arena_new.html">arena_new</a></span>() <span class="kw">%&gt;%</span>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">arena</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/create_arena.html">create_arena</a></span>() <span class="kw">%&gt;%</span>
   <span class="co"># Pushing explainers for each models</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Push dataframe of observations</span>
-  <span class="fu"><a href="../reference/arena_push_observations.html">arena_push_observations</a></span>(<span class="no">observations</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_observations.html">push_observations</a></span>(<span class="no">observations</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Upload calculated arena files to Gist and open Arena in browser</span>
-  <span class="fu"><a href="../reference/arena_upload.html">arena_upload</a></span>()</pre></body></html></div>
+  <span class="fu"><a href="../reference/upload_arena.html">upload_arena</a></span>()</pre></body></html></div>
 </div>
 <div id="appending-data" class="section level2">
 <h2 class="hasAnchor">
@@ -184,21 +187,21 @@
 <div id="new-arena-session" class="section level3">
 <h3 class="hasAnchor">
 <a href="#new-arena-session" class="anchor"></a>New Arena session</h3>
-<p>We can add observations to already existing arena object and call <code><a href="../reference/arena_upload.html">arena_upload()</a></code>.</p>
+<p>We can add observations to already existing arena object and call <code>arena_upload()</code>.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">arena</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_observations.html">arena_push_observations</a></span>(<span class="no">observations2</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_upload.html">arena_upload</a></span>()</pre></body></html></div>
+  <span class="fu"><a href="../reference/push_observations.html">push_observations</a></span>(<span class="no">observations2</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/upload_arena.html">upload_arena</a></span>()</pre></body></html></div>
 </div>
 <div id="append-to-already-existing-session" class="section level3">
 <h3 class="hasAnchor">
 <a href="#append-to-already-existing-session" class="anchor"></a>Append to already existing session</h3>
 <p>Sometimes we don’t want to close Arena session and just add data. There is argument in <code>arena_upload</code> function to do that. Remember to append new arena object and to push all models and all observations that are required to plots you want to append.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="../reference/arena_new.html">arena_new</a></span>() <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_observations.html">arena_push_observations</a></span>(<span class="no">arena_push_observations2</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_upload.html">arena_upload</a></span>(<span class="kw">append_data</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="../reference/create_arena.html">create_arena</a></span>() <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_observations.html">push_observations</a></span>(<span class="no">arena_push_observations2</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/upload_arena.html">upload_arena</a></span>(<span class="kw">append_data</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
 </div>
 </div>
   </div>

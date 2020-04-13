@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Models Explainations Generator • arenar</title>
+<title>Arena for the Exploration and Comparison of any Machine Learning Models. • arenar</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -19,7 +19,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- dalexverse --><link href="dalexverse.css" rel="stylesheet">
 <link href="dalexverse-2.css" rel="stylesheet">
 <!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Interactive Models Explainations Generator">
+<script src="pkgdown.js"></script><meta property="og:title" content="Arena for the Exploration and Comparison of any Machine Learning Models.">
 <meta property="og:description" content="Generates data for challenging models in Arena -
     an interactive web application. You can start the server with XAI plots
     being generated on-demand or create an auto-uploaded static JSON file
@@ -46,7 +46,7 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.5</span>
+          <span class="version version-default">0.1.6</span>
         </div>
       </div>
     </div>
@@ -69,6 +69,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="articles/arena_intro_titanic.html">Introduction to the Arena with the Titanic</a>
+    </li>
+    <li>
       <a href="articles/arena_live.html">Live Arena</a>
     </li>
     <li>
@@ -100,27 +103,55 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="arenar---data-generator-for-arena---interactive-xai-dashboard" class="section level1">
+<div id="cross-compare-any-ml-model-with-the-arena---an-interactive-xai-dashboard" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#arenar---data-generator-for-arena---interactive-xai-dashboard" class="anchor"></a>ArenaR - Data generator for Arena - interactive XAI dashboard</h1></div>
+<a href="#cross-compare-any-ml-model-with-the-arena---an-interactive-xai-dashboard" class="anchor"></a>Cross-compare any ML model with the Arena - an interactive XAI dashboard</h1></div>
 
-<div id="examples-generated-using-arenar" class="section level2">
+<div id="overview" class="section level2">
 <h2 class="hasAnchor">
-<a href="#examples-generated-using-arenar" class="anchor"></a>Examples generated using ArenaR</h2>
-<p><a href="https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/e90d62f8896637001b9110cbe143956f/raw/15a1c75488122580dc5766e3ca7474949ba89678/data.json">Apartments from 2009-2010 price per m2</a><br><a href="https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/db055c7ba325c964b22e52dc87a0019f/raw/ce3687e1d6e595d792f84bca0f07dd216f161d75/data.json">FIFA 20 Players value</a><br><a href="https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/42841017d32d89e1ca9ca0c89da94b88/raw/052bbed2b8a519e833663940225f16792cf337ca/data.json">HR Status classification</a></p>
+<a href="#overview" class="anchor"></a>Overview</h2>
+<p><img src="https://arena.drwhy.ai/img/logo.1a3768b8.png" align="right" width="250"></p>
+<p>Arena is an interactive tool that allows you to explore and compare any model regardless of its internal structure.</p>
+<p>The arena can be run in two modes - live (R runs in the background and calculates all necessary explanations) and serverless (all necessary explanations are calculated earlier).</p>
+<p>Using the Arena is trivially simple. An example with different levels of advancement is available at <a href="http://arenar.drwhy.ai/" class="uri">http://arenar.drwhy.ai/</a>.</p>
+<center>
+<img src="articles/arena03.gif">
+</center>
+</div>
+<div id="installation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h2>
+<p>Install the <code>ArenaR</code> package from GitHub.</p>
+<pre><code>devtools::install_github("ModelOriented/ArenaR")</code></pre>
 </div>
 <div id="how-to-use-it" class="section level2">
 <h2 class="hasAnchor">
 <a href="#how-to-use-it" class="anchor"></a>How to use it</h2>
-<div id="installation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h3>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"ModelOriented/ArenaR"</span>)</pre></div>
-</div>
+<p>Examples generated with ArenaR</p>
+<ul>
+<li>
+<a href="https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/e90d62f8896637001b9110cbe143956f/raw/15a1c75488122580dc5766e3ca7474949ba89678/data.json">Apartments from 2009-2010 price per m2</a><br>
+</li>
+<li>
+<a href="https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/db055c7ba325c964b22e52dc87a0019f/raw/ce3687e1d6e595d792f84bca0f07dd216f161d75/data.json">FIFA 20 Players value</a><br>
+</li>
+<li><a href="https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/42841017d32d89e1ca9ca0c89da94b88/raw/052bbed2b8a519e833663940225f16792cf337ca/data.json">HR classification</a></li>
+</ul>
 <div id="articles" class="section level3">
 <h3 class="hasAnchor">
 <a href="#articles" class="anchor"></a>Articles</h3>
-<p><a href="https://arenar.drwhy.ai/articles/articles/arena_live.html">Create Live Arena</a><br><a href="https://arenar.drwhy.ai/articles/articles/arena_static.html">Create Static Arena</a><br><a href="https://arenar.drwhy.ai/articles/articles/classification.html">Using ArenaR with classificators</a></p>
+<ul>
+<li>
+<a href="https://arenar.drwhy.ai/articles/arena_intro_titanic.html">Introduction to Arena</a><br>
+</li>
+<li>
+<a href="https://arenar.drwhy.ai/articles/arena_live.html">Create Live Arena</a><br>
+</li>
+<li>
+<a href="https://arenar.drwhy.ai/articles/arena_static.html">Create Static Arena</a><br>
+</li>
+<li><a href="https://arenar.drwhy.ai/articles/classification.html">Using ArenaR with classificators</a></li>
+</ul>
 </div>
 <div id="live-version---fast-for-testing-on-huge-data-frames" class="section level3">
 <h3 class="hasAnchor">
@@ -147,14 +178,14 @@
   <span class="kw">label</span> <span class="kw">=</span> <span class="st">"gbm [500 trees]"</span>
 )
 
-<span class="fu"><a href="reference/arena_new.html">arena_new</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
+<span class="fu"><a href="reference/create_arena.html">create_arena</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Pushing explainers for each models</span>
-  <span class="fu"><a href="reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Push dataframe of observations</span>
-  <span class="fu"><a href="reference/arena_push_observations.html">arena_push_observations</a></span>(<span class="no">apartments</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_observations.html">push_observations</a></span>(<span class="no">apartments</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Run server of default port and ip</span>
-  <span class="fu"><a href="reference/arena_run.html">arena_run</a></span>()</pre></div>
+  <span class="fu"><a href="reference/run_server.html">run_server</a></span>()</pre></div>
 </div>
 <div id="generating-static-files---easy-to-share" class="section level3">
 <h3 class="hasAnchor">
@@ -191,14 +222,14 @@
   <span class="st">"m2 "</span>
 )
 
-<span class="fu"><a href="reference/arena_new.html">arena_new</a></span>() <span class="kw">%&gt;%</span>
+<span class="fu"><a href="reference/create_arena.html">create_arena</a></span>() <span class="kw">%&gt;%</span>
   <span class="co"># Pushing explainers for each models</span>
-  <span class="fu"><a href="reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Push dataframe of observations</span>
-  <span class="fu"><a href="reference/arena_push_observations.html">arena_push_observations</a></span>(<span class="no">observations</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_observations.html">push_observations</a></span>(<span class="no">observations</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Upload calculated arena files to Gist and open Arena in browser</span>
-  <span class="fu"><a href="reference/arena_upload.html">arena_upload</a></span>()</pre></div>
+  <span class="fu"><a href="reference/upload_arena.html">upload_arena</a></span>()</pre></div>
 </div>
 </div>
 </div>

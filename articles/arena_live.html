@@ -43,7 +43,7 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.5</span>
+          <span class="version version-default">0.1.6</span>
         </div>
       </div>
     </div>
@@ -66,6 +66,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/arena_intro_titanic.html">Introduction to the Arena with the Titanic</a>
+    </li>
+    <li>
       <a href="../articles/arena_live.html">Live Arena</a>
     </li>
     <li>
@@ -147,15 +150,15 @@
 <h2 class="hasAnchor">
 <a href="#run-arena" class="anchor"></a>Run arena</h2>
 <p>It is not necessary to use dplyr’s pipes, but it’s designed to use pipes.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">arena</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/arena_new.html">arena_new</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">arena</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/create_arena.html">create_arena</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Pushing explainers for each models</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Push dataframe of observations</span>
-  <span class="fu"><a href="../reference/arena_push_observations.html">arena_push_observations</a></span>(<span class="no">apartments</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_observations.html">push_observations</a></span>(<span class="no">apartments</span>) <span class="kw">%&gt;%</span>
   <span class="co"># Run server of default port and ip</span>
-  <span class="fu"><a href="../reference/arena_run.html">arena_run</a></span>()</pre></body></html></div>
+  <span class="fu"><a href="../reference/run_server.html">run_server</a></span>()</pre></body></html></div>
 </div>
 <div id="custom-observation-names" class="section level2">
 <h2 class="hasAnchor">
@@ -170,10 +173,10 @@
   <span class="no">apartments2</span>$<span class="no">district</span>
 )
 
-<span class="fu"><a href="../reference/arena_new.html">arena_new</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_observations.html">arena_push_observations</a></span>(<span class="no">apartments2</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_run.html">arena_run</a></span>()</pre></body></html></div>
+<span class="fu"><a href="../reference/create_arena.html">create_arena</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_observations.html">push_observations</a></span>(<span class="no">apartments2</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/run_server.html">run_server</a></span>()</pre></body></html></div>
 <div class="figure">
 <img src="custom_observation.png" alt=""><p class="caption">Example of observation name</p>
 </div>
@@ -182,9 +185,9 @@
 <h2 class="hasAnchor">
 <a href="#appending-data" class="anchor"></a>Appending data</h2>
 <p>Sometimes you have already opened Arena session with static data, different live server or other data source. You can add new data without closing that window. Just use argument <code>append_data</code>.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="../reference/arena_new.html">arena_new</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_push_model.html">arena_push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/arena_run.html">arena_run</a></span>(<span class="kw">append_data</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="../reference/create_arena.html">create_arena</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">expl_glm</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="../reference/run_server.html">run_server</a></span>(<span class="kw">append_data</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
 </div>
   </div>
 
