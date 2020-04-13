@@ -53,7 +53,7 @@ model_lda <- lda(status ~ ., data=HR)
 ## Create Explainers & Arena
 ```{r}
 # Create new arena and add prepared observations
-arena <- arena_new() %>% arena_push_observations(observations)
+arena <- create_arena() %>% push_observations(observations)
 
 # Levels of target variable
 levels(HR$status)
@@ -82,10 +82,10 @@ for (status in levels(HR$status)) {
     predict_function = function(m, x) predict(m, x)$posterior[,status]
   )
   # Add explainers
-  arena <- arena_push_model(arena, explainer_gbm)
-  arena <- arena_push_model(arena, explainer_lda)
+  arena <- push_model(arena, explainer_gbm)
+  arena <- push_model(arena, explainer_lda)
 
   # Upload arena
-  arena_upload(arena)
+  upload_arena(arena)
 }
 ```

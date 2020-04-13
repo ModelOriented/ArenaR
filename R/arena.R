@@ -10,7 +10,7 @@
 #' @param cl Cluster used to run parallel computations (Do not work in live Arena)
 #' @return Empty \code{arena_static} of \code{arena_live} class object
 #' @export
-arena_new <- function(live = FALSE,
+create_arena <- function(live = FALSE,
                       N = 500,
                       fi_N = NULL,
                       fi_B = 10,
@@ -100,13 +100,13 @@ print.arena_live <- function(x, ...) {
 #' @param explainer Explainer created using \code{DALEX::explain}
 #' @return Updated arena object
 #' @export
-arena_push_model <- function(arena, explainer) {
-  UseMethod("arena_push_model")
+push_model <- function(arena, explainer) {
+  UseMethod("push_model")
 }
 
 #' @export
 #' @importFrom methods is
-arena_push_model.arena_static <- function(arena, explainer) {
+push_model.arena_static <- function(arena, explainer) {
   if (is.null(arena) || !is(arena, "arena_static")) {
     stop("Invalid arena argument")
   }
@@ -133,7 +133,7 @@ arena_push_model.arena_static <- function(arena, explainer) {
 
 #' @export
 #' @importFrom methods is
-arena_push_model.arena_live <- function(arena, explainer) {
+push_model.arena_live <- function(arena, explainer) {
   if (is.null(arena) || !is(arena, "arena_live")) {
     stop("Invalid arena argument")
   }
@@ -156,13 +156,13 @@ arena_push_model.arena_live <- function(arena, explainer) {
 #' @param observations data frame of new observations
 #' @return Updated arena object
 #' @export
-arena_push_observations <- function(arena, observations) {
-  UseMethod("arena_push_observations")
+push_observations <- function(arena, observations) {
+  UseMethod("push_observations")
 }
 
 #' @export
 #' @importFrom methods is
-arena_push_observations.arena_static <- function(arena, observations) {
+push_observations.arena_static <- function(arena, observations) {
   if (is.null(arena) || !is(arena, "arena_static")) {
     stop("Invalid arena argument")
   }
@@ -184,7 +184,7 @@ arena_push_observations.arena_static <- function(arena, observations) {
 
 #' @export
 #' @importFrom methods is
-arena_push_observations.arena_live <- function(arena, observations) {
+push_observations.arena_live <- function(arena, observations) {
   if (is.null(arena) || !is(arena, "arena_live")) {
     stop("Invalid arena argument")
   }
@@ -211,7 +211,7 @@ arena_push_observations.arena_live <- function(arena, observations) {
 #' @return not modified arena object
 #' @export
 #' @importFrom methods is
-arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE,
+upload_arena <- function (arena, open_browser = TRUE, append_data = FALSE,
                           arena_url = "https://arena.drwhy.ai/", pretty=FALSE) {
   if (is.null(arena) || !is(arena, "arena_static")) {
     stop("Invalid arena argument")
@@ -219,15 +219,15 @@ arena_upload <- function (arena, open_browser = TRUE, append_data = FALSE,
   # generate json string
   json <- jsonlite::toJSON(
     get_json_structure(arena),
-    auto_unbox=TRUE,
-    pretty=pretty
+    auto_unbox = TRUE,
+    pretty = pretty
   )
   # upload json to gist
   gist <- gistr::gist_create(
-    public=FALSE,
-    browse=FALSE,
-    code=json,
-    filename="data.json"
+    public = FALSE,
+    browse = FALSE,
+    code = json,
+    filename = "data.json"
   )
   # url of raw data file
   url <- gist$files$data.json$raw_url

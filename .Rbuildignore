@@ -9,3 +9,4 @@
 ^\.github$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.httr-oauth$

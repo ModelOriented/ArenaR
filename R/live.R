@@ -12,7 +12,7 @@
 #' @return not modified arena object
 #' @export
 #' @importFrom methods is
-arena_run <- function(arena, port = 8181, host = "127.0.0.1",
+run_server <- function(arena, port = 8181, host = "127.0.0.1",
                       open_browser = TRUE, append_data = FALSE,
                       arena_url = "https://arena.drwhy.ai/") {
   if (is.null(arena) || !is(arena, "arena_live")) {

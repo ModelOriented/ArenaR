@@ -1,6 +1,6 @@
 Package: arenar
-Title: Interactive Models Explainations Generator
-Version: 0.1.5
+Title: Arena for the Exploration and Comparison of any Machine Learning Models.
+Version: 0.1.6
 Authors@R: 
     person(given = "Piotr",
            family = "Piątyszek",
