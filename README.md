@@ -35,9 +35,10 @@ Examples generated with ArenaR
 
 ### Articles
 
-* [Create Live Arena](https://arenar.drwhy.ai/articles/articles/arena_live.html)  
-* [Create Static Arena](https://arenar.drwhy.ai/articles/articles/arena_static.html)  
-* [Using ArenaR with classificators](https://arenar.drwhy.ai/articles/articles/classification.html)  
+* [Introduction to Arena](https://arenar.drwhy.ai/articles/arena_intro_titanic.html)  
+* [Create Live Arena](https://arenar.drwhy.ai/articles/arena_live.html)  
+* [Create Static Arena](https://arenar.drwhy.ai/articles/arena_static.html)  
+* [Using ArenaR with classificators](https://arenar.drwhy.ai/articles/classification.html)  
 
 ### Live version - fast for testing on huge data frames
 
