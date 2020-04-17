@@ -24,7 +24,13 @@
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<![endif]--><!-- google analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-5650686-14"></script><script>
+ window.dataLayer = window.dataLayer || [];
+ function gtag(){dataLayer.push(arguments);}
+ gtag('js', new Date());
+
+ gtag('config', 'UA-5650686-14');
+</script>
 </head>
 <body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
@@ -145,6 +151,7 @@
 
 <span class="no">titanic_ex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
     <span class="no">titanic_rf</span>,
+    <span class="kw">y</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>$<span class="no">survived</span>,
     <span class="kw">data</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>)</pre></body></html></div>
 </div>
 <div id="create-an-arena-and-add-the-model" class="section level2">
@@ -232,8 +239,10 @@ Mary      1st female  12     0     0   50     Belfast</code></pre>
 <a href="#create-explainers" class="anchor"></a>Create explainers</h2>
 <p>Since these models have different structures, we need to standardize the way we can access them. We will use the explain function for this.</p>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">titanic_egb</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(<span class="no">titanic_gbm</span>,
+    <span class="kw">y</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>$<span class="no">survived</span>,
     <span class="kw">data</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>)
 <span class="no">titanic_elm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(<span class="no">titanic_glm</span>,
+    <span class="kw">y</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>$<span class="no">survived</span>,
     <span class="kw">data</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>)</pre></body></html></div>
 </div>
 <div id="add-more-models-to-the-arena" class="section level2">
@@ -281,7 +290,7 @@ Mary      1st female  12     0     0   50     Belfast</code></pre>
 
 
       <footer><div class="copyright">
-  <p>Developed by Piotr Piątyszek.</p>
+  <p>Developed by Piotr Piątyszek, Przemyslaw Biecek.</p>
 </div>
 
 <div class="pkgdown">
