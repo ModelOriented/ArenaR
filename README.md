@@ -118,3 +118,7 @@ create_arena() %>%
   # Upload calculated arena files to Gist and open Arena in browser
   upload_arena()
 ```
+
+## Acknowledgments
+
+Work on this package was financially supported by the Polish National Science Centre under Opus Grant number 2017/27/B/ST6/0130.

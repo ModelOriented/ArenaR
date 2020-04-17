@@ -1,11 +1,11 @@
 Package: arenar
 Title: Arena for the Exploration and Comparison of any Machine Learning Models.
 Version: 0.1.6
-Authors@R: 
-    person(given = "Piotr",
-           family = "Piątyszek",
-           role = c("aut", "cre"),
-           email = "piotrp@wektor.xyz")
+Authors@R:
+    c(person("Piotr", "Piątyszek", role = c("aut", "cre"),
+             email = "piotrp@wektor.xyz"),
+      person("Przemyslaw", "Biecek", role = c("aut"), 
+             comment = c(ORCID = "0000-0001-8423-1823")))
 Description: Generates data for challenging models in Arena -
     an interactive web application. You can start the server with XAI plots
     being generated on-demand or create an auto-uploaded static JSON file

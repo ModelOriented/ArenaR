@@ -60,6 +60,7 @@ library("DALEX")
 
 titanic_ex <- explain(
 	titanic_rf,
+	y = titanic_imputed$survived,
 	data = titanic_imputed)
 ```
 
@@ -173,8 +174,10 @@ Since these models have different structures, we need to standardize the way we 
 
 ```{r, eval=FALSE}
 titanic_egb <- explain(titanic_gbm,
+    y = titanic_imputed$survived,
     data = titanic_imputed)
 titanic_elm <- explain(titanic_glm,
+    y = titanic_imputed$survived,
     data = titanic_imputed)
 ```
 
