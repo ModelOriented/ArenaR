@@ -251,7 +251,7 @@ get_feature_importance <- function(explainer, vars, params) {
       by.y = "rownames(stats)"
     )
     # rm permutation column
-    perm0 <- subset(perm0, select = -permutation)
+    perm0 <- subset(perm0, select = setdiff(colnames(perm0), "permutation"))
     # leave only rows for variables, not for full model and baseline
     vars_only <- perm0[!(perm0$variable %in% c("_baseline_", "_full_model_")), ]
     vars_only <- vars_only[order(vars_only$dropout_loss, decreasing = TRUE), ]
@@ -310,7 +310,7 @@ get_shap_values <- function(explainer, observation, params) {
       by.y = "rownames(stats)"
     )
     # rm permutation column
-    perm0 <- subset(perm0, select = -B)
+    perm0 <- subset(perm0, select = setdiff(colnames(perm0), "B"))
     perm0 <- perm0[order(abs(perm0$contribution), decreasing = TRUE), ]
 
     output <- list(

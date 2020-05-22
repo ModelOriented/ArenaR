@@ -1,3 +1,8 @@
+arenar 0.1.7
+----------------------------------------------------------------
+* fix CRAN issues with non standard evaluation
+* compress gifs
+
 arenar 0.1.6
 ----------------------------------------------------------------
 * updated names `arena_new` -> `create_arena`,  `arena_push_model` -> `push_model`, `arena_upload` -> `upload_arena`, `arena_run` -> `run_server` according to `verb_noun` scheme

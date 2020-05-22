@@ -1,6 +1,6 @@
 Package: arenar
 Title: Arena for the Exploration and Comparison of any Machine Learning Models
-Version: 0.1.6
+Version: 0.1.7
 Authors@R:
     c(person("Piotr", "Piątyszek", role = c("aut", "cre"),
              email = "piotrp@wektor.xyz"),
