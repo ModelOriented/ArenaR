@@ -1,15 +1,16 @@
 Package: arenar
-Title: Arena for the Exploration and Comparison of any Machine Learning Models
+Title: Arena for the Exploration and Comparison of any ML Models
 Version: 0.1.7
 Authors@R:
     c(person("Piotr", "Piątyszek", role = c("aut", "cre"),
              email = "piotrp@wektor.xyz"),
       person("Przemyslaw", "Biecek", role = c("aut"), 
              comment = c(ORCID = "0000-0001-8423-1823")))
-Description: Generates data for challenging models in Arena -
-    an interactive web application. You can start the server with XAI plots
-    being generated on-demand or create an auto-uploaded static JSON file
-    and easy do share Arena URL.
+Description: Generates data for challenging machine learning models in 'Arena'
+    <https://arena.drwhy.ai> - an interactive web application. You can start
+    the server with XAI (Explainable Artificial Intelligence) plots to be
+    generated on-demand or precalculate and auto-upload data file beside
+    shareable 'Arena' URL.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

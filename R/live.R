@@ -12,6 +12,18 @@
 #' @return not modified arena object
 #' @export
 #' @importFrom methods is
+#' @examples
+#' library("DALEX")
+#' library("arenar")
+#' library("dplyr", quietly=TRUE, warn.conflicts = FALSE)
+#' # create a model
+#' model <- glm(m2.price ~ ., data=apartments)
+#' # create a DALEX explainer
+#' explainer <- DALEX::explain(model, data=apartments, y=apartments$m2.price)
+#' # generate live arena for one model and all data as observations
+#' arena <- create_arena(live=TRUE) %>% push_model(explainer) %>% push_observations(apartments)
+#' # run the server
+#' if (interactive()) run_server(arena, port=1234)
 run_server <- function(arena, port = 8181, host = "127.0.0.1",
                       open_browser = TRUE, append_data = FALSE,
                       arena_url = "https://arena.drwhy.ai/") {

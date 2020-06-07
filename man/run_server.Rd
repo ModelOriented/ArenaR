@@ -33,3 +33,16 @@ not modified arena object
 By default function opens browser with new arena session. Appending data to
 already existing session is also possible using argument \code{append_data}
 }
+\examples{
+library("DALEX")
+library("arenar")
+library("dplyr", quietly=TRUE, warn.conflicts = FALSE)
+# create a model
+model <- glm(m2.price ~ ., data=apartments)
+# create a DALEX explainer
+explainer <- DALEX::explain(model, data=apartments, y=apartments$m2.price)
+# generate live arena for one model and all data as observations
+arena <- create_arena(live=TRUE) \%>\% push_model(explainer) \%>\% push_observations(apartments)
+# run the server
+if (interactive()) run_server(arena, port=1234)
+}

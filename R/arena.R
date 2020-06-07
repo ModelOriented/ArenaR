@@ -10,6 +10,22 @@
 #' @param cl Cluster used to run parallel computations (Do not work in live Arena)
 #' @return Empty \code{arena_static} of \code{arena_live} class object
 #' @export
+#' @examples
+#' library("DALEX")
+#' library("arenar")
+#' library("dplyr", quietly=TRUE, warn.conflicts = FALSE)
+#' # create a model
+#' model <- glm(m2.price ~ ., data=apartments)
+#' # create a DALEX explainer
+#' explainer <- DALEX::explain(model, data=apartments, y=apartments$m2.price)
+#' # prepare observations to be explained
+#' observations <- apartments[1:3, ]
+#' # rownames are used as labels for each observation
+#' rownames(observations) <- paste0(observations$construction.year, "-", observations$surface, "m2")
+#' # generate static arena for one model and 3 observations
+#' arena <- create_arena(live=FALSE) %>% push_model(explainer) %>% push_observations(observations)
+#' print(arena)
+#' if (interactive()) upload_arena(arena)
 create_arena <- function(live = FALSE,
                       N = 500,
                       fi_N = NULL,
@@ -67,6 +83,23 @@ create_arena <- function(live = FALSE,
 #' @param x \code{arena_static} object
 #' @param ... other parameters
 #' @export
+#' @return None
+#' @examples
+#' library("DALEX")
+#' library("arenar")
+#' library("dplyr", quietly=TRUE, warn.conflicts = FALSE)
+#' # create a model
+#' model <- glm(m2.price ~ ., data=apartments)
+#' # create a DALEX explainer
+#' explainer <- DALEX::explain(model, data=apartments, y=apartments$m2.price)
+#' # prepare observations to be explained
+#' observations <- apartments[1:3, ]
+#' # rownames are used as labels for each observation
+#' rownames(observations) <- paste0(observations$construction.year, "-", observations$surface, "m2")
+#' # generate static arena for one model and 3 observations
+#' arena <- create_arena(live=FALSE) %>% push_model(explainer) %>% push_observations(observations)
+#' # print summary
+#' print(arena)
 print.arena_static <- function(x, ...) {
   cat("===== Static Arena Summary =====\n")
   jstr <- get_json_structure(x)
@@ -81,6 +114,23 @@ print.arena_static <- function(x, ...) {
 #' @param x \code{arena_live} object
 #' @param ... other parameters
 #' @export
+#' @return None
+#' @examples
+#' library("DALEX")
+#' library("arenar")
+#' library("dplyr", quietly=TRUE, warn.conflicts = FALSE)
+#' # create a model
+#' model <- glm(m2.price ~ ., data=apartments)
+#' # create a DALEX explainer
+#' explainer <- DALEX::explain(model, data=apartments, y=apartments$m2.price)
+#' # prepare observations to be explained
+#' observations <- apartments[1:30, ]
+#' # rownames are used as labels for each observation
+#' rownames(observations) <- paste0(observations$construction.year, "-", observations$surface, "m2")
+#' # generate live arena for one model and 30 observations
+#' arena <- create_arena(live=TRUE) %>% push_model(explainer) %>% push_observations(observations)
+#' # print summary
+#' print(arena)
 print.arena_live <- function(x, ...) {
   cat("===== Live Arena Summary =====\n")
   jstr <- get_json_structure(x)
@@ -100,6 +150,22 @@ print.arena_live <- function(x, ...) {
 #' @param explainer Explainer created using \code{DALEX::explain}
 #' @return Updated arena object
 #' @export
+#' @examples
+#' library("DALEX")
+#' library("arenar")
+#' library("dplyr", quietly=TRUE, warn.conflicts = FALSE)
+#' # create first model
+#' model1 <- glm(m2.price ~ ., data=apartments, family=gaussian)
+#' # create a DALEX explainer
+#' explainer1 <- DALEX::explain(model1, data=apartments, y=apartments$m2.price, label="GLM gaussian")
+#' # create live arena with only one model
+#' arena <- create_arena(live=TRUE) %>% push_model(explainer1)
+#' print(arena)
+#' # create and add next model
+#' model2 <- glm(m2.price ~ ., data=apartments, family=Gamma)
+#' explainer2 <- DALEX::explain(model2, data=apartments, y=apartments$m2.price, label="GLM gamma")
+#' arena <- arena %>% push_model(explainer2)
+#' print(arena)
 push_model <- function(arena, explainer) {
   UseMethod("push_model")
 }

@@ -11,6 +11,26 @@
 
 \item{...}{other parameters}
 }
+\value{
+None
+}
 \description{
 Prints live arena summary
+}
+\examples{
+library("DALEX")
+library("arenar")
+library("dplyr", quietly=TRUE, warn.conflicts = FALSE)
+# create a model
+model <- glm(m2.price ~ ., data=apartments)
+# create a DALEX explainer
+explainer <- DALEX::explain(model, data=apartments, y=apartments$m2.price)
+# prepare observations to be explained
+observations <- apartments[1:30, ]
+# rownames are used as labels for each observation
+rownames(observations) <- paste0(observations$construction.year, "-", observations$surface, "m2")
+# generate live arena for one model and 30 observations
+arena <- create_arena(live=TRUE) \%>\% push_model(explainer) \%>\% push_observations(observations)
+# print summary
+print(arena)
 }

@@ -19,3 +19,20 @@ If arena is static it will start calculations for all already pushed
 observations and global plots. If arena is live, then plots will be
 calculated on demand, after calling \code{arena_run}.
 }
+\examples{
+library("DALEX")
+library("arenar")
+library("dplyr", quietly=TRUE, warn.conflicts = FALSE)
+# create first model
+model1 <- glm(m2.price ~ ., data=apartments, family=gaussian)
+# create a DALEX explainer
+explainer1 <- DALEX::explain(model1, data=apartments, y=apartments$m2.price, label="GLM gaussian")
+# create live arena with only one model
+arena <- create_arena(live=TRUE) \%>\% push_model(explainer1)
+print(arena)
+# create and add next model
+model2 <- glm(m2.price ~ ., data=apartments, family=Gamma)
+explainer2 <- DALEX::explain(model2, data=apartments, y=apartments$m2.price, label="GLM gamma")
+arena <- arena \%>\% push_model(explainer2)
+print(arena)
+}
