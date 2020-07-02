@@ -178,6 +178,16 @@ push_model.arena_static <- function(arena, explainer) {
   }
   validate_new_model(arena, explainer)
  
+  # split expaliner into multiple classification explainers
+  if (explainer$model_info$type == "multiclass") {
+    cat("Provided explainer is multiclass and will be splited\n")
+    splited <- split_multiclass_explainer(explainer)
+    for (i in seq_along(splited)) {
+      arena <- push_model(arena, splited[[i]])
+    }
+    return(arena)
+  }
+
   params <- arena$params
 
   # calculate global plots and append to list
@@ -204,6 +214,16 @@ push_model.arena_live <- function(arena, explainer) {
     stop("Invalid arena argument")
   }
   validate_new_model(arena, explainer)
+  
+  # split expaliner into multiple classification explainers
+  if (explainer$model_info$type == "multiclass") {
+    cat("Provided explainer is multiclass and will be splited\n")
+    splited <- split_multiclass_explainer(explainer)
+    for (i in seq_along(splited)) {
+      arena <- push_model(arena, splited[[i]])
+    }
+    return(arena)
+  }
   
   # save explainer
   arena$explainers[[length(arena$explainers) + 1]] <- explainer

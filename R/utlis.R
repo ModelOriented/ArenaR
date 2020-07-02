@@ -1,3 +1,47 @@
+#' Splits multiclass explainer into multiple classification explainers
+#'
+#' @param explainer Multiclass explainer created using \code{DALEX::explain}
+#' @return list of explainers
+#' @importFrom methods is
+split_multiclass_explainer <- function(explainer) {
+  if (is.null(explainer) || !is(explainer, "explainer")) {
+    stop("Invalid explainer argument")
+  }
+  type <- explainer$model_info$type
+  if (type != "multiclass") {
+    stop(paste("Cannot split explainer with type:", type))
+  }
+  # y column no longer can be inside data
+  is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
+  data <- explainer$data[, !is_y]
+  # prediction columns
+  pred_cols <- colnames(explainer$y_hat)
+  # create explainers for each y class
+  lapply(pred_cols, function(class_name) {
+    # modify model info
+    model_info <- explainer$model_info
+    model_info$type <- "classification"
+    # number of column in predict output
+    pred_col_number <- which(pred_cols == class_name)
+    DALEX::explain(
+      explainer$model,
+      data = data,
+      y = explainer$y == class_name,
+      predict_function = function(model, newdata, ...) {
+        prediction <- explainer$predict_function(model, newdata, ...)
+        if (is.null(dim(prediction))) {
+          prediction[pred_col_number]
+        } else {
+          prediction[, pred_col_number]
+        }
+      },
+      label = paste0(explainer$label, " [", class_name, "]"),
+      type = explainer$type,
+      model_info = model_info
+    )
+  })
+}
+
 #' Checks if it is safe do add new observations to the arena object
 #'
 #' Function checks if rowname of each row is not already used

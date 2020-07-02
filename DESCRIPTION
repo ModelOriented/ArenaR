@@ -33,7 +33,8 @@ Suggests:
     dplyr,
     pkgdown,
     covr,
-    DALEX
+    DALEX,
+    ranger
 VignetteBuilder: knitr
 URL: https://arenar.drwhy.ai, https://github.com/ModelOriented/ArenaR
 BugReports: https://github.com/ModelOriented/ArenaR/issues
