@@ -33,6 +33,7 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
   pr <- plumber::plumber$new()
   json_structure <- get_json_structure(arena)
 
+  # helper function to find explainer for given name
   get_explainer <- function(model_name) {
     label_equals <- sapply(arena$explainers, function(x) x$label == model_name)
     e_list <- arena$explainers[label_equals]
@@ -40,6 +41,7 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     e_list[[1]]
   }
 
+  # helper function to find observation row for given name
   get_observation <- function(observation_name) {
     if (length(arena$observations_batches) == 0) return(NULL)
     name_equals <- function(x) x[rownames(x) == observation_name, ]
@@ -62,6 +64,30 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
     vars <- names(is_y[!is_y])
     get_feature_importance(explainer, vars, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+  
+  pr$handle("GET", "/ROC", function(req, res, model = "") {
+    explainer <- get_explainer(model)
+    if (is.null(explainer)) return(res$status <- 404)
+    get_roc(explainer, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+  
+  pr$handle("GET", "/REC", function(req, res, model = "") {
+    explainer <- get_explainer(model)
+    if (is.null(explainer)) return(res$status <- 404)
+    get_rec(explainer, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+  
+  pr$handle("GET", "/Metrics", function(req, res, model = "") {
+    explainer <- get_explainer(model)
+    if (is.null(explainer)) return(res$status <- 404)
+    get_metrics(explainer, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+
+  pr$handle("GET", "/FunnelMeasure", function(req, res, model = "") {
+    explainer <- get_explainer(model)
+    if (is.null(explainer)) return(res$status <- 404)
+    get_funnel_measure(explainer, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
   pr$handle("GET", "/PartialDependence",

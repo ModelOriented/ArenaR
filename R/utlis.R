@@ -44,7 +44,7 @@ split_multiclass_explainer <- function(explainer) {
 
 #' Checks if it is safe do add new observations to the arena object
 #'
-#' Function checks if rowname of each row is not already used
+#' Function checks if rownames are not already used
 #'
 #' @param arena live or static arena object
 #' @param observations data frame of new observations
@@ -60,7 +60,8 @@ validate_new_observations <- function(arena, observations) {
 
 #' Checks if it is safe do add a new model to the arena object
 #'
-#' Function checks if label is not already used
+#' Function checks if explainer's label is not already used
+#'
 #' @param arena live or static arena object
 #' @param explainer Explainer created using \code{DALEX::explain}
 #' @importFrom methods is
@@ -93,6 +94,8 @@ get_variables_list <- function(arena) {
 
 #' Prepare object ready to change into json
 #'
+#' Function converts object with class \code{arena_live} or \code{arena_static}
+#' to object with structure accepted by Arena. See \href{https://github.com/ModelOriented/Arena/tree/master/src/store/schemas}{list of schemas}.
 #' @param arena live or static arena object
 #' @importFrom methods is
 get_json_structure <- function(arena) {
@@ -147,19 +150,43 @@ get_json_structure.arena_live <- function(arena) {
       list(
         name = "Partial Dependence",
         plotType = "PartialDependence",
-      plotCategory = "Dataset Level",
+        plotCategory = "Dataset Level",
         requiredParams = list("model", "variable")
       ),
       list(
         name = "Accumulated Dependence",
         plotType = "AccumulatedDependence",
-      plotCategory = "Dataset Level",
+        plotCategory = "Dataset Level",
         requiredParams = list("model", "variable")
       ),
       list(
         name = "Variable Importance",
         plotType = "FeatureImportance",
-      plotCategory = "Dataset Level",
+        plotCategory = "Dataset Level",
+        requiredParams = list("model")
+      ),
+      list(
+        name = "Receiver Operating Characterstic",
+        plotType = "ROC",
+        plotCategory = "Model Performance",
+        requiredParams = list("model")
+      ),
+      list(
+        name = "Regression Error Characteristic",
+        plotType = "REC",
+        plotCategory = "Model Performance",
+        requiredParams = list("model")
+      ),
+      list(
+        name = "Funnel Plot",
+        plotType = "FunnelMeasure",
+        plotCategory = "Model Performance",
+        requiredParams = list("model")
+      ),
+      list(
+        name = "Metrics",
+        plotType = "Metrics",
+        plotCategory = "Model Performance",
         requiredParams = list("model")
       )
     )

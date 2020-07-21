@@ -12,5 +12,5 @@ validate_new_observations(arena, observations)
 \item{observations}{data frame of new observations}
 }
 \description{
-Function checks if rowname of each row is not already used
+Function checks if rownames are not already used
 }

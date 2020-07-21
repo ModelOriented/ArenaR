@@ -12,5 +12,5 @@ validate_new_model(arena, explainer)
 \item{explainer}{Explainer created using \code{DALEX::explain}}
 }
 \description{
-Function checks if label is not already used
+Function checks if explainer's label is not already used
 }

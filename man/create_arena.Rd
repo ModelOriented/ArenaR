@@ -11,6 +11,9 @@ create_arena(
   fi_B = 10,
   grid_points = 101,
   shap_B = 10,
+  funnel_nbins = 5,
+  funnel_cutoff = 0.01,
+  funnel_factor_threshold = 7,
   cl = NULL
 )
 }
@@ -28,13 +31,34 @@ in feature importance}
 
 \item{shap_B}{Numer of random paths in SHAP}
 
+\item{funnel_nbins}{Number of partitions for numeric columns for funnel plot}
+
+\item{funnel_cutoff}{Threshold for categorical data. Entries less frequent than specified value will be merged into one category in funnel plot.}
+
+\item{funnel_factor_threshold}{Numeric columns with lower number of unique values than value of this parameter will be treated as factors in funnel plot.}
+
 \item{cl}{Cluster used to run parallel computations (Do not work in live Arena)}
 }
 \value{
-Empty \code{arena_static} of \code{arena_live} class object
+Empty \code{arena_static} or \code{arena_live} class object.\cr
+\code{arena_static}:
+\itemize{
+  \item{explainer}{ List of used explainers}
+  \item{observations_batches}{ List of data frames added as observations}
+  \item{params}{ Plots' parameters}
+  \item{plots_data}{ List of generated data for plots}
+}
+\code{arena_live}:
+\itemize{
+  \item{explainer}{ List of used explainers}
+  \item{observations_batches}{ List of data frames added as observations}
+  \item{params}{ Plots' parameters}
+  \item{timestamp}{ Timestamp of last modification}
+}
 }
 \description{
-Creates arena object
+Creates object with class \code{arena_live} or \code{arena_static} depending on the first argument.
+This method is always first in \code{arenar} workflow and you should specify all plots' parameters there.
 }
 \examples{
 library("DALEX")

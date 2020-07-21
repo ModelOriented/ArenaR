@@ -25,7 +25,9 @@ Imports:
     parallel,
     utils,
     stats,
-    methods
+    methods,
+    auditor,
+    DALEX (>= 1.3.0)
 Suggests: 
     testthat,
     knitr,
@@ -33,7 +35,6 @@ Suggests:
     dplyr,
     pkgdown,
     covr,
-    DALEX,
     ranger
 VignetteBuilder: knitr
 URL: https://arenar.drwhy.ai, https://github.com/ModelOriented/ArenaR

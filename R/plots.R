@@ -1,3 +1,11 @@
+#' Internal function for calculating local plots for all observations
+#'
+#' Function runs all plot generating methods for given observations
+#' 
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param observations Data frame of observations
+#' @param params Params from arena object 
+#' @return list of generated plots' data
 get_local_plots <- function(explainer, observations, params) {
   is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
   vars <- intersect(names(is_y[!is_y]), colnames(observations))
@@ -46,12 +54,26 @@ get_local_plots <- function(explainer, observations, params) {
   )
 }
 
+#' Internal function for calculating global plots
+#'
+#' Function runs all plot generating methods for given explainer
+#' 
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param params Params from arena object 
+#' @return list of generated plots' data
 get_global_plots <- function(explainer, params) {
   is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
   vars <- names(is_y[!is_y])
 
   fi <- get_feature_importance(explainer, vars, params)
   fi <- list(fi)
+
+  perf <- list(
+    get_roc(explainer, params),
+    get_rec(explainer, params),
+    get_metrics(explainer, params),
+    get_funnel_measure(explainer, params)
+  )
 
   get_pd <- function(v) get_partial_dependence(explainer, v, params)
   get_ad <- function(v) get_accumulated_dependence(explainer, v, params)
@@ -77,14 +99,176 @@ get_global_plots <- function(explainer, params) {
     ad <- parallel::parLapply(params$cl, vars, get_ad)
   }
 
+  if (explainer$model_info$type == 'classification') {
+    eva <- auditor::model_evaluation(explainer)
+    if (nrow(eva) > params$roc_grid_points) {
+      # take random points
+      points <- round(runif(n=params$roc_grid_points, min=1, max=nrow(eva)))
+      eva <- eva[points, ]
+    }
+
+  }
+
   # Join results into one list
   c(
     fi[!sapply(fi, is.null)],
     pd[!sapply(pd, is.null)],
-    ad[!sapply(ad, is.null)]
+    ad[!sapply(ad, is.null)],
+    perf[!sapply(perf, is.null)]
   )
 }
 
+#' Internal function for calculating funnel measure
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_funnel_measure <- function(explainer, params) {
+  output <- NULL
+  tryCatch({
+    # get loss function and its name based on model type
+    measure_function <- switch(
+      explainer$model_info$type,
+      regression = list(DALEX::loss_root_mean_square, "MSE"),
+      classification = list(DALEX::loss_one_minus_auc, "1 - AUC"),
+      multiclass = list(DALEX::loss_cross_entropy, "Cross entropy"),
+      stop(explainer$model_info$type, " is not recognized as task name")
+    )
+    measures <- funnel_measure(
+      explainer,
+      measure_function = measure_function[[1]],
+      nbins = params$fm_nbins,
+      cutoff = params$fm_cutoff,
+      factor_conversion_threshold = params$fm_factor_threshold
+    )
+    splited <- split(measures, measures$Variable)
+    transformed <- lapply(splited, function(x) structure(as.list(x$Measure), names=x$Label))
+    output <- list(
+      plotComponent = "FunnelMeasure",
+      plotType = "FunnelMeasure",
+      plotCategory = "Model Performance",
+      name = "Funnel Plot",
+      params = list(
+        model = explainer$label
+      ),
+      data = list(
+        lossValues = transformed,
+        lossFunction = measure_function[[2]]
+      )
+    )
+  }, error = function(e) {
+    stop("Failed to calculate Metrics\n", e)
+  })
+  output
+}
+
+#' Internal function for calculating model performance metrics
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_metrics <- function(explainer, params) {
+  output <- NULL
+  tryCatch({
+    perf <- DALEX::model_performance(explainer)$measures
+    output <- list(
+      plotComponent = "Metrics",
+      plotType = "Metrics",
+      plotCategory = "Model Performance",
+      name = "Metrics",
+      params = list(
+        model = explainer$label
+      ),
+      data = perf
+    )
+  }, error = function(e) {
+    stop("Failed to calculate Metrics\n", e)
+  })
+  output
+}
+
+#' Internal function for calculating receiver operating curve
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+#' @importFrom stats runif
+get_roc <- function(explainer, params) {
+  output <- NULL
+  tryCatch({
+    if (explainer$model_info$type != 'classification') return(NULL)
+    eva <- auditor::model_evaluation(explainer)
+    if (nrow(eva) > params$roc_grid_points) {
+      # take random points
+      points <- round(runif(n=params$roc_grid_points, min=1, max=nrow(eva)))
+      eva <- eva[points, ]
+    }
+    eva <- eva[order(eva$`_fpr_`, decreasing = TRUE), ]
+    
+    output <- list(
+      plotComponent = "ROC",
+      plotType = "ROC",
+      plotCategory = "Model Performance",
+      name = "Receiver Operating Characterstic",
+      params = list(
+        model = explainer$label
+      ),
+      data = list(
+        specifity = 1 - eva$`_fpr_`,
+        sensivity = eva$`_tpr_`,
+        cutoff = eva$`_cutoffs_`
+      )
+    )
+  }, error = function(e) {
+    stop("Failed to calculate ROC\n", e)
+  })
+  output
+}
+
+#' Internal function for calculating regression error characteristic
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+#' @importFrom stats runif
+get_rec <- function(explainer, params) {
+  output <- NULL
+  tryCatch({
+    res <- auditor::model_residual(explainer)
+    make_dataframe <- utils::getFromNamespace("make_dataframe", "auditor")
+    df <- make_dataframe(res, type="rec")
+    if (nrow(df) > params$rec_grid_points) {
+      # take random points
+      points <- round(runif(n=params$rec_grid_points, min=1, max=nrow(df)))
+      df <- df[sort(points), ]
+    }
+    
+    output <- list(
+      plotComponent = "REC",
+      plotType = "REC",
+      plotCategory = "Model Performance",
+      name = "Regression Error Characteristic",
+      params = list(
+        model = explainer$label
+      ),
+      data = list(
+        tolerance = df$`_rec_x_`,
+        quantity = df$`_rec_y_`
+      )
+    )
+  }, error = function(e) {
+    stop("Failed to calculate REC\n", e)
+  })
+  output
+}
+
+#' Internal function for calculating Ceteris Paribus
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param observation One row data frame observation
+#' @param variable Name of variable
+#' @param params Params from arena object
+#' @return Plot data in Arena's format
 get_ceteris_paribus <- function(explainer, observation, variable, params) {
   output <- NULL
   tryCatch({
@@ -124,6 +308,12 @@ get_ceteris_paribus <- function(explainer, observation, variable, params) {
   output
 }
 
+#' Internal function for calculating Break Down
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param observation One row data frame observation
+#' @param params Params from arena object
+#' @return Plot data in Arena's format
 get_break_down <- function(explainer, observation, params) {
   output <- NULL
   tryCatch({
@@ -153,6 +343,12 @@ get_break_down <- function(explainer, observation, params) {
   output
 }
 
+#' Internal function for calculating Accumulated Dependence
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param variable Name of variable
+#' @param params Params from arena object
+#' @return Plot data in Arena's format
 get_accumulated_dependence <- function(explainer, variable, params) {
   output <- NULL
   tryCatch({
@@ -187,6 +383,12 @@ get_accumulated_dependence <- function(explainer, variable, params) {
   output
 }
 
+#' Internal function for calculating Partial Dependence
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param variable Name of variable
+#' @param params Params from arena object
+#' @return Plot data in Arena's format
 get_partial_dependence <- function(explainer, variable, params) {
   output <- NULL
   tryCatch({
@@ -226,6 +428,7 @@ get_partial_dependence <- function(explainer, variable, params) {
 #' @param explainer Explainer created using \code{DALEX::explain}
 #' @param vars Variables names for which feature importance should be calculated
 #' @param params Params from arena object 
+#' @return Plot data in Arena's format
 #' @importFrom stats quantile
 get_feature_importance <- function(explainer, vars, params) {
   output <- NULL
@@ -283,6 +486,7 @@ get_feature_importance <- function(explainer, vars, params) {
 #' @param explainer Explainer created using \code{DALEX::explain}
 #' @param observation One row data frame observation to calculate Shapley Values
 #' @param params Params from arena object
+#' @return Plot data in Arena's format
 #' @importFrom stats quantile
 get_shap_values <- function(explainer, observation, params) {
   output <- NULL
