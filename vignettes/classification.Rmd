@@ -1,5 +1,5 @@
 ---
-title: "Using Arena with classifiers"
+title: "Using Arena with multiclass classifiers"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Using Arena with classifiers}
@@ -16,14 +16,15 @@ knitr::opts_chunk$set(
 ```
 
 ## Preface
-Classifiers are not supported by default. You need to create `explainer` for each class you want to explain.
-Result of this example is available at [link](https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/42841017d32d89e1ca9ca0c89da94b88/raw/052bbed2b8a519e833663940225f16792cf337ca/data.json).
+Multiclass classifiers are not supported by default in Arena. To overcome that
+ArenaR splits them into binary classifiers for each class.
+Result of this example if available at [link](https://arena.drwhy.ai/branch/dev/?data=https://gist.githubusercontent.com/piotrpiatyszek/9e24710b794c377fa4740ee4651bf1b7/raw/b6d6036ccd8ea317920ebe977fa4c3ef9638dba6/data.json)
 
 ## Load data & libraries
-```{r setup}
+```{r setup, message=FALSE, warning=FALSE}
 library(arenar)
-library(DALEX)
 library(dplyr)
+library(DALEX)
 library(MASS)
 library(gbm)
 
@@ -51,6 +52,40 @@ model_lda <- lda(status ~ ., data=HR)
 ```
 
 ## Create Explainers & Arena
+```{r}
+# Create explainers
+explainer_gbm <- DALEX::explain(model_gbm, data=HR, y=HR$status)
+# For LDA we need to set model_info manualy
+explainer_lda <- DALEX::explain(
+  model_lda,
+  data=HR,
+  y=HR$status,
+  model_info=list(package="MASS", ver="", type="multiclass"),
+  predict_function = function(m, x) predict(m, x)$posterior
+)
+
+# Create new arena and add prepared observations and explainers
+arena <- 
+  create_arena() %>%
+  push_observations(observations) %>%
+  push_model(explainer_gbm) %>%
+  push_model(explainer_lda)
+
+# Now you can see that each explainer was splited into three
+print(arena)
+# ===== Static Arena Summary =====
+# Models: gbm [fired], gbm [ok], gbm [promoted], lda [fired], lda [ok], lda [promoted] 
+# Observations: Male 31yr Grade: 2, Female 24yr Grade: 4, Female 21yr Grade: 3, Female 25yr Grade: 3, Male 43yr Grade: 3, Female 32yr Grade: 5, Female 54yr Grade: 2, Female 32yr Grade: 2, Male 21yr Grade: 2, Male 41yr Grade: 2 
+# Variables: gender, age, hours, evaluation, salary 
+# Plots count: 510 
+# NULL
+
+# Upload arena
+if (interactive()) upload_arena(arena)
+```
+
+## Make explainers manualy
+Sometimes is usefull to make this process manualy.
 ```{r}
 # Create new arena and add prepared observations
 arena <- create_arena() %>% push_observations(observations)
@@ -86,6 +121,6 @@ for (status in levels(HR$status)) {
   arena <- push_model(arena, explainer_lda)
 
   # Upload arena
-  upload_arena(arena)
+  if (interactive()) upload_arena(arena)
 }
 ```
