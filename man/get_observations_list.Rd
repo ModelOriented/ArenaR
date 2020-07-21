@@ -9,6 +9,9 @@ get_observations_list(arena)
 \arguments{
 \item{arena}{live or static arena object}
 }
+\value{
+list of observations' names
+}
 \description{
 Generates list of rownames of each observation from each batch
 }

@@ -44,10 +44,12 @@ split_multiclass_explainer <- function(explainer) {
 
 #' Checks if it is safe do add new observations to the arena object
 #'
-#' Function checks if rownames are not already used
+#' Function checks if rownames are not already used and call stop if
+#' there is at least one conflict.
 #'
 #' @param arena live or static arena object
 #' @param observations data frame of new observations
+#' @return None
 #' @importFrom methods is
 validate_new_observations <- function(arena, observations) {
   if (is.null(observations) || !is(observations, "data.frame")) {
@@ -60,10 +62,12 @@ validate_new_observations <- function(arena, observations) {
 
 #' Checks if it is safe do add a new model to the arena object
 #'
-#' Function checks if explainer's label is not already used
+#' Function checks if explainer's label is not already used call stop if
+#' there is at least one conflict.
 #'
 #' @param arena live or static arena object
 #' @param explainer Explainer created using \code{DALEX::explain}
+#' @return None
 #' @importFrom methods is
 validate_new_model <- function(arena, explainer) {
   if (is.null(explainer) || !is(explainer, "explainer")) {
@@ -78,13 +82,15 @@ validate_new_model <- function(arena, explainer) {
 #' Generates list of rownames of each observation from each batch
 #'
 #' @param arena live or static arena object
+#' @return list of observations' names
 get_observations_list <- function(arena) {
   as.list(unlist(lapply(arena$observations_batches, rownames)))
 }
 
-#' Generates list of unique variables(without y) from each explainer
+#' Generates list of unique variables(without target) from each explainer
 #'
 #' @param arena live or static arena object
+#' @return list of variables' names
 get_variables_list <- function(arena) {
   as.list(unique(unlist(lapply(arena$explainers, function(expl) {
     is_y <- sapply(expl$data, function(column) { identical(column, expl$y) })
@@ -97,6 +103,7 @@ get_variables_list <- function(arena) {
 #' Function converts object with class \code{arena_live} or \code{arena_static}
 #' to object with structure accepted by Arena. See \href{https://github.com/ModelOriented/Arena/tree/master/src/store/schemas}{list of schemas}.
 #' @param arena live or static arena object
+#' @return Object for direct conversion into json
 #' @importFrom methods is
 get_json_structure <- function(arena) {
   UseMethod("get_json_structure")

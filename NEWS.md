@@ -1,3 +1,10 @@
+arenar 0.1.8
+----------------------------------------------------------------
+* Documentation with examples
+* Fix CRAN issues with DESCRIPTION file
+* Add model performance plots
+* Add auto spliting multiclass explainers into multiple binary classifiers
+
 arenar 0.1.7
 ----------------------------------------------------------------
 * fix CRAN issues with non standard evaluation
