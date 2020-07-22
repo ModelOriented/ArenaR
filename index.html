@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arena for the Exploration and Comparison of any Machine Learning Models • arenar</title>
+<title>Arena for the Exploration and Comparison of any ML Models • arenar</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -19,11 +19,12 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- dalexverse --><link href="dalexverse.css" rel="stylesheet">
 <link href="dalexverse-2.css" rel="stylesheet">
 <!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Arena for the Exploration and Comparison of any Machine Learning Models">
-<meta property="og:description" content="Generates data for challenging models in Arena -
-    an interactive web application. You can start the server with XAI plots
-    being generated on-demand or create an auto-uploaded static JSON file
-    and easy do share Arena URL.">
+<script src="pkgdown.js"></script><meta property="og:title" content="Arena for the Exploration and Comparison of any ML Models">
+<meta property="og:description" content="Generates data for challenging machine learning models in Arena
+    &lt;https://arena.drwhy.ai&gt; - an interactive web application. You can start
+    the server with XAI (Explainable Artificial Intelligence) plots to be
+    generated on-demand or precalculate and auto-upload data file beside
+    shareable Arena URL.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -52,7 +53,7 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.7</span>
+          <span class="version version-default">0.1.8</span>
         </div>
       </div>
     </div>
@@ -84,7 +85,7 @@
       <a href="articles/arena_static.html">Static Arena</a>
     </li>
     <li>
-      <a href="articles/classification.html">Using Arena with classifiers</a>
+      <a href="articles/classification.html">Using Arena with multiclass classifiers</a>
     </li>
   </ul>
 </li>
@@ -136,12 +137,12 @@
 <p>Examples generated with ArenaR</p>
 <ul>
 <li>
-<a href="https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/e90d62f8896637001b9110cbe143956f/raw/15a1c75488122580dc5766e3ca7474949ba89678/data.json">Apartments from 2009-2010 price per m2</a><br>
+<a href="https://arena.drwhy.ai/?demo=0">Apartments from 2009-2010 price per m2</a><br>
 </li>
 <li>
-<a href="https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/db055c7ba325c964b22e52dc87a0019f/raw/ce3687e1d6e595d792f84bca0f07dd216f161d75/data.json">FIFA 20 Players value</a><br>
+<a href="https://arena.drwhy.ai/?demo=1">FIFA 20 Players value</a><br>
 </li>
-<li><a href="https://arena.drwhy.ai/?data=https://gist.githubusercontent.com/piotrpiatyszek/42841017d32d89e1ca9ca0c89da94b88/raw/052bbed2b8a519e833663940225f16792cf337ca/data.json">HR classification</a></li>
+<li><a href="https://arena.drwhy.ai/?demo=2">HR classification</a></li>
 </ul>
 <div id="articles" class="section level3">
 <h3 class="hasAnchor">
@@ -162,80 +163,84 @@
 <div id="live-version---fast-for-testing-on-huge-data-frames" class="section level3">
 <h3 class="hasAnchor">
 <a href="#live-version---fast-for-testing-on-huge-data-frames" class="anchor"></a>Live version - fast for testing on huge data frames</h3>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">arenar</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">gbm</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">DALEX</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://arenar.drwhy.ai">arenar</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">gbm</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://ModelOriented.github.io/DALEX">DALEX</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://dplyr.tidyverse.org">dplyr</a></span>)
 
 <span class="co"># Create models and DALEX explainers</span>
-<span class="no">model_gbm100</span> <span class="kw">&lt;-</span> <span class="fu">gbm</span>(<span class="no">m2.price</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">apartments</span>, <span class="kw">n.trees</span> <span class="kw">=</span> <span class="fl">100</span>)
-<span class="no">expl_gbm100</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
-  <span class="no">model_gbm100</span>,
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">apartments</span>,
-  <span class="kw">y</span> <span class="kw">=</span> <span class="no">apartments</span>$<span class="no">m2.price</span>,
-  <span class="kw">label</span> <span class="kw">=</span> <span class="st">"gbm [100 trees]"</span>
+<span class="kw">model_gbm100</span> <span class="op">&lt;-</span> <span class="fu">gbm</span>(<span class="kw">m2.price</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">apartments</span>, n.trees = <span class="fl">100</span>)
+<span class="kw">expl_gbm100</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
+  <span class="kw">model_gbm100</span>,
+  data = <span class="kw">apartments</span>,
+  y = <span class="kw">apartments</span><span class="op">$</span><span class="kw">m2.price</span>,
+  label = <span class="st">"gbm [100 trees]"</span>
 )
 
-<span class="no">model_gbm500</span> <span class="kw">&lt;-</span> <span class="fu">gbm</span>(<span class="no">m2.price</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">apartments</span>, <span class="kw">n.trees</span> <span class="kw">=</span> <span class="fl">500</span>)
-<span class="no">expl_gbm500</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
-  <span class="no">model_gbm500</span>,
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">apartments</span>,
-  <span class="kw">y</span> <span class="kw">=</span> <span class="no">apartments</span>$<span class="no">m2.price</span>,
-  <span class="kw">label</span> <span class="kw">=</span> <span class="st">"gbm [500 trees]"</span>
+<span class="kw">model_gbm500</span> <span class="op">&lt;-</span> <span class="fu">gbm</span>(<span class="kw">m2.price</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">apartments</span>, n.trees = <span class="fl">500</span>)
+<span class="kw">expl_gbm500</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
+  <span class="kw">model_gbm500</span>,
+  data = <span class="kw">apartments</span>,
+  y = <span class="kw">apartments</span><span class="op">$</span><span class="kw">m2.price</span>,
+  label = <span class="st">"gbm [500 trees]"</span>
 )
 
-<span class="fu"><a href="reference/create_arena.html">create_arena</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
+<span class="fu"><a href="reference/create_arena.html">create_arena</a></span>(live = <span class="fl">TRUE</span>) <span class="op">%&gt;%</span>
   <span class="co"># Pushing explainers for each models</span>
-  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="kw">expl_gbm100</span>) <span class="op">%&gt;%</span>
+  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="kw">expl_gbm500</span>) <span class="op">%&gt;%</span>
   <span class="co"># Push dataframe of observations</span>
-  <span class="fu"><a href="reference/push_observations.html">push_observations</a></span>(<span class="no">apartments</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_observations.html">push_observations</a></span>(<span class="kw">apartments</span>) <span class="op">%&gt;%</span>
   <span class="co"># Run server of default port and ip</span>
-  <span class="fu"><a href="reference/run_server.html">run_server</a></span>()</pre></div>
+  <span class="fu"><a href="reference/run_server.html">run_server</a></span>()
+</pre></div>
 </div>
 <div id="generating-static-files---easy-to-share" class="section level3">
 <h3 class="hasAnchor">
 <a href="#generating-static-files---easy-to-share" class="anchor"></a>Generating static files - easy to share</h3>
-<div class="sourceCode" id="cb3"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">arenar</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">gbm</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">DALEX</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://arenar.drwhy.ai">arenar</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">gbm</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://ModelOriented.github.io/DALEX">DALEX</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://dplyr.tidyverse.org">dplyr</a></span>)
 
 <span class="co"># Create models and DALEX explainers</span>
-<span class="no">model_gbm100</span> <span class="kw">&lt;-</span> <span class="fu">gbm</span>(<span class="no">m2.price</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">apartments</span>, <span class="kw">n.trees</span> <span class="kw">=</span> <span class="fl">100</span>)
-<span class="no">expl_gbm100</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
-  <span class="no">model_gbm100</span>,
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">apartments</span>,
-  <span class="kw">y</span> <span class="kw">=</span> <span class="no">apartments</span>$<span class="no">m2.price</span>,
-  <span class="kw">label</span> <span class="kw">=</span> <span class="st">"gbm [100 trees]"</span>
+<span class="kw">model_gbm100</span> <span class="op">&lt;-</span> <span class="fu">gbm</span>(<span class="kw">m2.price</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">apartments</span>, n.trees = <span class="fl">100</span>)
+<span class="kw">expl_gbm100</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
+  <span class="kw">model_gbm100</span>,
+  data = <span class="kw">apartments</span>,
+  y = <span class="kw">apartments</span><span class="op">$</span><span class="kw">m2.price</span>,
+  label = <span class="st">"gbm [100 trees]"</span>
 )
 
-<span class="no">model_gbm500</span> <span class="kw">&lt;-</span> <span class="fu">gbm</span>(<span class="no">m2.price</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">apartments</span>, <span class="kw">n.trees</span> <span class="kw">=</span> <span class="fl">500</span>)
-<span class="no">expl_gbm500</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
-  <span class="no">model_gbm500</span>,
-  <span class="kw">data</span> <span class="kw">=</span> <span class="no">apartments</span>,
-  <span class="kw">y</span> <span class="kw">=</span> <span class="no">apartments</span>$<span class="no">m2.price</span>,
-  <span class="kw">label</span> <span class="kw">=</span> <span class="st">"gbm [500 trees]"</span>
+<span class="kw">model_gbm500</span> <span class="op">&lt;-</span> <span class="fu">gbm</span>(<span class="kw">m2.price</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">apartments</span>, n.trees = <span class="fl">500</span>)
+<span class="kw">expl_gbm500</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
+  <span class="kw">model_gbm500</span>,
+  data = <span class="kw">apartments</span>,
+  y = <span class="kw">apartments</span><span class="op">$</span><span class="kw">m2.price</span>,
+  label = <span class="st">"gbm [500 trees]"</span>
 )
 
 <span class="co"># Take only few observations</span>
-<span class="no">observations</span> <span class="kw">&lt;-</span> <span class="no">apartments</span> <span class="kw">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="no">construction.year</span> <span class="kw">&gt;=</span> <span class="fl">2009</span>)
+<span class="kw">observations</span> <span class="op">&lt;-</span> <span class="kw">apartments</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">construction.year</span> <span class="op">&gt;=</span> <span class="fl">2009</span>)
 <span class="co"># Observations' names are taken from rownames</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">observations</span>) <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(
-  <span class="no">observations</span>$<span class="no">district</span>,
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">observations</span>) <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(
+  <span class="kw">observations</span><span class="op">$</span><span class="kw">district</span>,
   <span class="st">" "</span>,
-  <span class="no">observations</span>$<span class="no">surface</span>,
+  <span class="kw">observations</span><span class="op">$</span><span class="kw">surface</span>,
   <span class="st">"m2 "</span>
 )
 
-<span class="fu"><a href="reference/create_arena.html">create_arena</a></span>() <span class="kw">%&gt;%</span>
+<span class="fu"><a href="reference/create_arena.html">create_arena</a></span>() <span class="op">%&gt;%</span>
   <span class="co"># Pushing explainers for each models</span>
-  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm100</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="no">expl_gbm500</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="kw">expl_gbm100</span>) <span class="op">%&gt;%</span>
+  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="kw">expl_gbm500</span>) <span class="op">%&gt;%</span>
   <span class="co"># Push dataframe of observations</span>
-  <span class="fu"><a href="reference/push_observations.html">push_observations</a></span>(<span class="no">observations</span>) <span class="kw">%&gt;%</span>
+  <span class="fu"><a href="reference/push_observations.html">push_observations</a></span>(<span class="kw">observations</span>) <span class="op">%&gt;%</span>
   <span class="co"># Upload calculated arena files to Gist and open Arena in browser</span>
-  <span class="fu"><a href="reference/upload_arena.html">upload_arena</a></span>()</pre></div>
+  <span class="fu"><a href="reference/upload_arena.html">upload_arena</a></span>()
+</pre></div>
 </div>
 </div>
 <div id="acknowledgments" class="section level2">

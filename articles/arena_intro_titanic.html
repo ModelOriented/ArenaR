@@ -49,7 +49,7 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.7</span>
+          <span class="version version-default">0.1.8</span>
         </div>
       </div>
     </div>
@@ -81,7 +81,7 @@
       <a href="../articles/arena_static.html">Static Arena</a>
     </li>
     <li>
-      <a href="../articles/classification.html">Using Arena with classifiers</a>
+      <a href="../articles/classification.html">Using Arena with multiclass classifiers</a>
     </li>
   </ul>
 </li>
@@ -104,7 +104,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="arena_intro_titanic_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to the Arena with the Titanic</h1>
@@ -123,10 +123,12 @@
 <p>In this example we will use <code>titanic_imputed</code> data to show some examples for the <code>ArenaR</code> library.</p>
 <p>We will create a random forest model that will predict chances of survival and then use <code>Arena</code> to do global exploration of this model.</p>
 <p>Let’s see the data.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"dplyr"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"DALEX"</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://dplyr.tidyverse.org">"dplyr"</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://ModelOriented.github.io/DALEX">"DALEX"</a></span>)
 
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">titanic_imputed</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw">titanic_imputed</span>)
+</pre></div>
 </div>
 <div id="basic-use-of-arena---single-model-global-explanations" class="section level1">
 <h1 class="hasAnchor">
@@ -136,23 +138,27 @@
 <h2 class="hasAnchor">
 <a href="#train-a-model" class="anchor"></a>Train a model</h2>
 <p>We’ll use the <code>ranger</code> package for this example. With its help, we will build a random forest model.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ranger"</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/imbs-hl/ranger">"ranger"</a></span>)
 
-<span class="no">titanic_rf</span> <span class="kw">&lt;-</span> <span class="fu">ranger</span>(<span class="no">survived</span> ~ <span class="no">.</span>,
-              <span class="kw">data</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>,
-              <span class="kw">probability</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-              <span class="kw">classification</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
+<span class="kw">titanic_rf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ranger/man/ranger.html">ranger</a></span>(<span class="kw">survived</span> <span class="op">~</span> <span class="kw">.</span>, 
+              data = <span class="kw">titanic_imputed</span>,
+              probability = <span class="fl">TRUE</span>, 
+              classification = <span class="fl">TRUE</span>)
+</pre></div>
 </div>
 <div id="create-an-explainer" class="section level2">
 <h2 class="hasAnchor">
 <a href="#create-an-explainer" class="anchor"></a>Create an explainer</h2>
 <p><code>ArenaR</code>, like all packages from the <code>DrWhy</code> family, works on unified model wrappers. We will create them with the <code>explain</code> function from the <code>DALEX</code> package.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"DALEX"</span>)
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://ModelOriented.github.io/DALEX">"DALEX"</a></span>)
 
-<span class="no">titanic_ex</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
-    <span class="no">titanic_rf</span>,
-    <span class="kw">y</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>$<span class="no">survived</span>,
-    <span class="kw">data</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>)</pre></body></html></div>
+<span class="kw">titanic_ex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
+    <span class="kw">titanic_rf</span>,
+    y = <span class="kw">titanic_imputed</span><span class="op">$</span><span class="kw">survived</span>,
+    data = <span class="kw">titanic_imputed</span>)
+</pre></div>
 </div>
 <div id="create-an-arena-and-add-the-model" class="section level2">
 <h2 class="hasAnchor">
@@ -160,10 +166,12 @@
 <p>We are ready to create an arena for comparison and exploration of machine learning models.</p>
 <p>First, we need to create an empty space to explore models with the use of the <code>create_arena</code> function. Then we can add models to it with the <code>push_model</code> function.</p>
 <p>We have one model, so let’s add it to the arena!</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"arenar"</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://arenar.drwhy.ai">"arenar"</a></span>)
 
-<span class="no">titanic_ar</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/create_arena.html">create_arena</a></span>(<span class="kw">live</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">titanic_ex</span>)</pre></body></html></div>
+<span class="kw">titanic_ar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_arena.html">create_arena</a></span>(live = <span class="fl">TRUE</span>) <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="kw">titanic_ex</span>) 
+</pre></div>
 <p>For the pushed model a set of global explanations is calculated. Such as the <a href="https://pbiecek.github.io/ema/featureImportance.html">Variables importance</a> and <a href="https://pbiecek.github.io/ema/partialDependenceProfiles.html">Partial Dependence Plots</a> / <a href="https://pbiecek.github.io/ema/accumulatedLocalProfiles.html">Accumulated Local Effects</a> for each variable.</p>
 </div>
 <div id="run-the-live-arena-server" class="section level2">
@@ -171,7 +179,9 @@
 <a href="#run-the-live-arena-server" class="anchor"></a>Run the live Arena server</h2>
 <p>We are ready to work with the model interactively.</p>
 <p>We can execute the arena object using <code>run_server</code> function. It will turn R into a server serving data and use the dashboard <a href="https://arena.drwhy.ai/" class="uri">https://arena.drwhy.ai/</a> to explore the data.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="../reference/run_server.html">run_server</a></span>(<span class="no">titanic_ar</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="fu"><a href="../reference/run_server.html">run_server</a></span>(<span class="kw">titanic_ar</span>)
+</pre></div>
 <p>The browser will open an interactive tool for model exploration.</p>
 <div class="figure">
 <img src="https://github.com/ModelOriented/ArenaR/raw/master/vignettes/arena01.gif" alt=""><p class="caption">Basic use of the AreaR</p>
@@ -186,32 +196,38 @@
 <h2 class="hasAnchor">
 <a href="#add-local-explanations" class="anchor"></a>Add local explanations</h2>
 <p>The arena also supports the exploration of the model at the level of explanations for individual instances. Let’s first prepare a data set with three new passengers.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">passangers</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
-            <span class="kw">class</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"1st"</span>, <span class="st">"3rd"</span>, <span class="st">"1st"</span>), <span class="kw">levels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"1st"</span>, <span class="st">"2nd"</span>, <span class="st">"3rd"</span>, <span class="st">"deck crew"</span>,
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="kw">passangers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
+            class = <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"1st"</span>, <span class="st">"3rd"</span>, <span class="st">"1st"</span>), levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"1st"</span>, <span class="st">"2nd"</span>, <span class="st">"3rd"</span>, <span class="st">"deck crew"</span>,
                         <span class="st">"engineering crew"</span>, <span class="st">"restaurant staff"</span>, <span class="st">"victualling crew"</span>)),
-            <span class="kw">gender</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"male"</span>, <span class="st">"male"</span>, <span class="st">"female"</span>), <span class="kw">levels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"female"</span>, <span class="st">"male"</span>)),
-            <span class="kw">age</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">8</span>, <span class="fl">42</span>, <span class="fl">12</span>),
-            <span class="kw">sibsp</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>),
-            <span class="kw">parch</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>),
-            <span class="kw">fare</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">72</span>, <span class="fl">10</span>, <span class="fl">50</span>),
-            <span class="kw">embarked</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Southampton"</span>, <span class="st">"Belfast"</span>, <span class="st">"Belfast"</span>), <span class="kw">levels</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Belfast"</span>,
+            gender = <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"male"</span>, <span class="st">"male"</span>, <span class="st">"female"</span>), levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"female"</span>, <span class="st">"male"</span>)),
+            age = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">8</span>, <span class="fl">42</span>, <span class="fl">12</span>),
+            sibsp = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>),
+            parch = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>),
+            fare = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">72</span>, <span class="fl">10</span>, <span class="fl">50</span>),
+            embarked = <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Southampton"</span>, <span class="st">"Belfast"</span>, <span class="st">"Belfast"</span>), levels = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Belfast"</span>,
                         <span class="st">"Cherbourg"</span>,<span class="st">"Queenstown"</span>,<span class="st">"Southampton"</span>)))
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="no">passangers</span>) <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Johny D"</span>, <span class="st">"Henry"</span>, <span class="st">"Mary"</span>)
-<span class="no">passangers</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">passangers</span>) <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Johny D"</span>, <span class="st">"Henry"</span>, <span class="st">"Mary"</span>)
+<span class="kw">passangers</span>
+</pre></div>
 <pre><code>        class gender age sibsp parch fare    embarked
 Johny D   1st   male   8     0     0   72 Southampton
 Henry     3rd   male  42     0     0   10     Belfast
 Mary      1st female  12     0     0   50     Belfast</code></pre>
 <p>Let’s add these observations to the arena with the <code>push_observations</code> functions.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="no">titanic_ar</span> <span class="kw">&lt;-</span> <span class="no">titanic_ar</span> <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="../reference/push_observations.html">push_observations</a></span>(<span class="no">passangers</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="kw">titanic_ar</span> <span class="op">&lt;-</span> <span class="kw">titanic_ar</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/push_observations.html">push_observations</a></span>(<span class="kw">passangers</span>) 
+</pre></div>
 <p>For these new observations a set of local explanations is calculated. Such as the <a href="https://pbiecek.github.io/ema/breakDown.html">Break Down</a>, <a href="https://pbiecek.github.io/ema/shapley.html">Shapley values</a> and <a href="https://pbiecek.github.io/ema/ceterisParibus.html">Ceteris Paribus</a> for each variable.</p>
 </div>
 <div id="run-the-live-arena-server-1" class="section level2">
 <h2 class="hasAnchor">
 <a href="#run-the-live-arena-server-1" class="anchor"></a>Run the live Arena server</h2>
 <p>The updated arena object can be viewed again by running the <code>run_server</code> function on it.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="../reference/run_server.html">run_server</a></span>(<span class="no">titanic_ar</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="fu"><a href="../reference/run_server.html">run_server</a></span>(<span class="kw">titanic_ar</span>)
+</pre></div>
 <p>The browser will open an interactive tool for model exploration.</p>
 <div class="figure">
 <img src="https://github.com/ModelOriented/ArenaR/raw/master/vignettes/arena02.gif" alt=""><p class="caption">Intermediate use of the AreaR</p>
@@ -228,36 +244,44 @@ Mary      1st female  12     0     0   50     Belfast</code></pre>
 <a href="#create-more-models" class="anchor"></a>Create more models</h2>
 <p>For the titanic data let’s build a gradient boosting model and a generalized linear model. Together with the ranger model, these are three models with a completely different structures. This will make comparing them much more interesting.</p>
 <p>The linear model is additive, the gradient boosting model can have deep interactions. Let’s build these models and then compare them.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">titanic_glm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span>(<span class="no">survived</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>, <span class="kw">family</span> <span class="kw">=</span> <span class="st">"binomial"</span>)
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="kw">titanic_glm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span>(<span class="kw">survived</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">titanic_imputed</span>, family = <span class="st">"binomial"</span>)
 
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"gbm"</span>)
 
-<span class="no">titanic_gbm</span> <span class="kw">&lt;-</span> <span class="fu">gbm</span>(<span class="no">survived</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>, <span class="kw">n.trees</span> <span class="kw">=</span> <span class="fl">500</span>)</pre></body></html></div>
+<span class="kw">titanic_gbm</span> <span class="op">&lt;-</span> <span class="fu">gbm</span>(<span class="kw">survived</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">titanic_imputed</span>, n.trees = <span class="fl">500</span>)
+</pre></div>
 </div>
 <div id="create-explainers" class="section level2">
 <h2 class="hasAnchor">
 <a href="#create-explainers" class="anchor"></a>Create explainers</h2>
 <p>Since these models have different structures, we need to standardize the way we can access them. We will use the explain function for this.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">titanic_egb</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(<span class="no">titanic_gbm</span>,
-    <span class="kw">y</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>$<span class="no">survived</span>,
-    <span class="kw">data</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>)
-<span class="no">titanic_elm</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(<span class="no">titanic_glm</span>,
-    <span class="kw">y</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>$<span class="no">survived</span>,
-    <span class="kw">data</span> <span class="kw">=</span> <span class="no">titanic_imputed</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="kw">titanic_egb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(<span class="kw">titanic_gbm</span>,
+    y = <span class="kw">titanic_imputed</span><span class="op">$</span><span class="kw">survived</span>,
+    data = <span class="kw">titanic_imputed</span>)
+<span class="kw">titanic_elm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(<span class="kw">titanic_glm</span>,
+    y = <span class="kw">titanic_imputed</span><span class="op">$</span><span class="kw">survived</span>,
+    data = <span class="kw">titanic_imputed</span>)
+</pre></div>
 </div>
 <div id="add-more-models-to-the-arena" class="section level2">
 <h2 class="hasAnchor">
 <a href="#add-more-models-to-the-arena" class="anchor"></a>Add more models to the Arena</h2>
 <p>We can add more models to the Arena with the <code>push_model</code> function. It is very easy.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">titanic_ar</span> <span class="kw">&lt;-</span> <span class="no">titanic_ar</span> <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">titanic_egb</span>) <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">titanic_elm</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb12"><pre class="downlit">
+<span class="kw">titanic_ar</span> <span class="op">&lt;-</span> <span class="kw">titanic_ar</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="kw">titanic_egb</span>) <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="kw">titanic_elm</span>)
+</pre></div>
 </div>
 <div id="run-the-live-arena-server-2" class="section level2">
 <h2 class="hasAnchor">
 <a href="#run-the-live-arena-server-2" class="anchor"></a>Run the live Arena server</h2>
 <p>The updated arena object can be viewed again by running the <code>run_server</code> function on it.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="../reference/run_server.html">run_server</a></span>(<span class="no">titanic_ar</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="fu"><a href="../reference/run_server.html">run_server</a></span>(<span class="kw">titanic_ar</span>)
+</pre></div>
 <p>The browser will open an interactive tool for model exploration.</p>
 <div class="figure">
 <img src="https://github.com/ModelOriented/ArenaR/raw/master/vignettes/arena03.gif" alt=""><p class="caption">Advanced use of the AreaR</p>
@@ -270,12 +294,14 @@ Mary      1st female  12     0     0   50     Belfast</code></pre>
 <p>In the above example, we called <code><a href="../reference/create_arena.html">create_arena(live = TRUE)</a></code> so all the necessary explanations were calculated on the spot when they were needed. However, this requires a working R in the backend.</p>
 <p>You can also run the arena in serverless mode. Just initialize it with the parameter <code><a href="../reference/create_arena.html">create_arena(live = FALSE)</a></code>. In this case all important statistics will be pre-calculated and the arena can be used in serverless mode.</p>
 <p>Here is the full example that shows how to use Arena in the this mode.</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="../reference/create_arena.html">create_arena</a></span>() <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">titanic_ex</span>) <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">titanic_egb</span>) <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="no">titanic_elm</span>) <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="../reference/push_observations.html">push_observations</a></span>(<span class="no">passangers</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/upload_arena.html">upload_arena</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb14"><pre class="downlit">
+<span class="fu"><a href="../reference/create_arena.html">create_arena</a></span>() <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="kw">titanic_ex</span>) <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="kw">titanic_egb</span>) <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/push_model.html">push_model</a></span>(<span class="kw">titanic_elm</span>) <span class="op">%&gt;%</span>
+    <span class="fu"><a href="../reference/push_observations.html">push_observations</a></span>(<span class="kw">passangers</span>) <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/upload_arena.html">upload_arena</a></span>()
+</pre></div>
 </div>
   </div>
 

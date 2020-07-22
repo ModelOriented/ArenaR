@@ -96,7 +96,7 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.7</span>
+          <span class="version version-default">0.1.8</span>
         </div>
       </div>
     </div>
@@ -128,7 +128,7 @@
       <a href="../articles/arena_static.html">Static Arena</a>
     </li>
     <li>
-      <a href="../articles/classification.html">Using Arena with classifiers</a>
+      <a href="../articles/classification.html">Using Arena with multiclass classifiers</a>
     </li>
   </ul>
 </li>
@@ -254,8 +254,8 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-misc" class="hasAnchor"><a href="#section-misc" class="anchor"></a>Misc</h2>
-          <p class="section-desc"><p>Supplementary functions</p></p>
+          <h2 id="section-plots" class="hasAnchor"><a href="#section-plots" class="anchor"></a>Plots</h2>
+          <p class="section-desc"><p>Internal functions for generating plot’s data.</p></p>
         </th>
       </tr>
       
@@ -266,10 +266,89 @@
       <tr>
         
         <td>
+          <p><code><a href="get_global_plots.html">get_global_plots()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating global plots</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_local_plots.html">get_local_plots()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating local plots for all observations</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_feature_importance.html">get_feature_importance()</a></code> </p>
         </td>
         <td><p>Internal function for calculating feature importance</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="get_accumulated_dependence.html">get_accumulated_dependence()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating Accumulated Dependence</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_break_down.html">get_break_down()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating Break Down</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_shap_values.html">get_shap_values()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating Shapley Values</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_ceteris_paribus.html">get_ceteris_paribus()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating Ceteris Paribus</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_funnel_measure.html">get_funnel_measure()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating funnel measure</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_metrics.html">get_metrics()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating model performance metrics</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_partial_dependence.html">get_partial_dependence()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating Partial Dependence</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_rec.html">get_rec()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating regression error characteristic</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_roc.html">get_roc()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating receiver operating curve</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-misc" class="hasAnchor"><a href="#section-misc" class="anchor"></a>Misc</h2>
+          <p class="section-desc"><p>Supplementary functions</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="get_json_structure.html">get_json_structure()</a></code> </p>
@@ -284,15 +363,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="get_shap_values.html">get_shap_values()</a></code> </p>
-        </td>
-        <td><p>Internal function for calculating Shapley Values</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="get_variables_list.html">get_variables_list()</a></code> </p>
         </td>
-        <td><p>Generates list of unique variables(without y) from each explainer</p></td>
+        <td><p>Generates list of unique variables(without target) from each explainer</p></td>
       </tr><tr>
         
         <td>
@@ -305,6 +378,18 @@
           <p><code><a href="validate_new_observations.html">validate_new_observations()</a></code> </p>
         </td>
         <td><p>Checks if it is safe do add new observations to the arena object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="funnel_measure.html">funnel_measure()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating data for funnel plot</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="split_multiclass_explainer.html">split_multiclass_explainer()</a></code> </p>
+        </td>
+        <td><p>Splits multiclass explainer into multiple classification explainers</p></td>
       </tr>
     </tbody>
     </table>

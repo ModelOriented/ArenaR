@@ -97,7 +97,7 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.7</span>
+          <span class="version version-default">0.1.8</span>
         </div>
       </div>
     </div>
@@ -129,7 +129,7 @@
       <a href="../articles/arena_static.html">Static Arena</a>
     </li>
     <li>
-      <a href="../articles/classification.html">Using Arena with classifiers</a>
+      <a href="../articles/classification.html">Using Arena with multiclass classifiers</a>
     </li>
   </ul>
 </li>
@@ -165,7 +165,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for arena_live</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>x</span>, <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -180,7 +180,38 @@
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>None</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'><a href='https://ModelOriented.github.io/DALEX'>"DALEX"</a></span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'><a href='https://arenar.drwhy.ai'>"arenar"</a></span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span>, quietly=<span class='fl'>TRUE</span>, warn.conflicts = <span class='fl'>FALSE</span>)
+<span class='co'># create a model</span>
+<span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='kw'>m2.price</span> <span class='op'>~</span> <span class='kw'>.</span>, data=<span class='kw'>apartments</span>)
+<span class='co'># create a DALEX explainer</span>
+<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='kw'>DALEX</span>::<span class='fu'><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>explain</a></span>(<span class='kw'>model</span>, data=<span class='kw'>apartments</span>, y=<span class='kw'>apartments</span><span class='op'>$</span><span class='kw'>m2.price</span>)</div><div class='output co'>#&gt; Preparation of a new explainer is initiated
+#&gt;   -&gt; model label       :  lm  ( <span style='color: #BBBB00;'> default </span><span> )
+#&gt;   -&gt; data              :  1000  rows  6  cols 
+#&gt;   -&gt; target variable   :  1000  values 
+#&gt;   -&gt; predict function  :  yhat.glm  will be used ( </span><span style='color: #BBBB00;'> default </span><span> )
+#&gt;   -&gt; predicted values  :  numerical, min =  1781.848 , mean =  3487.019 , max =  6176.032  
+#&gt;   -&gt; model_info        :  package stats , ver. 4.0.2 , task regression ( </span><span style='color: #BBBB00;'> default </span><span> ) 
+#&gt;   -&gt; residual function :  difference between y and yhat ( </span><span style='color: #BBBB00;'> default </span><span> )
+#&gt;   -&gt; residuals         :  numerical, min =  -247.4728 , mean =  2.093656e-14 , max =  469.0023  
+#&gt;  </span><span style='color: #00BB00;'> A new explainer has been created! </span><span> </div><div class='input'><span class='co'># prepare observations to be explained</span>
+<span class='kw'>observations</span> <span class='op'>&lt;-</span> <span class='kw'>apartments</span>[<span class='fl'>1</span><span class='op'>:</span><span class='fl'>30</span>, ]
+<span class='co'># rownames are used as labels for each observation</span>
+<span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='kw'>observations</span>) <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='kw'>observations</span><span class='op'>$</span><span class='kw'>construction.year</span>, <span class='st'>"-"</span>, <span class='kw'>observations</span><span class='op'>$</span><span class='kw'>surface</span>, <span class='st'>"m2"</span>)
+<span class='co'># generate live arena for one model and 30 observations</span>
+<span class='kw'>arena</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_arena.html'>create_arena</a></span>(live=<span class='fl'>TRUE</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='push_model.html'>push_model</a></span>(<span class='kw'>explainer</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='push_observations.html'>push_observations</a></span>(<span class='kw'>observations</span>)
+<span class='co'># print summary</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>arena</span>)</div><div class='output co'>#&gt; ===== Live Arena Summary =====
+#&gt; Models: lm 
+#&gt; Observations: 1953-25m2, 1992-143m2, 1937-56m2, 1995-93m2, 1992-144m2, 1926-61m2, 1970-127m2, 1985-105m2, 1928-145m2, 1949-112m2, 1940-74m2, 1971-75m2, 1934-53m2, 1985-111m2, 1948-58m2, 1975-116m2, 1986-53m2, 1983-37m2, 1992-33m2, 1935-33m2, 1929-39m2, 1980-95m2, 1995-148m2, 1972-42m2, 1963-27m2, 1990-142m2, 1933-81m2, 1994-112m2, 1956-97m2, 2002-88m2 
+#&gt; Variables: construction.year, surface, floor, no.rooms, district 
+#&gt; Remember to start server with arena_run(arena)</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

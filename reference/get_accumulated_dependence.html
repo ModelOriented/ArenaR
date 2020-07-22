@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare object ready to change into json — get_json_structure • arenar</title>
+<title>Internal function for calculating Accumulated Dependence — get_accumulated_dependence • arenar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -52,9 +52,8 @@
 
 
 
-<meta property="og:title" content="Prepare object ready to change into json — get_json_structure" />
-<meta property="og:description" content="Function converts object with class arena_live or arena_static
-to object with structure accepted by Arena. See list of schemas." />
+<meta property="og:title" content="Internal function for calculating Accumulated Dependence — get_accumulated_dependence" />
+<meta property="og:description" content="Internal function for calculating Accumulated Dependence" />
 
 
 
@@ -156,30 +155,37 @@ to object with structure accepted by Arena. See list of schemas." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prepare object ready to change into json</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/utlis.R'><code>R/utlis.R</code></a></small>
-    <div class="hidden name"><code>get_json_structure.Rd</code></div>
+    <h1>Internal function for calculating Accumulated Dependence</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/plots.R'><code>R/plots.R</code></a></small>
+    <div class="hidden name"><code>get_accumulated_dependence.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Function converts object with class <code>arena_live</code> or <code>arena_static</code>
-to object with structure accepted by Arena. See <a href='https://github.com/ModelOriented/Arena/tree/master/src/store/schemas'>list of schemas</a>.</p>
+    <p>Internal function for calculating Accumulated Dependence</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_json_structure</span>(<span class='kw'>arena</span>)</pre>
+    <pre class="usage"><span class='fu'>get_accumulated_dependence</span>(<span class='kw'>explainer</span>, <span class='kw'>variable</span>, <span class='kw'>params</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>arena</th>
-      <td><p>live or static arena object</p></td>
+      <th>explainer</th>
+      <td><p>Explainer created using <code><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>DALEX::explain</a></code></p></td>
+    </tr>
+    <tr>
+      <th>variable</th>
+      <td><p>Name of variable</p></td>
+    </tr>
+    <tr>
+      <th>params</th>
+      <td><p>Params from arena object</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Object for direct conversion into json</p>
+    <p>Plot data in Arena's format</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

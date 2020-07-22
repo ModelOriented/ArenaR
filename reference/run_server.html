@@ -98,7 +98,7 @@ already existing session is also possible using argument append_data" />
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.7</span>
+          <span class="version version-default">0.1.8</span>
         </div>
       </div>
     </div>
@@ -130,7 +130,7 @@ already existing session is also possible using argument append_data" />
       <a href="../articles/arena_static.html">Static Arena</a>
     </li>
     <li>
-      <a href="../articles/classification.html">Using Arena with classifiers</a>
+      <a href="../articles/classification.html">Using Arena with multiclass classifiers</a>
     </li>
   </ul>
 </li>
@@ -167,12 +167,12 @@ already existing session is also possible using argument <code>append_data</code
     </div>
 
     <pre class="usage"><span class='fu'>run_server</span>(
-  <span class='no'>arena</span>,
-  <span class='kw'>port</span> <span class='kw'>=</span> <span class='fl'>8181</span>,
-  <span class='kw'>host</span> <span class='kw'>=</span> <span class='st'>"127.0.0.1"</span>,
-  <span class='kw'>open_browser</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>append_data</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>arena_url</span> <span class='kw'>=</span> <span class='st'>"https://arena.drwhy.ai/"</span>
+  <span class='kw'>arena</span>,
+  port = <span class='fl'>8181</span>,
+  host = <span class='st'>"127.0.0.1"</span>,
+  open_browser = <span class='fl'>TRUE</span>,
+  append_data = <span class='fl'>FALSE</span>,
+  arena_url = <span class='st'>"https://arena.drwhy.ai/"</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -208,6 +208,26 @@ already existing session is also possible using argument <code>append_data</code
 
     <p>not modified arena object</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'><a href='https://ModelOriented.github.io/DALEX'>"DALEX"</a></span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'><a href='https://arenar.drwhy.ai'>"arenar"</a></span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'><a href='https://dplyr.tidyverse.org'>"dplyr"</a></span>, quietly=<span class='fl'>TRUE</span>, warn.conflicts = <span class='fl'>FALSE</span>)
+<span class='co'># create a model</span>
+<span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='kw'>m2.price</span> <span class='op'>~</span> <span class='kw'>.</span>, data=<span class='kw'>apartments</span>)
+<span class='co'># create a DALEX explainer</span>
+<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='kw'>DALEX</span>::<span class='fu'><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>explain</a></span>(<span class='kw'>model</span>, data=<span class='kw'>apartments</span>, y=<span class='kw'>apartments</span><span class='op'>$</span><span class='kw'>m2.price</span>)</div><div class='output co'>#&gt; Preparation of a new explainer is initiated
+#&gt;   -&gt; model label       :  lm  ( <span style='color: #BBBB00;'> default </span><span> )
+#&gt;   -&gt; data              :  1000  rows  6  cols 
+#&gt;   -&gt; target variable   :  1000  values 
+#&gt;   -&gt; predict function  :  yhat.glm  will be used ( </span><span style='color: #BBBB00;'> default </span><span> )
+#&gt;   -&gt; predicted values  :  numerical, min =  1781.848 , mean =  3487.019 , max =  6176.032  
+#&gt;   -&gt; model_info        :  package stats , ver. 4.0.2 , task regression ( </span><span style='color: #BBBB00;'> default </span><span> ) 
+#&gt;   -&gt; residual function :  difference between y and yhat ( </span><span style='color: #BBBB00;'> default </span><span> )
+#&gt;   -&gt; residuals         :  numerical, min =  -247.4728 , mean =  2.093656e-14 , max =  469.0023  
+#&gt;  </span><span style='color: #00BB00;'> A new explainer has been created! </span><span> </div><div class='input'><span class='co'># generate live arena for one model and all data as observations</span>
+<span class='kw'>arena</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_arena.html'>create_arena</a></span>(live=<span class='fl'>TRUE</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='push_model.html'>push_model</a></span>(<span class='kw'>explainer</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='push_observations.html'>push_observations</a></span>(<span class='kw'>apartments</span>)
+<span class='co'># run the server</span>
+<span class='co'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span>()) <span class='fu'>run_server</span>(<span class='kw'>arena</span>, port=<span class='fl'>1234</span>)</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
