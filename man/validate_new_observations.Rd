@@ -11,6 +11,10 @@ validate_new_observations(arena, observations)
 
 \item{observations}{data frame of new observations}
 }
+\value{
+None
+}
 \description{
-Function checks if rowname of each row is not already used
+Function checks if rownames are not already used and call stop if
+there is at least one conflict.
 }

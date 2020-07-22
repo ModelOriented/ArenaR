@@ -13,6 +13,9 @@ get_shap_values(explainer, observation, params)
 
 \item{params}{Params from arena object}
 }
+\value{
+Plot data in Arena's format
+}
 \description{
 Internal function for calculating Shapley Values
 }

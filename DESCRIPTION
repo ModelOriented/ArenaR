@@ -1,6 +1,6 @@
 Package: arenar
 Title: Arena for the Exploration and Comparison of any ML Models
-Version: 0.1.7
+Version: 0.1.8
 Authors@R:
     c(person("Piotr", "Piątyszek", role = c("aut", "cre"),
              email = "piotrp@wektor.xyz"),
@@ -25,7 +25,9 @@ Imports:
     parallel,
     utils,
     stats,
-    methods
+    methods,
+    auditor,
+    DALEX (>= 1.3.0)
 Suggests: 
     testthat,
     knitr,
@@ -33,7 +35,7 @@ Suggests:
     dplyr,
     pkgdown,
     covr,
-    DALEX
+    ranger
 VignetteBuilder: knitr
 URL: https://arenar.drwhy.ai, https://github.com/ModelOriented/ArenaR
 BugReports: https://github.com/ModelOriented/ArenaR/issues

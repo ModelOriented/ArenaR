@@ -1,5 +1,8 @@
 #' Creates arena object
 #'
+#' Creates object with class \code{arena_live} or \code{arena_static} depending on the first argument.
+#' This method is always first in \code{arenar} workflow and you should specify all plots' parameters there.
+#'
 #' @param live Defines if arena should start live server or generate static json
 #' @param N number of observations used to calculate dependence profiles
 #' @param fi_B Number of permutation rounds to perform each variable
@@ -7,8 +10,25 @@
 #' @param fi_N number of observations used in feature importance
 #' @param grid_points number of points for profile
 #' @param shap_B Numer of random paths in SHAP
+#' @param funnel_nbins Number of partitions for numeric columns for funnel plot
+#' @param funnel_cutoff Threshold for categorical data. Entries less frequent than specified value will be merged into one category in funnel plot.
+#' @param funnel_factor_threshold Numeric columns with lower number of unique values than value of this parameter will be treated as factors in funnel plot.
 #' @param cl Cluster used to run parallel computations (Do not work in live Arena)
-#' @return Empty \code{arena_static} of \code{arena_live} class object
+#' @return Empty \code{arena_static} or \code{arena_live} class object.\cr
+#' \code{arena_static}:
+#' \itemize{
+#'   \item{explainer}{ List of used explainers}
+#'   \item{observations_batches}{ List of data frames added as observations}
+#'   \item{params}{ Plots' parameters}
+#'   \item{plots_data}{ List of generated data for plots}
+#' }
+#' \code{arena_live}:
+#' \itemize{
+#'   \item{explainer}{ List of used explainers}
+#'   \item{observations_batches}{ List of data frames added as observations}
+#'   \item{params}{ Plots' parameters}
+#'   \item{timestamp}{ Timestamp of last modification}
+#' }
 #' @export
 #' @examples
 #' library("DALEX")
@@ -32,6 +52,9 @@ create_arena <- function(live = FALSE,
                       fi_B = 10,
                       grid_points = 101,
                       shap_B = 10,
+                      funnel_nbins = 5,
+                      funnel_cutoff = 0.01,
+                      funnel_factor_threshold = 7,
                       cl = NULL) {
   if (live) return(
     structure(
@@ -47,7 +70,12 @@ create_arena <- function(live = FALSE,
           pd_N = N,
           fi_B = fi_B,
           fi_n_samples = fi_N,
-          shap_B = shap_B
+          shap_B = shap_B,
+          roc_grid_points = grid_points,
+          rec_grid_points = grid_points,
+          fm_nbins = funnel_nbins,
+          fm_cutoff = funnel_cutoff,
+          fm_factor_threshold = funnel_factor_threshold
         ),
         timestamp = as.numeric(Sys.time())
       ),
@@ -69,6 +97,11 @@ create_arena <- function(live = FALSE,
           fi_B = fi_B,
           fi_n_samples = fi_N,
           shap_B = shap_B,
+          roc_grid_points = grid_points,
+          rec_grid_points = grid_points,
+          fm_nbins = funnel_nbins,
+          fm_cutoff = funnel_cutoff,
+          fm_factor_threshold = funnel_factor_threshold,
           cl = cl
         ),
         plots_data = list()
@@ -178,6 +211,16 @@ push_model.arena_static <- function(arena, explainer) {
   }
   validate_new_model(arena, explainer)
  
+  # split expaliner into multiple classification explainers
+  if (explainer$model_info$type == "multiclass") {
+    cat("Provided explainer is multiclass and will be splited\n")
+    splited <- split_multiclass_explainer(explainer)
+    for (i in seq_along(splited)) {
+      arena <- push_model(arena, splited[[i]])
+    }
+    return(arena)
+  }
+
   params <- arena$params
 
   # calculate global plots and append to list
@@ -204,6 +247,16 @@ push_model.arena_live <- function(arena, explainer) {
     stop("Invalid arena argument")
   }
   validate_new_model(arena, explainer)
+  
+  # split expaliner into multiple classification explainers
+  if (explainer$model_info$type == "multiclass") {
+    cat("Provided explainer is multiclass and will be splited\n")
+    splited <- split_multiclass_explainer(explainer)
+    for (i in seq_along(splited)) {
+      arena <- push_model(arena, splited[[i]])
+    }
+    return(arena)
+  }
   
   # save explainer
   arena$explainers[[length(arena$explainers) + 1]] <- explainer

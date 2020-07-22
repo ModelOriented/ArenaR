@@ -1,9 +1,55 @@
+#' Splits multiclass explainer into multiple classification explainers
+#'
+#' @param explainer Multiclass explainer created using \code{DALEX::explain}
+#' @return list of explainers
+#' @importFrom methods is
+split_multiclass_explainer <- function(explainer) {
+  if (is.null(explainer) || !is(explainer, "explainer")) {
+    stop("Invalid explainer argument")
+  }
+  type <- explainer$model_info$type
+  if (type != "multiclass") {
+    stop(paste("Cannot split explainer with type:", type))
+  }
+  # y column no longer can be inside data
+  is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
+  data <- explainer$data[, !is_y]
+  # prediction columns
+  pred_cols <- colnames(explainer$y_hat)
+  # create explainers for each y class
+  lapply(pred_cols, function(class_name) {
+    # modify model info
+    model_info <- explainer$model_info
+    model_info$type <- "classification"
+    # number of column in predict output
+    pred_col_number <- which(pred_cols == class_name)
+    DALEX::explain(
+      explainer$model,
+      data = data,
+      y = explainer$y == class_name,
+      predict_function = function(model, newdata, ...) {
+        prediction <- explainer$predict_function(model, newdata, ...)
+        if (is.null(dim(prediction))) {
+          prediction[pred_col_number]
+        } else {
+          prediction[, pred_col_number]
+        }
+      },
+      label = paste0(explainer$label, " [", class_name, "]"),
+      type = explainer$type,
+      model_info = model_info
+    )
+  })
+}
+
 #' Checks if it is safe do add new observations to the arena object
 #'
-#' Function checks if rowname of each row is not already used
+#' Function checks if rownames are not already used and call stop if
+#' there is at least one conflict.
 #'
 #' @param arena live or static arena object
 #' @param observations data frame of new observations
+#' @return None
 #' @importFrom methods is
 validate_new_observations <- function(arena, observations) {
   if (is.null(observations) || !is(observations, "data.frame")) {
@@ -16,9 +62,12 @@ validate_new_observations <- function(arena, observations) {
 
 #' Checks if it is safe do add a new model to the arena object
 #'
-#' Function checks if label is not already used
+#' Function checks if explainer's label is not already used call stop if
+#' there is at least one conflict.
+#'
 #' @param arena live or static arena object
 #' @param explainer Explainer created using \code{DALEX::explain}
+#' @return None
 #' @importFrom methods is
 validate_new_model <- function(arena, explainer) {
   if (is.null(explainer) || !is(explainer, "explainer")) {
@@ -33,13 +82,15 @@ validate_new_model <- function(arena, explainer) {
 #' Generates list of rownames of each observation from each batch
 #'
 #' @param arena live or static arena object
+#' @return list of observations' names
 get_observations_list <- function(arena) {
   as.list(unlist(lapply(arena$observations_batches, rownames)))
 }
 
-#' Generates list of unique variables(without y) from each explainer
+#' Generates list of unique variables(without target) from each explainer
 #'
 #' @param arena live or static arena object
+#' @return list of variables' names
 get_variables_list <- function(arena) {
   as.list(unique(unlist(lapply(arena$explainers, function(expl) {
     is_y <- sapply(expl$data, function(column) { identical(column, expl$y) })
@@ -49,7 +100,10 @@ get_variables_list <- function(arena) {
 
 #' Prepare object ready to change into json
 #'
+#' Function converts object with class \code{arena_live} or \code{arena_static}
+#' to object with structure accepted by Arena. See \href{https://github.com/ModelOriented/Arena/tree/master/src/store/schemas}{list of schemas}.
 #' @param arena live or static arena object
+#' @return Object for direct conversion into json
 #' @importFrom methods is
 get_json_structure <- function(arena) {
   UseMethod("get_json_structure")
@@ -103,19 +157,43 @@ get_json_structure.arena_live <- function(arena) {
       list(
         name = "Partial Dependence",
         plotType = "PartialDependence",
-      plotCategory = "Dataset Level",
+        plotCategory = "Dataset Level",
         requiredParams = list("model", "variable")
       ),
       list(
         name = "Accumulated Dependence",
         plotType = "AccumulatedDependence",
-      plotCategory = "Dataset Level",
+        plotCategory = "Dataset Level",
         requiredParams = list("model", "variable")
       ),
       list(
         name = "Variable Importance",
         plotType = "FeatureImportance",
-      plotCategory = "Dataset Level",
+        plotCategory = "Dataset Level",
+        requiredParams = list("model")
+      ),
+      list(
+        name = "Receiver Operating Characterstic",
+        plotType = "ROC",
+        plotCategory = "Model Performance",
+        requiredParams = list("model")
+      ),
+      list(
+        name = "Regression Error Characteristic",
+        plotType = "REC",
+        plotCategory = "Model Performance",
+        requiredParams = list("model")
+      ),
+      list(
+        name = "Funnel Plot",
+        plotType = "FunnelMeasure",
+        plotCategory = "Model Performance",
+        requiredParams = list("model")
+      ),
+      list(
+        name = "Metrics",
+        plotType = "Metrics",
+        plotCategory = "Model Performance",
         requiredParams = list("model")
       )
     )

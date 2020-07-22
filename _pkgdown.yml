@@ -19,13 +19,28 @@ reference:
       - push_observations
       - print.arena_static
       - upload_arena
+  - title: Plots
+    desc: Internal functions for generating plot's data.
+    contents:
+      - get_global_plots
+      - get_local_plots
+      - get_feature_importance
+      - get_accumulated_dependence
+      - get_break_down
+      - get_shap_values
+      - get_ceteris_paribus
+      - get_funnel_measure
+      - get_metrics
+      - get_partial_dependence
+      - get_rec
+      - get_roc
   - title: Misc
     desc: Supplementary functions
     contents:
-      - get_feature_importance
       - get_json_structure
       - get_observations_list
-      - get_shap_values
       - get_variables_list
       - validate_new_model
       - validate_new_observations
+      - funnel_measure
+      - split_multiclass_explainer

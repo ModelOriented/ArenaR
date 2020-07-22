@@ -13,6 +13,9 @@ get_feature_importance(explainer, vars, params)
 
 \item{params}{Params from arena object}
 }
+\value{
+Plot data in Arena's format
+}
 \description{
 Internal function for calculating feature importance
 }

@@ -9,6 +9,10 @@ get_json_structure(arena)
 \arguments{
 \item{arena}{live or static arena object}
 }
+\value{
+Object for direct conversion into json
+}
 \description{
-Prepare object ready to change into json
+Function converts object with class \code{arena_live} or \code{arena_static}
+to object with structure accepted by Arena. See \href{https://github.com/ModelOriented/Arena/tree/master/src/store/schemas}{list of schemas}.
 }
