@@ -2,6 +2,7 @@
 
 [![Codecov test coverage](https://codecov.io/gh/ModelOriented/ArenaR/branch/master/graph/badge.svg)](https://codecov.io/gh/ModelOriented/ArenaR?branch=master)
 [![R build status](https://github.com/ModelOriented/ArenaR/workflows/R-CMD-check/badge.svg)](https://github.com/ModelOriented/ArenaR/actions)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/arenar)](https://cran.r-project.org/package=arenar)
 
 ## Overview
 
