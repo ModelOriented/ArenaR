@@ -65,20 +65,15 @@ get_global_plots <- function(explainer, params) {
   is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
   vars <- names(is_y[!is_y])
 
-  fi <- get_feature_importance(explainer, vars, params)
-  fi <- list(fi)
+  global_plots_names <- c("roc", "rec", "metrics", "funnel_measure", "feature_importance")
+  global_plots <- lapply(global_plots_names, function(n) get(paste0("get_", n)))
 
-  perf <- list(
-    get_roc(explainer, params),
-    get_rec(explainer, params),
-    get_metrics(explainer, params),
-    get_funnel_measure(explainer, params)
-  )
-
+  get_global <- function(f) f(explainer, params)
   get_pd <- function(v) get_partial_dependence(explainer, v, params)
   get_ad <- function(v) get_accumulated_dependence(explainer, v, params)
 
   if (is.null(params$cl)) { # single thread if cluster was not provided
+    globals <- lapply(global_plots, get_global)
     pd <- lapply(vars, get_pd)
     ad <- lapply(vars, get_ad)
   } else {
@@ -95,26 +90,16 @@ get_global_plots <- function(explainer, params) {
       params$cl,
       library(explainer$model_info$package, character.only=TRUE)
     )
+    globals <- parallel::parLapply(params$cl, global_plots, get_global)
     pd <- parallel::parLapply(params$cl, vars, get_pd)
     ad <- parallel::parLapply(params$cl, vars, get_ad)
   }
 
-  if (explainer$model_info$type == 'classification') {
-    eva <- auditor::model_evaluation(explainer)
-    if (nrow(eva) > params$roc_grid_points) {
-      # take random points
-      points <- round(runif(n=params$roc_grid_points, min=1, max=nrow(eva)))
-      eva <- eva[points, ]
-    }
-
-  }
-
   # Join results into one list
   c(
-    fi[!sapply(fi, is.null)],
     pd[!sapply(pd, is.null)],
     ad[!sapply(ad, is.null)],
-    perf[!sapply(perf, is.null)]
+    globals[!sapply(globals, is.null)]
   )
 }
 
@@ -426,14 +411,14 @@ get_partial_dependence <- function(explainer, variable, params) {
 #' Internal function for calculating feature importance
 #'
 #' @param explainer Explainer created using \code{DALEX::explain}
-#' @param vars Variables names for which feature importance should be calculated
 #' @param params Params from arena object 
 #' @return Plot data in Arena's format
 #' @importFrom stats quantile
-get_feature_importance <- function(explainer, vars, params) {
+get_feature_importance <- function(explainer, params) {
   output <- NULL
-  params
   tryCatch({
+    is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
+    vars <- names(is_y[!is_y])
     fi <- ingredients::feature_importance(
       explainer,
       variables = vars,

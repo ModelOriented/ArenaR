@@ -61,9 +61,7 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
   pr$handle("GET", "/FeatureImportance", function(req, res, model = "") {
     explainer <- get_explainer(model)
     if (is.null(explainer)) return(res$status <- 404)
-    is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
-    vars <- names(is_y[!is_y])
-    get_feature_importance(explainer, vars, arena$params)
+    get_feature_importance(explainer, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
   pr$handle("GET", "/ROC", function(req, res, model = "") {
