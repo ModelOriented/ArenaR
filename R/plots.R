@@ -71,11 +71,13 @@ get_global_plots <- function(explainer, params) {
   get_global <- function(f) f(explainer, params)
   get_pd <- function(v) get_partial_dependence(explainer, v, params)
   get_ad <- function(v) get_accumulated_dependence(explainer, v, params)
+  get_fr <- function(v) get_fairness(explainer, v, params)
 
   if (is.null(params$cl)) { # single thread if cluster was not provided
     globals <- lapply(global_plots, get_global)
     pd <- lapply(vars, get_pd)
     ad <- lapply(vars, get_ad)
+    fr <- lapply(vars, get_fr)
   } else {
     # Export variables and functions to cluster
     to_export <- c(
@@ -83,7 +85,8 @@ get_global_plots <- function(explainer, params) {
       "params",
       "calculate_subsets_performance",
       "get_partial_dependence",
-      "get_accumulated_dependence"
+      "get_accumulated_dependence",
+      "get_fairness"
     )
     parallel::clusterExport(params$cl, to_export, envir=environment())
     # Load model's library to access predict function
@@ -94,15 +97,98 @@ get_global_plots <- function(explainer, params) {
     globals <- parallel::parLapply(params$cl, global_plots, get_global)
     pd <- parallel::parLapply(params$cl, vars, get_pd)
     ad <- parallel::parLapply(params$cl, vars, get_ad)
+    fr <- parallel::parLapply(params$cl, vars, get_fr)
   }
 
   # Join results into one list
   c(
     pd[!sapply(pd, is.null)],
     ad[!sapply(ad, is.null)],
+    fr[!sapply(fr, is.null)],
     globals[!sapply(globals, is.null)]
   )
 }
+
+#' Internal function for returning message as plot data
+#'
+#' This method modify exisiting plot's data in Arena's format
+#' to show message instead of chart.
+#' @param output existing plot data to be overwritten
+#' @param type type of message "info" or "error"
+#' @param msg message to be displayed
+#' @return Plot data in Arena's format
+get_message_output <- function(output, type, msg) {
+  output$plotComponent <- "Message"
+  output$data <- list(message = msg, type = type)
+  output
+}
+
+#' Internal function for calculating fairness
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param variable Name of variable
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_fairness <- function(explainer, variable, params) {
+  output <- NULL
+  tryCatch({
+    output <- list(
+      plotType = "Fairness",
+      plotCategory = "Dataset Level",
+      plotComponent = "Fairness",
+      name = "Fairness",
+      params = list(model = explainer$label, variable = variable)
+    )
+    if (explainer$model_info$type != 'classification') {
+      return(get_message_output(output, "info", "Fairness plot is only available for classificators"))
+    }
+    protected <- explainer$data[, variable]
+    if (!is.factor(protected)) {
+      return(get_message_output(output, "info", "Select categorical variable to check fairness"))
+    }
+    subgroups <- levels(protected)
+    # Get unexported methods from fairmodels
+    group_matrices <- utils::getFromNamespace("group_matrices", "fairmodels")
+    calculate_group_fairness_metrics <- utils::getFromNamespace("calculate_group_fairness_metrics", "fairmodels")
+    # for every cutoff level get group metric matrix
+    gmm_list <- lapply(params$fairness_cutoffs, function(cutoff) {
+      # make cutoff a const list
+      cutoff_list <- as.list(rep(cutoff, length(subgroups)))
+      names(cutoff_list) <- subgroups
+      # calculate confusion matrices for each subgroup
+      stopifnot(is.logical(explainer$y) || is.numeric(explainer$y))
+      gm <- group_matrices(
+        protected = protected,
+        probs = explainer$y_hat,
+        preds = as.numeric(explainer$y),
+        cutoff = cutoff_list
+      )
+      # group metric matrix
+      gmm <- calculate_group_fairness_metrics(gm)
+      data.frame(
+        value = as.vector(gmm),
+        subgroup = rep(colnames(gmm), each=nrow(gmm)),
+        metric = rep(rownames(gmm), ncol(gmm)),
+        cutoff = cutoff
+      )
+    }) 
+    gmm <- do.call('rbind', gmm_list)
+    # Split data frame by subgroup names
+    gmm_transformed <- lapply(split(gmm, gmm$subgroup), function(x) {
+      # for each subgroup there is a list for each cutoff
+      lapply(split(x, x$cutoff), function(x) {
+        # the element for specified subgroup and cutoff
+        # is a named list with values for metrics
+        structure(as.list(x$value), names=x$metric)
+      })
+    })
+    output$data <- list(subgroups = gmm_transformed)
+  }, error = function(e) {
+    stop("Failed to calculate fairness\n", e)
+  })
+  output
+}
+
 
 #' Internal function for calculating subset performance
 #'

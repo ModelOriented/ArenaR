@@ -14,6 +14,7 @@ create_arena(
   funnel_nbins = 5,
   funnel_cutoff = 0.01,
   funnel_factor_threshold = 7,
+  fairness_cutoffs = seq(0.05, 0.95, 0.05),
   cl = NULL
 )
 }

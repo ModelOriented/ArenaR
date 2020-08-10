@@ -201,6 +201,12 @@ get_json_structure.arena_live <- function(arena) {
         plotType = "Metrics",
         plotCategory = "Model Performance",
         requiredParams = list("model")
+      ),
+      list(
+        name = "Fairness",
+        plotType = "Fairness",
+        plotCategory = "Dataset Level",
+        requiredParams = list("model", "variable")
       )
     )
   )

@@ -104,6 +104,16 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     get_partial_dependence(explainer, variable, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
 
+  pr$handle("GET", "/Fairness",
+            function(req, res, model = "", variable = "") {
+    explainer <- get_explainer(model)
+    if (is.null(explainer)) return(res$status <- 404)
+    is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
+    vars <- names(is_y[!is_y])
+    if (!(variable %in% vars)) return(res$status <- 404)
+    get_fairness(explainer, variable, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+
   pr$handle("GET", "/AccumulatedDependence",
             function(req, res, model = "", variable = "") {
     explainer <- get_explainer(model)

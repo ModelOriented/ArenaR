@@ -55,6 +55,7 @@ create_arena <- function(live = FALSE,
                       funnel_nbins = 5,
                       funnel_cutoff = 0.01,
                       funnel_factor_threshold = 7,
+                      fairness_cutoffs = seq(0.05, 0.95, 0.05),
                       cl = NULL) {
   if (live) return(
     structure(
@@ -75,7 +76,8 @@ create_arena <- function(live = FALSE,
           rec_grid_points = grid_points,
           fm_nbins = funnel_nbins,
           fm_cutoff = funnel_cutoff,
-          fm_factor_threshold = funnel_factor_threshold
+          fm_factor_threshold = funnel_factor_threshold,
+          fairness_cutoffs = fairness_cutoffs
         ),
         timestamp = as.numeric(Sys.time())
       ),
@@ -102,6 +104,7 @@ create_arena <- function(live = FALSE,
           fm_nbins = funnel_nbins,
           fm_cutoff = funnel_cutoff,
           fm_factor_threshold = funnel_factor_threshold,
+          fairness_cutoffs = fairness_cutoffs,
           cl = cl
         ),
         plots_data = list()
