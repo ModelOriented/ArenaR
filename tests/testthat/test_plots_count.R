@@ -16,7 +16,7 @@ arena <- push_observations(arena, new_observation)
 
 n_vars <- ncol(new_observation) - 1
 n_obs <- nrow(new_observation)
-correct_len <- 4 + # FI, REC, Metrics, FM
+correct_len <- 5 + # FI, REC, Metrics, FM, SP
   n_obs * 2 + # BD, SHAP
   n_vars * 2 + # ADP, PDP
   n_vars * n_obs # CP
@@ -50,7 +50,7 @@ arena <- push_observations(arena, new_observation)
 
 n_vars <- ncol(new_observation) - 1
 n_obs <- nrow(new_observation)
-correct_len <- 5 + # FI, REC, ROC, Metrics, FM
+correct_len <- 6 + # FI, REC, ROC, Metrics, FM, SP
   n_obs * 2 + # BD, SHAP
   n_vars * 2 + # ADP, PDP
   n_vars * n_obs # CP

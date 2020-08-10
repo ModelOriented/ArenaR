@@ -19,7 +19,7 @@ test_that("explainers count is correct", {
 
 n_vars <- ncol(new_observation) - 1
 n_obs <- nrow(new_observation)
-correct_len <- 3 * 5 + # FI, ROC, REC, Metrics, FM
+correct_len <- 3 * 6 + # FI, ROC, REC, Metrics, FM, SP
   3 * n_obs * 2 + # BD, SHAP
   3 * n_vars * 2 + # ADP, PDP
   3 * n_vars * n_obs # CP
