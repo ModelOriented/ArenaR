@@ -2,7 +2,7 @@ on:
   push:
     branches:
       - master
-      - 'dev-*'
+      - 'dev*'
       - 'fix*'
       - '!doc'
   pull_request:
@@ -68,6 +68,7 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_github("ModelOriented/DALEX")
+          remotes::install_github("ModelOriented/FairModels")
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
