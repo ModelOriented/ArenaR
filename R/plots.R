@@ -65,7 +65,7 @@ get_global_plots <- function(explainer, params) {
   is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
   vars <- names(is_y[!is_y])
 
-  global_plots_names <- c("roc", "rec", "metrics", "funnel_measure", "feature_importance")
+  global_plots_names <- c("roc", "rec", "metrics", "subsets_performance", "funnel_measure", "feature_importance")
   global_plots <- lapply(global_plots_names, function(n) get(paste0("get_", n)))
 
   get_global <- function(f) f(explainer, params)
@@ -81,6 +81,7 @@ get_global_plots <- function(explainer, params) {
     to_export <- c(
       "explainer",
       "params",
+      "calculate_subsets_performance",
       "get_partial_dependence",
       "get_accumulated_dependence"
     )
@@ -103,6 +104,64 @@ get_global_plots <- function(explainer, params) {
   )
 }
 
+#' Internal function for calculating subset performance
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_subsets_performance <- function(explainer, params) {
+  output <- NULL
+  tryCatch({
+    # get loss function and its name based on model type
+    score_functions <- switch(
+      explainer$model_info$type,
+      regression = list(
+        RMSE=auditor::score_rmse,
+        MSE=auditor::score_mse,
+        R2=auditor::score_r2,
+        MAE=auditor::score_mae
+      ),
+      classification = list(
+        Accuracy=auditor::score_acc,
+        Recall=auditor::score_recall,
+        Precision=auditor::score_precision,
+        Specificity=auditor::score_specificity,
+        AUC=auditor::score_auc,
+        F1=auditor::score_f1
+      ),
+      stop(explainer$model_info$type, " is not recognized as task name")
+    )
+    scores <- calculate_subsets_performance(
+      explainer,
+      score_functions = score_functions,
+      nbins = params$fm_nbins,
+      cutoff = params$fm_cutoff,
+      factor_conversion_threshold = params$fm_factor_threshold
+    )
+    splited <- split(scores, scores$Variable)
+    output_data <- lapply(names(score_functions), function(score_name) {
+      list(
+        scoreValues = lapply(splited, function(x) structure(as.list(x[, score_name]), names=x$Label)),
+        base = score_functions[[score_name]](explainer)$score
+      )
+    })
+    names(output_data) <- names(score_functions)
+    output <- list(
+      plotComponent = "SubsetsPerformance",
+      plotType = "SubsetsPerformance",
+      plotCategory = "Model Performance",
+      name = "Subsets Performance",
+      params = list(
+        model = explainer$label
+      ),
+      data = output_data
+    )
+  }, error = function(e) {
+    stop("Failed to calculate subsets performance\n", e)
+  })
+  output
+}
+
 #' Internal function for calculating funnel measure
 #'
 #' @param explainer Explainer created using \code{DALEX::explain}
@@ -112,22 +171,21 @@ get_funnel_measure <- function(explainer, params) {
   output <- NULL
   tryCatch({
     # get loss function and its name based on model type
-    measure_function <- switch(
+    score_functions <- switch(
       explainer$model_info$type,
-      regression = list(DALEX::loss_root_mean_square, "MSE"),
-      classification = list(DALEX::loss_one_minus_auc, "1 - AUC"),
-      multiclass = list(DALEX::loss_cross_entropy, "Cross entropy"),
+      regression = list(MSE=auditor::score_mse),
+      classification = list("ONE_MINUS_AUC"=auditor::score_one_minus_auc),
       stop(explainer$model_info$type, " is not recognized as task name")
     )
-    measures <- funnel_measure(
+    scores <- calculate_subsets_performance(
       explainer,
-      measure_function = measure_function[[1]],
+      score_functions = score_functions,
       nbins = params$fm_nbins,
       cutoff = params$fm_cutoff,
       factor_conversion_threshold = params$fm_factor_threshold
     )
-    splited <- split(measures, measures$Variable)
-    transformed <- lapply(splited, function(x) structure(as.list(x$Measure), names=x$Label))
+    splited <- split(scores, scores$Variable)
+    transformed <- lapply(splited, function(x) structure(as.list(x[, names(score_functions)]), names=x$Label))
     output <- list(
       plotComponent = "FunnelMeasure",
       plotType = "FunnelMeasure",
@@ -138,11 +196,11 @@ get_funnel_measure <- function(explainer, params) {
       ),
       data = list(
         lossValues = transformed,
-        lossFunction = measure_function[[2]]
+        lossFunction = gsub("ONE_MINUS_", "1 - ", names(score_functions))
       )
     )
   }, error = function(e) {
-    stop("Failed to calculate Metrics\n", e)
+    stop("Failed to calculate funnel measure\n", e)
   })
   output
 }

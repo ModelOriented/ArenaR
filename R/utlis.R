@@ -191,6 +191,12 @@ get_json_structure.arena_live <- function(arena) {
         requiredParams = list("model")
       ),
       list(
+        name = "Subsets Performance",
+        plotType = "SubsetsPerformance",
+        plotCategory = "Model Performance",
+        requiredParams = list("model")
+      ),
+      list(
         name = "Metrics",
         plotType = "Metrics",
         plotCategory = "Model Performance",

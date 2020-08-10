@@ -88,6 +88,12 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     get_funnel_measure(explainer, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
+  pr$handle("GET", "/SubsetsPerformance", function(req, res, model = "") {
+    explainer <- get_explainer(model)
+    if (is.null(explainer)) return(res$status <- 404)
+    get_subsets_performance(explainer, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+  
   pr$handle("GET", "/PartialDependence",
             function(req, res, model = "", variable = "") {
     explainer <- get_explainer(model)
