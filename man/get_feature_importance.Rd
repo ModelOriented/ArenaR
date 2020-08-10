@@ -4,12 +4,10 @@
 \alias{get_feature_importance}
 \title{Internal function for calculating feature importance}
 \usage{
-get_feature_importance(explainer, vars, params)
+get_feature_importance(explainer, params)
 }
 \arguments{
 \item{explainer}{Explainer created using \code{DALEX::explain}}
-
-\item{vars}{Variables names for which feature importance should be calculated}
 
 \item{params}{Params from arena object}
 }
