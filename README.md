@@ -24,6 +24,7 @@ Install the `ArenaR` package from GitHub.
 
 ```
 devtools::install_github("ModelOriented/ArenaR")
+install.packages("arenar")
 ```
 
 ## How to use it
@@ -40,6 +41,8 @@ Examples generated with ArenaR
 * [Create Live Arena](https://arenar.drwhy.ai/articles/arena_live.html)  
 * [Create Static Arena](https://arenar.drwhy.ai/articles/arena_static.html)  
 * [Using ArenaR with classificators](https://arenar.drwhy.ai/articles/classification.html)  
+
+![](guide.png)
 
 ### Live version - fast for testing on huge data frames
 
