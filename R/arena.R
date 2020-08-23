@@ -13,6 +13,9 @@
 #' @param funnel_nbins Number of partitions for numeric columns for funnel plot
 #' @param funnel_cutoff Threshold for categorical data. Entries less frequent than specified value will be merged into one category in funnel plot.
 #' @param funnel_factor_threshold Numeric columns with lower number of unique values than value of this parameter will be treated as factors in funnel plot.
+#' @param fairness_cutoffs vector of available cutoff levels for fairness panel
+#' @param max_points_number maximum size of sample to plot scatter plots in variable against another panel
+#' @param distribution_bins vector of available bins count for histogram
 #' @param cl Cluster used to run parallel computations (Do not work in live Arena)
 #' @return Empty \code{arena_static} or \code{arena_live} class object.\cr
 #' \code{arena_static}:
@@ -56,6 +59,8 @@ create_arena <- function(live = FALSE,
                       funnel_cutoff = 0.01,
                       funnel_factor_threshold = 7,
                       fairness_cutoffs = seq(0.05, 0.95, 0.05),
+                      max_points_number = 150,
+                      distribution_bins = seq(5, 40, 5),
                       cl = NULL) {
   if (live) return(
     structure(
@@ -63,33 +68,7 @@ create_arena <- function(live = FALSE,
         explainers = list(),
         # batch = one data frame of observations
         observations_batches = list(),
-        params = list(
-          cp_grid_points = grid_points,
-          ad_grid_points = grid_points,
-          ad_N = N,
-          pd_grid_points = grid_points,
-          pd_N = N,
-          fi_B = fi_B,
-          fi_n_samples = fi_N,
-          shap_B = shap_B,
-          roc_grid_points = grid_points,
-          rec_grid_points = grid_points,
-          fm_nbins = funnel_nbins,
-          fm_cutoff = funnel_cutoff,
-          fm_factor_threshold = funnel_factor_threshold,
-          fairness_cutoffs = fairness_cutoffs
-        ),
-        timestamp = as.numeric(Sys.time())
-      ),
-      class = "arena_live"
-    )
-  )
-  else return(
-    structure(
-      list(
-        explainers = list(),
-        # batch = one data frame of observations
-        observations_batches = list(),
+        datasets = list(),
         params = list(
           cp_grid_points = grid_points,
           ad_grid_points = grid_points,
@@ -105,6 +84,38 @@ create_arena <- function(live = FALSE,
           fm_cutoff = funnel_cutoff,
           fm_factor_threshold = funnel_factor_threshold,
           fairness_cutoffs = fairness_cutoffs,
+          vaa_points_number = max_points_number,
+          vd_bins = distribution_bins
+        ),
+        timestamp = as.numeric(Sys.time())
+      ),
+      class = "arena_live"
+    )
+  )
+  else return(
+    structure(
+      list(
+        explainers = list(),
+        # batch = one data frame of observations
+        observations_batches = list(),
+        datasets = list(),
+        params = list(
+          cp_grid_points = grid_points,
+          ad_grid_points = grid_points,
+          ad_N = N,
+          pd_grid_points = grid_points,
+          pd_N = N,
+          fi_B = fi_B,
+          fi_n_samples = fi_N,
+          shap_B = shap_B,
+          roc_grid_points = grid_points,
+          rec_grid_points = grid_points,
+          fm_nbins = funnel_nbins,
+          fm_cutoff = funnel_cutoff,
+          fm_factor_threshold = funnel_factor_threshold,
+          fairness_cutoffs = fairness_cutoffs,
+          vaa_points_number = max_points_number,
+          vd_bins = distribution_bins,
           cl = cl
         ),
         plots_data = list()
@@ -317,6 +328,77 @@ push_observations.arena_live <- function(arena, observations) {
   arena$observations_batches[[n]] <- observations
   # update timestamp
   arena$timestamp <- as.numeric(Sys.time())
+  arena
+}
+
+#' Adds new datasets to Arena
+#' 
+#' Adds data frame to create exploratory data analysis plots
+#' @param arena live or static arena object
+#' @param dataset data frame used for EDA plots
+#' @param target name of target variable
+#' @param label label of dataset
+#' @return Updated arena object
+#' @export
+#' @examples
+#' library("DALEX")
+#' library("arenar")
+#' library("dplyr", quietly=TRUE, warn.conflicts = FALSE)
+#' # create live arena with only one dataset
+#' apartments <- DALEX::apartments
+#' arena <- create_arena(live=TRUE) %>% push_dataset(apartments, "m2.price", "apartment")
+#' print(arena)
+#' # add another dataset
+#' HR <- DALEX::HR
+#' arena <- arena %>% push_dataset(HR, "status", "HR")
+#' print(arena)
+push_dataset <- function(arena, dataset, target, label) {
+  UseMethod("push_dataset")
+}
+
+#' @export
+#' @importFrom methods is
+push_dataset.arena_live <- function(arena, dataset, target, label) {
+  if (is.null(arena) || !is(arena, "arena_live")) {
+    stop("Invalid arena argument")
+  }
+  validate_new_dataset(arena, dataset, target, label)
+
+  # save dataset
+  n <- length(arena$datasets) + 1
+  arena$datasets[[n]] <- list(
+    dataset = dataset,
+    target = target,
+    label = label,
+    variables = colnames(dataset)[colnames(dataset) != target]
+  )
+  # update timestamp
+  arena$timestamp <- as.numeric(Sys.time())
+  arena
+}
+
+#' @export
+#' @importFrom methods is
+push_dataset.arena_static <- function(arena, dataset, target, label) {
+  if (is.null(arena) || !is(arena, "arena_static")) {
+    stop("Invalid arena argument")
+  }
+  validate_new_dataset(arena, dataset, target, label)
+
+  # save dataset
+  n <- length(arena$datasets) + 1
+  arena$datasets[[n]] <- list(
+    dataset = dataset,
+    target = target,
+    label = label,
+    variables = colnames(dataset)[colnames(dataset) != target]
+  )
+
+  # calculate eda plots and append to list
+  arena$plots_data <- c(
+    arena$plots_data,
+    get_dataset_plots(arena$datasets[[n]], arena$params)
+  )
   arena
 }
 

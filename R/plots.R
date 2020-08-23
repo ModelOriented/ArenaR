@@ -32,7 +32,8 @@ get_local_plots <- function(explainer, observations, params) {
       "vars",
       "get_break_down",
       "get_shap_values",
-      "get_ceteris_paribus"
+      "get_ceteris_paribus",
+      "get_message_output"
     )
     parallel::clusterExport(params$cl, to_export, envir=environment())
     # Load model's library to access predict function
@@ -86,7 +87,8 @@ get_global_plots <- function(explainer, params) {
       "calculate_subsets_performance",
       "get_partial_dependence",
       "get_accumulated_dependence",
-      "get_fairness"
+      "get_fairness",
+      "get_message_output"
     )
     parallel::clusterExport(params$cl, to_export, envir=environment())
     # Load model's library to access predict function
@@ -109,6 +111,34 @@ get_global_plots <- function(explainer, params) {
   )
 }
 
+#' Internal function for calculating exploratory data anaylysis plots
+#'
+#' Function runs all plot generating methods for given dataset
+#' 
+#' @param dataset List with following elements 
+#' \itemize{
+#'   \item{dataset}{ Data frame}
+#'   \item{target}{ Name of one column from data frame that is used as target variable}
+#'   \item{label}{ Label for dataset to be displayed in Arena}
+#'   \item{variables}{ vector of column names from data frame without target}
+#' }
+#' @param params Params from arena object 
+#' @return list of generated plots' data
+get_dataset_plots <- function(dataset, params) {
+  # Helper methods to reduce arguments length
+  get_vd <- function(v) get_variable_distribution(dataset, v, params)
+  get_vaa <- function(v) get_variable_against_another(dataset, v, params)
+
+  vd <- lapply(dataset$variables, get_vd)
+  vaa <- lapply(dataset$variables, get_vaa)
+
+  # Join results and filter out null
+  c(
+    vd[!sapply(vd, is.null)],
+    vaa[!sapply(vaa, is.null)]
+  )
+}
+
 #' Internal function for returning message as plot data
 #'
 #' This method modify exisiting plot's data in Arena's format
@@ -120,6 +150,160 @@ get_global_plots <- function(explainer, params) {
 get_message_output <- function(output, type, msg) {
   output$plotComponent <- "Message"
   output$data <- list(message = msg, type = type)
+  output
+}
+
+#' Internal function for variable against another plot
+#'
+#' @param dataset List with following elements 
+#' \itemize{
+#'   \item{dataset}{ Data frame}
+#'   \item{target}{ Name of one column from data frame that is used as target variable}
+#'   \item{label}{ Label for dataset to be displayed in Arena}
+#'   \item{variables}{ vector of column names from data frame without target}
+#' }
+#' @param variable Name of primary variable
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_variable_against_another <- function(dataset, variable, params) {
+  output <- NULL
+  tryCatch({
+    output <- list(
+      plotType = "VariableAgainstAnother",
+      plotCategory = "EDA",
+      name = "Variable Against Another",
+      plotComponent = "VariableAgainstAnother",
+      params = list(dataset = dataset$label, variable = variable)
+    )
+    # primary variable
+    first <- dataset$dataset[, variable]
+    if (is.logical(first)) first  <- as.factor(first)
+    # for each other variable (including target) compute plot
+    vars <- sapply(dataset$dataset, function(secondary) {
+      if (is.logical(secondary)) secondary <- as.factor(secondary)
+      if (identical(first, secondary)) return(NULL)
+      # count table for two factors
+      if (is.factor(secondary) && is.factor(first)) {
+        tab <- table(first, secondary)
+        return(
+          list(
+            type = "table",
+            counts = lapply(seq_len(nrow(tab)), function(i) unname(tab[i, ])),
+            first = dimnames(tab)[[1]],
+            secondary = dimnames(tab)[[2]]
+          )
+        )
+      # scatter plot for two numeric vectors
+      } else if (is.numeric(secondary) && is.numeric(first)) {
+        # get subset of points
+        points_number <- min(params$vaa_points_number, length(first))
+        points <- sample(seq_len(length(first)), size = points_number)
+        return(list(type = "scatter", first = first[points], secondary = secondary[points]))
+      # boxplots of secondary variable
+      } else if (is.factor(first) && is.numeric(secondary)) {
+        boxes <- lapply(levels(first), function(lev) {
+          filtered <- secondary[first == lev]
+          quantiles <- quantile(filtered, probs = c(0.25, 0.5, 0.75))
+          iqr <- quantiles[3] - quantiles[1]
+          # lower, upper fences
+          lf <- max(quantiles[1] - (1.5 * iqr), min(filtered))
+          uf <- min(quantiles[3] + (1.5 * iqr), max(filtered))
+          list(
+            q1 = quantiles[1],
+            q3 = quantiles[3],
+            mean = mean(filtered),
+            median = quantiles[2],
+            lf = lf,
+            uf = uf,
+            outliers = filtered[filtered > uf | filtered < lf]
+          )
+        })
+        return(list(type = "boxplots", first = levels(first), secondary = boxes, numerical = "secondary"))
+      # boxplots of primary variable
+      } else if (is.numeric(first) && is.factor(secondary)) {
+        boxes <- lapply(levels(secondary), function(lev) {
+          filtered <- first[secondary == lev]
+          quantiles <- quantile(filtered, probs = c(0.25, 0.5, 0.75))
+          iqr <- quantiles[3] - quantiles[1]
+          # lower, upper fences
+          lf <- max(quantiles[1] - (1.5 * iqr), min(filtered))
+          uf <- min(quantiles[3] + (1.5 * iqr), max(filtered))
+          list(
+            q1 = quantiles[1],
+            q3 = quantiles[3],
+            mean = mean(filtered),
+            median = quantiles[2],
+            lf = lf,
+            uf = uf,
+            outliers = filtered[filtered > uf | filtered < lf]
+          )
+        })
+        return(list(type = "boxplots", secondary = levels(secondary), first = boxes, numerical = "first"))
+      } else {
+        return(NULL)
+      }
+    })
+    names(vars) <- colnames(dataset$dataset)
+    output$data <- as.list(vars[!sapply(vars, is.null)])
+  }, error = function(e) {
+    stop("Failed to calculate variable against another\n", e)
+  })
+  output
+}
+
+#' Internal function for variable distribution
+#'
+#' @param dataset List with following elements 
+#' \itemize{
+#'   \item{dataset}{ Data frame}
+#'   \item{target}{ Name of one column from data frame that is used as target variable}
+#'   \item{label}{ Label for dataset to be displayed in Arena}
+#'   \item{variables}{ vector of column names from data frame without target}
+#' }
+#' @param variable Name of variable
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_variable_distribution <- function(dataset, variable, params) {
+  output <- NULL
+  tryCatch({
+    output <- list(
+      plotType = "VariableDistribution",
+      plotCategory = "EDA",
+      name = "Variable Distribution",
+      params = list(dataset = dataset$label, variable = variable)
+    )
+    column <- dataset$dataset[, variable]
+    # bars of count/density if variable is categorical
+    if (is.factor(column)) {
+      counts <- as.numeric(table(column))
+      output$data <- list(
+        names = levels(column),
+        count = counts,
+        density = counts / sum(counts)
+      )
+      output$plotComponent <- "DistributionCounts"
+    # histogram if variable is numerical
+    } else if (is.numeric(column)) {
+      bins <- params$vd_bins
+      # get histogram for different bins number
+      output$data <- lapply(bins, function(nbins) {
+        breaks <- seq(from=min(column), to=max(column), length.out=nbins + 1)
+        hist_data <- graphics::hist(column, plot=FALSE, breaks=breaks)
+        list(
+          breaks = breaks,
+          mids = hist_data$mids,
+          density = hist_data$density,
+          counts = hist_data$counts
+        )
+      })
+      names(output$data) <- bins
+      output$plotComponent <- "DistributionHistogram"
+    } else {
+      return(get_message_output(output, "info", "Distribution is available only for numerical and categorical columns"))
+    }
+  }, error = function(e) {
+    stop("Failed to calculate variable distribution\n", e)
+  })
   output
 }
 
@@ -147,9 +331,6 @@ get_fairness <- function(explainer, variable, params) {
       return(get_message_output(output, "info", "Select categorical variable to check fairness"))
     }
     subgroups <- levels(protected)
-    # Get unexported methods from fairmodels
-    group_matrices <- utils::getFromNamespace("group_matrices", "fairmodels")
-    calculate_group_fairness_metrics <- utils::getFromNamespace("calculate_group_fairness_metrics", "fairmodels")
     # for every cutoff level get group metric matrix
     gmm_list <- lapply(params$fairness_cutoffs, function(cutoff) {
       # make cutoff a const list
@@ -157,14 +338,14 @@ get_fairness <- function(explainer, variable, params) {
       names(cutoff_list) <- subgroups
       # calculate confusion matrices for each subgroup
       stopifnot(is.logical(explainer$y) || is.numeric(explainer$y))
-      gm <- group_matrices(
+      gm <- fairmodels::group_matrices(
         protected = protected,
         probs = explainer$y_hat,
         preds = as.numeric(explainer$y),
         cutoff = cutoff_list
       )
       # group metric matrix
-      gmm <- calculate_group_fairness_metrics(gm)
+      gmm <- fairmodels::calculate_group_fairness_metrics(gm)
       data.frame(
         value = as.vector(gmm),
         subgroup = rep(colnames(gmm), each=nrow(gmm)),

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utlis.R
 \name{get_variables_list}
 \alias{get_variables_list}
-\title{Generates list of unique variables(without target) from each explainer}
+\title{Generates list of unique variables(without target) from each explainer and dataset}
 \usage{
 get_variables_list(arena)
 }
@@ -13,5 +13,5 @@ get_variables_list(arena)
 list of variables' names
 }
 \description{
-Generates list of unique variables(without target) from each explainer
+Generates list of unique variables(without target) from each explainer and dataset
 }
