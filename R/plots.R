@@ -102,6 +102,12 @@ get_global_plots <- function(explainer, params) {
     fr <- parallel::parLapply(params$cl, vars, get_fr)
   }
 
+  # filter out plots only for classificators
+  if (explainer$model_info$type != 'classification') {
+    fr <- list()
+    globals <- globals[sapply(globals, function(p) p$plotType != "ROC")]
+  }
+
   # Join results into one list
   c(
     pd[!sapply(pd, is.null)],
@@ -506,7 +512,16 @@ get_metrics <- function(explainer, params) {
 get_roc <- function(explainer, params) {
   output <- NULL
   tryCatch({
-    if (explainer$model_info$type != 'classification') return(NULL)
+    output <- list(
+      plotComponent = "ROC",
+      plotType = "ROC",
+      plotCategory = "Model Performance",
+      name = "Receiver Operating Characterstic",
+      params = list(model = explainer$label)
+    )
+    if (explainer$model_info$type != 'classification') {
+      return(get_message_output(output, "info", "ROC plot is only available for classificators"))
+    }
     eva <- auditor::model_evaluation(explainer)
     if (nrow(eva) > params$roc_grid_points) {
       # take random points
@@ -514,20 +529,10 @@ get_roc <- function(explainer, params) {
       eva <- eva[points, ]
     }
     eva <- eva[order(eva$`_fpr_`, decreasing = TRUE), ]
-    
-    output <- list(
-      plotComponent = "ROC",
-      plotType = "ROC",
-      plotCategory = "Model Performance",
-      name = "Receiver Operating Characterstic",
-      params = list(
-        model = explainer$label
-      ),
-      data = list(
-        specifity = 1 - eva$`_fpr_`,
-        sensivity = eva$`_tpr_`,
-        cutoff = eva$`_cutoffs_`
-      )
+    output$data <- list(
+      specifity = 1 - eva$`_fpr_`,
+      sensivity = eva$`_tpr_`,
+      cutoff = eva$`_cutoffs_`
     )
   }, error = function(e) {
     stop("Failed to calculate ROC\n", e)

@@ -18,7 +18,7 @@ n_vars <- ncol(new_observation) - 1
 n_obs <- nrow(new_observation)
 correct_len <- 5 + # FI, REC, Metrics, FM, SP
   n_obs * 2 + # BD, SHAP
-  n_vars * 3 + # ADP, PDP, Fairness
+  n_vars * 2 + # ADP, PDP
   n_vars * n_obs # CP
 
 test_that("regression plots count is correct", {
