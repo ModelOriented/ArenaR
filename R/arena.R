@@ -445,3 +445,25 @@ upload_arena <- function (arena, open_browser = TRUE, append_data = FALSE,
   }
   arena
 }
+
+#' Save generated json file from static arena
+#'
+#' @param arena Static arena object
+#' @param filename Name of output file
+#' @param pretty whether to generate pretty and easier to debug JSON
+#' @return not modified arena object
+#' @export
+#' @importFrom methods is
+save_arena <- function (arena, filename="data.json", pretty=FALSE) {
+  if (is.null(arena) || !is(arena, "arena_static")) {
+    stop("Invalid arena argument")
+  }
+  # generate json string
+  json <- jsonlite::toJSON(
+    get_json_structure(arena),
+    auto_unbox = TRUE,
+    pretty = pretty
+  )
+  write(json, file = filename)
+  arena
+}
