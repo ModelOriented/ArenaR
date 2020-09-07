@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Internal function for calculating Shapley Values — get_shap_values • arenar</title>
+<title>Internal function for returning message as plot data — get_message_output • arenar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -52,8 +52,9 @@
 
 
 
-<meta property="og:title" content="Internal function for calculating Shapley Values — get_shap_values" />
-<meta property="og:description" content="Internal function for calculating Shapley Values" />
+<meta property="og:title" content="Internal function for returning message as plot data — get_message_output" />
+<meta property="og:description" content="This method modify exisiting plot's data in Arena's format
+to show message instead of chart." />
 
 
 
@@ -155,31 +156,32 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function for calculating Shapley Values</h1>
+    <h1>Internal function for returning message as plot data</h1>
     <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/plots.R'><code>R/plots.R</code></a></small>
-    <div class="hidden name"><code>get_shap_values.Rd</code></div>
+    <div class="hidden name"><code>get_message_output.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Internal function for calculating Shapley Values</p>
+    <p>This method modify exisiting plot's data in Arena's format
+to show message instead of chart.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_shap_values</span>(<span class='kw'>explainer</span>, <span class='kw'>observation</span>, <span class='kw'>params</span>)</pre>
+    <pre class="usage"><span class='fu'>get_message_output</span>(<span class='kw'>output</span>, <span class='kw'>type</span>, <span class='kw'>msg</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>explainer</th>
-      <td><p>Explainer created using <code><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>DALEX::explain</a></code></p></td>
+      <th>output</th>
+      <td><p>existing plot data to be overwritten</p></td>
     </tr>
     <tr>
-      <th>observation</th>
-      <td><p>One row data frame observation to calculate Shapley Values</p></td>
+      <th>type</th>
+      <td><p>type of message "info" or "error"</p></td>
     </tr>
     <tr>
-      <th>params</th>
-      <td><p>Params from arena object</p></td>
+      <th>msg</th>
+      <td><p>message to be displayed</p></td>
     </tr>
     </table>
 

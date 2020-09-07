@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Internal function for calculating Shapley Values — get_shap_values • arenar</title>
+<title>Internal function for calculating exploratory data anaylysis plots — get_dataset_plots • arenar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -52,8 +52,8 @@
 
 
 
-<meta property="og:title" content="Internal function for calculating Shapley Values — get_shap_values" />
-<meta property="og:description" content="Internal function for calculating Shapley Values" />
+<meta property="og:title" content="Internal function for calculating exploratory data anaylysis plots — get_dataset_plots" />
+<meta property="og:description" content="Function runs all plot generating methods for given dataset" />
 
 
 
@@ -155,27 +155,28 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function for calculating Shapley Values</h1>
+    <h1>Internal function for calculating exploratory data anaylysis plots</h1>
     <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/plots.R'><code>R/plots.R</code></a></small>
-    <div class="hidden name"><code>get_shap_values.Rd</code></div>
+    <div class="hidden name"><code>get_dataset_plots.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Internal function for calculating Shapley Values</p>
+    <p>Function runs all plot generating methods for given dataset</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_shap_values</span>(<span class='kw'>explainer</span>, <span class='kw'>observation</span>, <span class='kw'>params</span>)</pre>
+    <pre class="usage"><span class='fu'>get_dataset_plots</span>(<span class='kw'>dataset</span>, <span class='kw'>params</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>explainer</th>
-      <td><p>Explainer created using <code><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>DALEX::explain</a></code></p></td>
-    </tr>
-    <tr>
-      <th>observation</th>
-      <td><p>One row data frame observation to calculate Shapley Values</p></td>
+      <th>dataset</th>
+      <td><p>List with following elements</p><ul>
+<li><p>dataset Data frame</p></li>
+<li><p>target Name of one column from data frame that is used as target variable</p></li>
+<li><p>label Label for dataset to be displayed in Arena</p></li>
+<li><p>variables vector of column names from data frame without target</p></li>
+</ul></td>
     </tr>
     <tr>
       <th>params</th>
@@ -185,7 +186,7 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Plot data in Arena's format</p>
+    <p>list of generated plots' data</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

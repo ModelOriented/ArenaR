@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Internal function for calculating Shapley Values — get_shap_values • arenar</title>
+<title>Checks if it is safe do add new dataset to the arena object — validate_new_dataset • arenar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -52,8 +52,8 @@
 
 
 
-<meta property="og:title" content="Internal function for calculating Shapley Values — get_shap_values" />
-<meta property="og:description" content="Internal function for calculating Shapley Values" />
+<meta property="og:title" content="Checks if it is safe do add new dataset to the arena object — validate_new_dataset" />
+<meta property="og:description" content="Checks if it is safe do add new dataset to the arena object" />
 
 
 
@@ -155,37 +155,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function for calculating Shapley Values</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/plots.R'><code>R/plots.R</code></a></small>
-    <div class="hidden name"><code>get_shap_values.Rd</code></div>
+    <h1>Checks if it is safe do add new dataset to the arena object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/utlis.R'><code>R/utlis.R</code></a></small>
+    <div class="hidden name"><code>validate_new_dataset.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Internal function for calculating Shapley Values</p>
+    <p>Checks if it is safe do add new dataset to the arena object</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_shap_values</span>(<span class='kw'>explainer</span>, <span class='kw'>observation</span>, <span class='kw'>params</span>)</pre>
+    <pre class="usage"><span class='fu'>validate_new_dataset</span>(<span class='kw'>arena</span>, <span class='kw'>dataset</span>, <span class='kw'>target</span>, <span class='kw'>label</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>explainer</th>
-      <td><p>Explainer created using <code><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>DALEX::explain</a></code></p></td>
+      <th>arena</th>
+      <td><p>live or static arena object</p></td>
     </tr>
     <tr>
-      <th>observation</th>
-      <td><p>One row data frame observation to calculate Shapley Values</p></td>
+      <th>dataset</th>
+      <td><p>data frame for data analysis</p></td>
     </tr>
     <tr>
-      <th>params</th>
-      <td><p>Params from arena object</p></td>
+      <th>target</th>
+      <td><p>name of target variable</p></td>
+    </tr>
+    <tr>
+      <th>label</th>
+      <td><p>name of dataset</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Plot data in Arena's format</p>
+    <p>None</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

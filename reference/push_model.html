@@ -99,7 +99,7 @@ calculated on demand, after calling arena_run." />
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.8</span>
+          <span class="version version-default">0.1.9</span>
         </div>
       </div>
     </div>
@@ -194,7 +194,8 @@ calculated on demand, after calling <code>arena_run</code>.</p>
 <span class='co'># create first model</span>
 <span class='kw'>model1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='kw'>m2.price</span> <span class='op'>~</span> <span class='kw'>.</span>, data=<span class='kw'>apartments</span>, family=<span class='kw'>gaussian</span>)
 <span class='co'># create a DALEX explainer</span>
-<span class='kw'>explainer1</span> <span class='op'>&lt;-</span> <span class='kw'>DALEX</span>::<span class='fu'><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>explain</a></span>(<span class='kw'>model1</span>, data=<span class='kw'>apartments</span>, y=<span class='kw'>apartments</span><span class='op'>$</span><span class='kw'>m2.price</span>, label=<span class='st'>"GLM gaussian"</span>)</div><div class='output co'>#&gt; Preparation of a new explainer is initiated
+<span class='kw'>explainer1</span> <span class='op'>&lt;-</span> <span class='kw'>DALEX</span>::<span class='fu'><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>explain</a></span>(<span class='kw'>model1</span>, data=<span class='kw'>apartments</span>, y=<span class='kw'>apartments</span><span class='op'>$</span><span class='kw'>m2.price</span>, label=<span class='st'>"GLM gaussian"</span>)
+</div><div class='output co'>#&gt; Preparation of a new explainer is initiated
 #&gt;   -&gt; model label       :  GLM gaussian 
 #&gt;   -&gt; data              :  1000  rows  6  cols 
 #&gt;   -&gt; target variable   :  1000  values 
@@ -205,13 +206,16 @@ calculated on demand, after calling <code>arena_run</code>.</p>
 #&gt;   -&gt; residuals         :  numerical, min =  -247.4728 , mean =  2.093656e-14 , max =  469.0023  
 #&gt;  </span><span style='color: #00BB00;'> A new explainer has been created! </span><span> </div><div class='input'><span class='co'># create live arena with only one model</span>
 <span class='kw'>arena</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_arena.html'>create_arena</a></span>(live=<span class='fl'>TRUE</span>) <span class='op'>%&gt;%</span> <span class='fu'>push_model</span>(<span class='kw'>explainer1</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>arena</span>)</div><div class='output co'>#&gt; ===== Live Arena Summary =====
-#&gt; Models: GLM gaussian 
-#&gt; Observations:  
-#&gt; Variables: construction.year, surface, floor, no.rooms, district 
-#&gt; Remember to start server with arena_run(arena)</div><div class='input'><span class='co'># create and add next model</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>arena</span>)
+</div><div class='output co'>#&gt; ===== Live Arena Summary =====
+#&gt; Observations: 
+#&gt; Variables: construction.year, surface, floor, no.rooms, district
+#&gt; Models: GLM gaussian
+#&gt; Datasets: 
+#&gt; Remember to start server with run_server(arena)</div><div class='input'><span class='co'># create and add next model</span>
 <span class='kw'>model2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='kw'>m2.price</span> <span class='op'>~</span> <span class='kw'>.</span>, data=<span class='kw'>apartments</span>, family=<span class='kw'>Gamma</span>)
-<span class='kw'>explainer2</span> <span class='op'>&lt;-</span> <span class='kw'>DALEX</span>::<span class='fu'><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>explain</a></span>(<span class='kw'>model2</span>, data=<span class='kw'>apartments</span>, y=<span class='kw'>apartments</span><span class='op'>$</span><span class='kw'>m2.price</span>, label=<span class='st'>"GLM gamma"</span>)</div><div class='output co'>#&gt; Preparation of a new explainer is initiated
+<span class='kw'>explainer2</span> <span class='op'>&lt;-</span> <span class='kw'>DALEX</span>::<span class='fu'><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>explain</a></span>(<span class='kw'>model2</span>, data=<span class='kw'>apartments</span>, y=<span class='kw'>apartments</span><span class='op'>$</span><span class='kw'>m2.price</span>, label=<span class='st'>"GLM gamma"</span>)
+</div><div class='output co'>#&gt; Preparation of a new explainer is initiated
 #&gt;   -&gt; model label       :  GLM gamma 
 #&gt;   -&gt; data              :  1000  rows  6  cols 
 #&gt;   -&gt; target variable   :  1000  values 
@@ -221,11 +225,13 @@ calculated on demand, after calling <code>arena_run</code>.</p>
 #&gt;   -&gt; residual function :  difference between y and yhat ( </span><span style='color: #BBBB00;'> default </span><span> )
 #&gt;   -&gt; residuals         :  numerical, min =  -2020.469 , mean =  -2.479255e-12 , max =  1029.545  
 #&gt;  </span><span style='color: #00BB00;'> A new explainer has been created! </span><span> </div><div class='input'><span class='kw'>arena</span> <span class='op'>&lt;-</span> <span class='kw'>arena</span> <span class='op'>%&gt;%</span> <span class='fu'>push_model</span>(<span class='kw'>explainer2</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>arena</span>)</div><div class='output co'>#&gt; ===== Live Arena Summary =====
-#&gt; Models: GLM gaussian, GLM gamma 
-#&gt; Observations:  
-#&gt; Variables: construction.year, surface, floor, no.rooms, district 
-#&gt; Remember to start server with arena_run(arena)</div></span></pre>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>arena</span>)
+</div><div class='output co'>#&gt; ===== Live Arena Summary =====
+#&gt; Observations: 
+#&gt; Variables: construction.year, surface, floor, no.rooms, district
+#&gt; Models: GLM gaussian, GLM gamma
+#&gt; Datasets: 
+#&gt; Remember to start server with run_server(arena)</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

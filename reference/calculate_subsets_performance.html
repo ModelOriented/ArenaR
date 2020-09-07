@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Internal function for calculating Shapley Values — get_shap_values • arenar</title>
+<title>Internal function for calculating data for funnel plot — calculate_subsets_performance • arenar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -52,8 +52,8 @@
 
 
 
-<meta property="og:title" content="Internal function for calculating Shapley Values — get_shap_values" />
-<meta property="og:description" content="Internal function for calculating Shapley Values" />
+<meta property="og:title" content="Internal function for calculating data for funnel plot — calculate_subsets_performance" />
+<meta property="og:description" content="This is modified version of DALEXtra::funnel_measure" />
 
 
 
@@ -155,16 +155,23 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function for calculating Shapley Values</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/plots.R'><code>R/plots.R</code></a></small>
-    <div class="hidden name"><code>get_shap_values.Rd</code></div>
+    <h1>Internal function for calculating data for funnel plot</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/subsets_performance.R'><code>R/subsets_performance.R</code></a></small>
+    <div class="hidden name"><code>calculate_subsets_performance.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Internal function for calculating Shapley Values</p>
+    <p>This is modified version of <code>DALEXtra::funnel_measure</code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_shap_values</span>(<span class='kw'>explainer</span>, <span class='kw'>observation</span>, <span class='kw'>params</span>)</pre>
+    <pre class="usage"><span class='fu'>calculate_subsets_performance</span>(
+  <span class='kw'>explainer</span>,
+  score_functions = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
+  nbins = <span class='fl'>5</span>,
+  cutoff = <span class='fl'>0.01</span>,
+  cutoff_name = <span class='st'>"Other"</span>,
+  factor_conversion_threshold = <span class='fl'>7</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -174,18 +181,33 @@
       <td><p>Explainer created using <code><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>DALEX::explain</a></code></p></td>
     </tr>
     <tr>
-      <th>observation</th>
-      <td><p>One row data frame observation to calculate Shapley Values</p></td>
+      <th>score_functions</th>
+      <td><p>Named list of functions named <code>score_*</code> from <code>auditor</code> package</p></td>
     </tr>
     <tr>
-      <th>params</th>
-      <td><p>Params from arena object</p></td>
+      <th>nbins</th>
+      <td><p>Number of qunatiles (partition points) for numeric columns. In case when more than one qunatile have the same value, there will be less partition points.</p></td>
+    </tr>
+    <tr>
+      <th>cutoff</th>
+      <td><p>Threshold for categorical data. Entries less frequent than specified value will be merged into one category.</p></td>
+    </tr>
+    <tr>
+      <th>cutoff_name</th>
+      <td><p>Name for new category that arised after merging entries less frequent than <code>cutoff</code></p></td>
+    </tr>
+    <tr>
+      <th>factor_conversion_threshold</th>
+      <td><p>Numeric columns with lower number of unique values than value of this parameter will be treated as factors</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Plot data in Arena's format</p>
+    <p>Data frame with columns</p><ul>
+<li><p>Variable Name of splited variable</p></li>
+<li><p>Label Label for variable's values subset</p></li>
+</ul><p>and one column for each score function with returned score</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

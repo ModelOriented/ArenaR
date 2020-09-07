@@ -53,7 +53,7 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.8</span>
+          <span class="version version-default">0.1.9</span>
         </div>
       </div>
     </div>
@@ -129,7 +129,8 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>Install the <code>ArenaR</code> package from GitHub.</p>
-<pre><code>devtools::install_github("ModelOriented/ArenaR")</code></pre>
+<pre><code>devtools::install_github("ModelOriented/ArenaR")
+install.packages("arenar")</code></pre>
 </div>
 <div id="how-to-use-it" class="section level2">
 <h2 class="hasAnchor">
@@ -160,87 +161,10 @@
 <li><a href="https://arenar.drwhy.ai/articles/classification.html">Using ArenaR with classificators</a></li>
 </ul>
 </div>
-<div id="live-version---fast-for-testing-on-huge-data-frames" class="section level3">
+<div id="guide" class="section level3">
 <h3 class="hasAnchor">
-<a href="#live-version---fast-for-testing-on-huge-data-frames" class="anchor"></a>Live version - fast for testing on huge data frames</h3>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://arenar.drwhy.ai">arenar</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">gbm</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://ModelOriented.github.io/DALEX">DALEX</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://dplyr.tidyverse.org">dplyr</a></span>)
-
-<span class="co"># Create models and DALEX explainers</span>
-<span class="kw">model_gbm100</span> <span class="op">&lt;-</span> <span class="fu">gbm</span>(<span class="kw">m2.price</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">apartments</span>, n.trees = <span class="fl">100</span>)
-<span class="kw">expl_gbm100</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
-  <span class="kw">model_gbm100</span>,
-  data = <span class="kw">apartments</span>,
-  y = <span class="kw">apartments</span><span class="op">$</span><span class="kw">m2.price</span>,
-  label = <span class="st">"gbm [100 trees]"</span>
-)
-
-<span class="kw">model_gbm500</span> <span class="op">&lt;-</span> <span class="fu">gbm</span>(<span class="kw">m2.price</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">apartments</span>, n.trees = <span class="fl">500</span>)
-<span class="kw">expl_gbm500</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
-  <span class="kw">model_gbm500</span>,
-  data = <span class="kw">apartments</span>,
-  y = <span class="kw">apartments</span><span class="op">$</span><span class="kw">m2.price</span>,
-  label = <span class="st">"gbm [500 trees]"</span>
-)
-
-<span class="fu"><a href="reference/create_arena.html">create_arena</a></span>(live = <span class="fl">TRUE</span>) <span class="op">%&gt;%</span>
-  <span class="co"># Pushing explainers for each models</span>
-  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="kw">expl_gbm100</span>) <span class="op">%&gt;%</span>
-  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="kw">expl_gbm500</span>) <span class="op">%&gt;%</span>
-  <span class="co"># Push dataframe of observations</span>
-  <span class="fu"><a href="reference/push_observations.html">push_observations</a></span>(<span class="kw">apartments</span>) <span class="op">%&gt;%</span>
-  <span class="co"># Run server of default port and ip</span>
-  <span class="fu"><a href="reference/run_server.html">run_server</a></span>()
-</pre></div>
-</div>
-<div id="generating-static-files---easy-to-share" class="section level3">
-<h3 class="hasAnchor">
-<a href="#generating-static-files---easy-to-share" class="anchor"></a>Generating static files - easy to share</h3>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://arenar.drwhy.ai">arenar</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">gbm</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://ModelOriented.github.io/DALEX">DALEX</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://dplyr.tidyverse.org">dplyr</a></span>)
-
-<span class="co"># Create models and DALEX explainers</span>
-<span class="kw">model_gbm100</span> <span class="op">&lt;-</span> <span class="fu">gbm</span>(<span class="kw">m2.price</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">apartments</span>, n.trees = <span class="fl">100</span>)
-<span class="kw">expl_gbm100</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
-  <span class="kw">model_gbm100</span>,
-  data = <span class="kw">apartments</span>,
-  y = <span class="kw">apartments</span><span class="op">$</span><span class="kw">m2.price</span>,
-  label = <span class="st">"gbm [100 trees]"</span>
-)
-
-<span class="kw">model_gbm500</span> <span class="op">&lt;-</span> <span class="fu">gbm</span>(<span class="kw">m2.price</span> <span class="op">~</span> <span class="kw">.</span>, data = <span class="kw">apartments</span>, n.trees = <span class="fl">500</span>)
-<span class="kw">expl_gbm500</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DALEX/man/explain.html">explain</a></span>(
-  <span class="kw">model_gbm500</span>,
-  data = <span class="kw">apartments</span>,
-  y = <span class="kw">apartments</span><span class="op">$</span><span class="kw">m2.price</span>,
-  label = <span class="st">"gbm [500 trees]"</span>
-)
-
-<span class="co"># Take only few observations</span>
-<span class="kw">observations</span> <span class="op">&lt;-</span> <span class="kw">apartments</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">construction.year</span> <span class="op">&gt;=</span> <span class="fl">2009</span>)
-<span class="co"># Observations' names are taken from rownames</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span>(<span class="kw">observations</span>) <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(
-  <span class="kw">observations</span><span class="op">$</span><span class="kw">district</span>,
-  <span class="st">" "</span>,
-  <span class="kw">observations</span><span class="op">$</span><span class="kw">surface</span>,
-  <span class="st">"m2 "</span>
-)
-
-<span class="fu"><a href="reference/create_arena.html">create_arena</a></span>() <span class="op">%&gt;%</span>
-  <span class="co"># Pushing explainers for each models</span>
-  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="kw">expl_gbm100</span>) <span class="op">%&gt;%</span>
-  <span class="fu"><a href="reference/push_model.html">push_model</a></span>(<span class="kw">expl_gbm500</span>) <span class="op">%&gt;%</span>
-  <span class="co"># Push dataframe of observations</span>
-  <span class="fu"><a href="reference/push_observations.html">push_observations</a></span>(<span class="kw">observations</span>) <span class="op">%&gt;%</span>
-  <span class="co"># Upload calculated arena files to Gist and open Arena in browser</span>
-  <span class="fu"><a href="reference/upload_arena.html">upload_arena</a></span>()
-</pre></div>
+<a href="#guide" class="anchor"></a>Guide</h3>
+<p><img src="guide.png"></p>
 </div>
 </div>
 <div id="acknowledgments" class="section level2">
@@ -283,6 +207,7 @@
 <li><a href="https://codecov.io/gh/ModelOriented/ArenaR?branch=master"><img src="https://codecov.io/gh/ModelOriented/ArenaR/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://github.com/ModelOriented/ArenaR/actions"><img src="https://github.com/ModelOriented/ArenaR/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://cran.r-project.org/package=arenar"><img src="http://www.r-pkg.org/badges/version/arenar" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://cranlogs.r-pkg.org/downloads/total/last-month/arenar"><img src="https://cranlogs.r-pkg.org/badges/arenar" alt="CRAN downloads badge"></a></li>
 </ul>
 </div>
 </div>

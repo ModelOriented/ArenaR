@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Internal function for calculating Shapley Values — get_shap_values • arenar</title>
+<title>Generates list of datasets' labels — get_datasets_list • arenar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -52,8 +52,8 @@
 
 
 
-<meta property="og:title" content="Internal function for calculating Shapley Values — get_shap_values" />
-<meta property="og:description" content="Internal function for calculating Shapley Values" />
+<meta property="og:title" content="Generates list of datasets' labels — get_datasets_list" />
+<meta property="og:description" content="Generates list of datasets' labels" />
 
 
 
@@ -155,37 +155,29 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function for calculating Shapley Values</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/plots.R'><code>R/plots.R</code></a></small>
-    <div class="hidden name"><code>get_shap_values.Rd</code></div>
+    <h1>Generates list of datasets' labels</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/utlis.R'><code>R/utlis.R</code></a></small>
+    <div class="hidden name"><code>get_datasets_list.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Internal function for calculating Shapley Values</p>
+    <p>Generates list of datasets' labels</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_shap_values</span>(<span class='kw'>explainer</span>, <span class='kw'>observation</span>, <span class='kw'>params</span>)</pre>
+    <pre class="usage"><span class='fu'>get_datasets_list</span>(<span class='kw'>arena</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>explainer</th>
-      <td><p>Explainer created using <code><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>DALEX::explain</a></code></p></td>
-    </tr>
-    <tr>
-      <th>observation</th>
-      <td><p>One row data frame observation to calculate Shapley Values</p></td>
-    </tr>
-    <tr>
-      <th>params</th>
-      <td><p>Params from arena object</p></td>
+      <th>arena</th>
+      <td><p>live or static arena object</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Plot data in Arena's format</p>
+    <p>list of datasets' labels</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

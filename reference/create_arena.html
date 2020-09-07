@@ -98,7 +98,7 @@ This method is always first in arenar workflow and you should specify all plots'
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.8</span>
+          <span class="version version-default">0.1.9</span>
         </div>
       </div>
     </div>
@@ -176,6 +176,9 @@ This method is always first in <code>arenar</code> workflow and you should speci
   funnel_nbins = <span class='fl'>5</span>,
   funnel_cutoff = <span class='fl'>0.01</span>,
   funnel_factor_threshold = <span class='fl'>7</span>,
+  fairness_cutoffs = <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0.05</span>, <span class='fl'>0.95</span>, <span class='fl'>0.05</span>),
+  max_points_number = <span class='fl'>150</span>,
+  distribution_bins = <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>5</span>, <span class='fl'>40</span>, <span class='fl'>5</span>),
   cl = <span class='kw'>NULL</span>
 )</pre>
 
@@ -220,6 +223,18 @@ in feature importance</p></td>
       <td><p>Numeric columns with lower number of unique values than value of this parameter will be treated as factors in funnel plot.</p></td>
     </tr>
     <tr>
+      <th>fairness_cutoffs</th>
+      <td><p>vector of available cutoff levels for fairness panel</p></td>
+    </tr>
+    <tr>
+      <th>max_points_number</th>
+      <td><p>maximum size of sample to plot scatter plots in variable against another panel</p></td>
+    </tr>
+    <tr>
+      <th>distribution_bins</th>
+      <td><p>vector of available bins count for histogram</p></td>
+    </tr>
+    <tr>
       <th>cl</th>
       <td><p>Cluster used to run parallel computations (Do not work in live Arena)</p></td>
     </tr>
@@ -242,7 +257,8 @@ in feature importance</p></td>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'><a href='https://ModelOriented.github.io/DALEX'>"DALEX"</a></span>)</div><div class='output co'>#&gt; <span class='message'>Welcome to DALEX (version: 1.3.1).</span>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'><a href='https://ModelOriented.github.io/DALEX'>"DALEX"</a></span>)
+</div><div class='output co'>#&gt; <span class='message'>Welcome to DALEX (version: 2.0.1).</span>
 #&gt; <span class='message'>Find examples and detailed introduction at: https://pbiecek.github.io/ema/</span>
 #&gt; <span class='message'>Additional features will be available after installation of: ggpubr.</span>
 #&gt; <span class='message'>Use 'install_dependencies()' to get all suggested dependencies</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'><a href='https://arenar.drwhy.ai'>"arenar"</a></span>)
@@ -250,7 +266,8 @@ in feature importance</p></td>
 <span class='co'># create a model</span>
 <span class='kw'>model</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/glm.html'>glm</a></span>(<span class='kw'>m2.price</span> <span class='op'>~</span> <span class='kw'>.</span>, data=<span class='kw'>apartments</span>)
 <span class='co'># create a DALEX explainer</span>
-<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='kw'>DALEX</span>::<span class='fu'><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>explain</a></span>(<span class='kw'>model</span>, data=<span class='kw'>apartments</span>, y=<span class='kw'>apartments</span><span class='op'>$</span><span class='kw'>m2.price</span>)</div><div class='output co'>#&gt; Preparation of a new explainer is initiated
+<span class='kw'>explainer</span> <span class='op'>&lt;-</span> <span class='kw'>DALEX</span>::<span class='fu'><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>explain</a></span>(<span class='kw'>model</span>, data=<span class='kw'>apartments</span>, y=<span class='kw'>apartments</span><span class='op'>$</span><span class='kw'>m2.price</span>)
+</div><div class='output co'>#&gt; Preparation of a new explainer is initiated
 #&gt;   -&gt; model label       :  lm  ( <span style='color: #BBBB00;'> default </span><span> )
 #&gt;   -&gt; data              :  1000  rows  6  cols 
 #&gt;   -&gt; target variable   :  1000  values 
@@ -265,11 +282,14 @@ in feature importance</p></td>
 <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span>(<span class='kw'>observations</span>) <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='kw'>observations</span><span class='op'>$</span><span class='kw'>construction.year</span>, <span class='st'>"-"</span>, <span class='kw'>observations</span><span class='op'>$</span><span class='kw'>surface</span>, <span class='st'>"m2"</span>)
 <span class='co'># generate static arena for one model and 3 observations</span>
 <span class='kw'>arena</span> <span class='op'>&lt;-</span> <span class='fu'>create_arena</span>(live=<span class='fl'>FALSE</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='push_model.html'>push_model</a></span>(<span class='kw'>explainer</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='push_observations.html'>push_observations</a></span>(<span class='kw'>observations</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>arena</span>)</div><div class='output co'>#&gt; ===== Static Arena Summary =====
-#&gt; Models: lm 
-#&gt; Observations: 1953-25m2, 1992-143m2, 1937-56m2 
-#&gt; Variables: construction.year, surface, floor, no.rooms, district 
-#&gt; Plots count: 35 </div><div class='input'><span class='co'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span>()) <span class='fu'><a href='upload_arena.html'>upload_arena</a></span>(<span class='kw'>arena</span>)</div></span></pre>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw'>arena</span>)
+</div><div class='output co'>#&gt; ===== Static Arena Summary =====
+#&gt; Observations: 1953-25m2, 1992-143m2, 1937-56m2
+#&gt; Variables: construction.year, surface, floor, no.rooms, district
+#&gt; Models: lm
+#&gt; Datasets: 
+#&gt; Plots count: 36 </div><div class='input'><span class='co'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span>()) <span class='fu'><a href='upload_arena.html'>upload_arena</a></span>(<span class='kw'>arena</span>)
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
