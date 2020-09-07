@@ -19,11 +19,20 @@ test_that("explainers count is correct", {
 
 n_vars <- ncol(new_observation) - 1
 n_obs <- nrow(new_observation)
-correct_len <- 3 * 5 + # FI, ROC, REC, Metrics, FM
+correct_len <- 3 * 6 + # FI, ROC, REC, Metrics, FM, SP
   3 * n_obs * 2 + # BD, SHAP
-  3 * n_vars * 2 + # ADP, PDP
+  3 * n_vars * 3 + # ADP, PDP, Fairness
   3 * n_vars * n_obs # CP
 
 test_that("plots count is correct", {
-  expect_equal(length(arena$plots_data), correct_len)
+  tryCatch(
+    expr = {
+      expect_equal(length(arena$plots_data), correct_len)
+    }, 
+    error = function(e){
+      print(e)
+      # if failed print table of plot types
+      print(table(sapply(arena$plots_data, function(p) p$plotType)))
+    }
+  )
 })

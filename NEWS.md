@@ -1,3 +1,12 @@
+arenar 0.1.9
+----------------------------------------------------------------
+* Add EDA plots
+* Add Fairness plot
+* Add subsets performance plot
+* Update generated data version to 1.1.0
+* Add `save_arena` method
+* Update printing summary
+
 arenar 0.1.8
 ----------------------------------------------------------------
 * Documentation with examples

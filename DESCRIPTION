@@ -1,6 +1,6 @@
 Package: arenar
 Title: Arena for the Exploration and Comparison of any ML Models
-Version: 0.1.8
+Version: 0.1.9
 Authors@R:
     c(person("Piotr", "Piątyszek", role = c("aut", "cre"),
              email = "piotrp@wektor.xyz"),
@@ -14,7 +14,7 @@ Description: Generates data for challenging machine learning models in 'Arena'
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Depends: R (>= 3.6)
 Imports: 
     ingredients,
@@ -27,7 +27,9 @@ Imports:
     stats,
     methods,
     auditor,
-    DALEX (>= 1.3.0)
+    DALEX (>= 1.3.0),
+    fairmodels,
+    graphics
 Suggests: 
     testthat,
     knitr,

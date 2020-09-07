@@ -32,7 +32,8 @@ get_local_plots <- function(explainer, observations, params) {
       "vars",
       "get_break_down",
       "get_shap_values",
-      "get_ceteris_paribus"
+      "get_ceteris_paribus",
+      "get_message_output"
     )
     parallel::clusterExport(params$cl, to_export, envir=environment())
     # Load model's library to access predict function
@@ -65,29 +66,29 @@ get_global_plots <- function(explainer, params) {
   is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
   vars <- names(is_y[!is_y])
 
-  fi <- get_feature_importance(explainer, vars, params)
-  fi <- list(fi)
+  global_plots_names <- c("roc", "rec", "metrics", "subsets_performance", "funnel_measure", "feature_importance")
+  global_plots <- lapply(global_plots_names, function(n) get(paste0("get_", n)))
 
-  perf <- list(
-    get_roc(explainer, params),
-    get_rec(explainer, params),
-    get_metrics(explainer, params),
-    get_funnel_measure(explainer, params)
-  )
-
+  get_global <- function(f) f(explainer, params)
   get_pd <- function(v) get_partial_dependence(explainer, v, params)
   get_ad <- function(v) get_accumulated_dependence(explainer, v, params)
+  get_fr <- function(v) get_fairness(explainer, v, params)
 
   if (is.null(params$cl)) { # single thread if cluster was not provided
+    globals <- lapply(global_plots, get_global)
     pd <- lapply(vars, get_pd)
     ad <- lapply(vars, get_ad)
+    fr <- lapply(vars, get_fr)
   } else {
     # Export variables and functions to cluster
     to_export <- c(
       "explainer",
       "params",
+      "calculate_subsets_performance",
       "get_partial_dependence",
-      "get_accumulated_dependence"
+      "get_accumulated_dependence",
+      "get_fairness",
+      "get_message_output"
     )
     parallel::clusterExport(params$cl, to_export, envir=environment())
     # Load model's library to access predict function
@@ -95,27 +96,343 @@ get_global_plots <- function(explainer, params) {
       params$cl,
       library(explainer$model_info$package, character.only=TRUE)
     )
+    globals <- parallel::parLapply(params$cl, global_plots, get_global)
     pd <- parallel::parLapply(params$cl, vars, get_pd)
     ad <- parallel::parLapply(params$cl, vars, get_ad)
+    fr <- parallel::parLapply(params$cl, vars, get_fr)
   }
 
-  if (explainer$model_info$type == 'classification') {
-    eva <- auditor::model_evaluation(explainer)
-    if (nrow(eva) > params$roc_grid_points) {
-      # take random points
-      points <- round(runif(n=params$roc_grid_points, min=1, max=nrow(eva)))
-      eva <- eva[points, ]
-    }
-
+  # filter out plots only for classificators
+  if (explainer$model_info$type != 'classification') {
+    fr <- list()
+    globals <- globals[sapply(globals, function(p) p$plotType != "ROC")]
   }
 
   # Join results into one list
   c(
-    fi[!sapply(fi, is.null)],
     pd[!sapply(pd, is.null)],
     ad[!sapply(ad, is.null)],
-    perf[!sapply(perf, is.null)]
+    fr[!sapply(fr, is.null)],
+    globals[!sapply(globals, is.null)]
   )
+}
+
+#' Internal function for calculating exploratory data anaylysis plots
+#'
+#' Function runs all plot generating methods for given dataset
+#' 
+#' @param dataset List with following elements 
+#' \itemize{
+#'   \item{dataset}{ Data frame}
+#'   \item{target}{ Name of one column from data frame that is used as target variable}
+#'   \item{label}{ Label for dataset to be displayed in Arena}
+#'   \item{variables}{ vector of column names from data frame without target}
+#' }
+#' @param params Params from arena object 
+#' @return list of generated plots' data
+get_dataset_plots <- function(dataset, params) {
+  # Helper methods to reduce arguments length
+  get_vd <- function(v) get_variable_distribution(dataset, v, params)
+  get_vaa <- function(v) get_variable_against_another(dataset, v, params)
+
+  vd <- lapply(dataset$variables, get_vd)
+  vaa <- lapply(dataset$variables, get_vaa)
+
+  # Join results and filter out null
+  c(
+    vd[!sapply(vd, is.null)],
+    vaa[!sapply(vaa, is.null)]
+  )
+}
+
+#' Internal function for returning message as plot data
+#'
+#' This method modify exisiting plot's data in Arena's format
+#' to show message instead of chart.
+#' @param output existing plot data to be overwritten
+#' @param type type of message "info" or "error"
+#' @param msg message to be displayed
+#' @return Plot data in Arena's format
+get_message_output <- function(output, type, msg) {
+  output$plotComponent <- "Message"
+  output$data <- list(message = msg, type = type)
+  output
+}
+
+#' Internal function for variable against another plot
+#'
+#' @param dataset List with following elements 
+#' \itemize{
+#'   \item{dataset}{ Data frame}
+#'   \item{target}{ Name of one column from data frame that is used as target variable}
+#'   \item{label}{ Label for dataset to be displayed in Arena}
+#'   \item{variables}{ vector of column names from data frame without target}
+#' }
+#' @param variable Name of primary variable
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_variable_against_another <- function(dataset, variable, params) {
+  output <- NULL
+  tryCatch({
+    output <- list(
+      plotType = "VariableAgainstAnother",
+      plotCategory = "EDA",
+      name = "Variable Against Another",
+      plotComponent = "VariableAgainstAnother",
+      params = list(dataset = dataset$label, variable = variable)
+    )
+    # primary variable
+    first <- dataset$dataset[, variable]
+    if (is.logical(first)) first  <- as.factor(first)
+    # for each other variable (including target) compute plot
+    vars <- sapply(dataset$dataset, function(secondary) {
+      if (is.logical(secondary)) secondary <- as.factor(secondary)
+      if (identical(first, secondary)) return(NULL)
+      # count table for two factors
+      if (is.factor(secondary) && is.factor(first)) {
+        tab <- table(first, secondary)
+        return(
+          list(
+            type = "table",
+            counts = lapply(seq_len(nrow(tab)), function(i) unname(tab[i, ])),
+            first = dimnames(tab)[[1]],
+            secondary = dimnames(tab)[[2]]
+          )
+        )
+      # scatter plot for two numeric vectors
+      } else if (is.numeric(secondary) && is.numeric(first)) {
+        # get subset of points
+        points_number <- min(params$vaa_points_number, length(first))
+        points <- sample(seq_len(length(first)), size = points_number)
+        return(list(type = "scatter", first = first[points], secondary = secondary[points]))
+      # boxplots of secondary variable
+      } else if (is.factor(first) && is.numeric(secondary)) {
+        boxes <- lapply(levels(first), function(lev) {
+          filtered <- secondary[first == lev]
+          quantiles <- quantile(filtered, probs = c(0.25, 0.5, 0.75))
+          iqr <- quantiles[3] - quantiles[1]
+          # lower, upper fences
+          lf <- max(quantiles[1] - (1.5 * iqr), min(filtered))
+          uf <- min(quantiles[3] + (1.5 * iqr), max(filtered))
+          list(
+            q1 = quantiles[1],
+            q3 = quantiles[3],
+            mean = mean(filtered),
+            median = quantiles[2],
+            lf = lf,
+            uf = uf,
+            outliers = filtered[filtered > uf | filtered < lf]
+          )
+        })
+        return(list(type = "boxplots", first = levels(first), secondary = boxes, numerical = "secondary"))
+      # boxplots of primary variable
+      } else if (is.numeric(first) && is.factor(secondary)) {
+        boxes <- lapply(levels(secondary), function(lev) {
+          filtered <- first[secondary == lev]
+          quantiles <- quantile(filtered, probs = c(0.25, 0.5, 0.75))
+          iqr <- quantiles[3] - quantiles[1]
+          # lower, upper fences
+          lf <- max(quantiles[1] - (1.5 * iqr), min(filtered))
+          uf <- min(quantiles[3] + (1.5 * iqr), max(filtered))
+          list(
+            q1 = quantiles[1],
+            q3 = quantiles[3],
+            mean = mean(filtered),
+            median = quantiles[2],
+            lf = lf,
+            uf = uf,
+            outliers = filtered[filtered > uf | filtered < lf]
+          )
+        })
+        return(list(type = "boxplots", secondary = levels(secondary), first = boxes, numerical = "first"))
+      } else {
+        return(NULL)
+      }
+    })
+    names(vars) <- colnames(dataset$dataset)
+    output$data <- as.list(vars[!sapply(vars, is.null)])
+  }, error = function(e) {
+    stop("Failed to calculate variable against another\n", e)
+  })
+  output
+}
+
+#' Internal function for variable distribution
+#'
+#' @param dataset List with following elements 
+#' \itemize{
+#'   \item{dataset}{ Data frame}
+#'   \item{target}{ Name of one column from data frame that is used as target variable}
+#'   \item{label}{ Label for dataset to be displayed in Arena}
+#'   \item{variables}{ vector of column names from data frame without target}
+#' }
+#' @param variable Name of variable
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_variable_distribution <- function(dataset, variable, params) {
+  output <- NULL
+  tryCatch({
+    output <- list(
+      plotType = "VariableDistribution",
+      plotCategory = "EDA",
+      name = "Variable Distribution",
+      params = list(dataset = dataset$label, variable = variable)
+    )
+    column <- dataset$dataset[, variable]
+    # bars of count/density if variable is categorical
+    if (is.factor(column)) {
+      counts <- as.numeric(table(column))
+      output$data <- list(
+        names = levels(column),
+        count = counts,
+        density = counts / sum(counts)
+      )
+      output$plotComponent <- "DistributionCounts"
+    # histogram if variable is numerical
+    } else if (is.numeric(column)) {
+      bins <- params$vd_bins
+      # get histogram for different bins number
+      output$data <- lapply(bins, function(nbins) {
+        breaks <- seq(from=min(column), to=max(column), length.out=nbins + 1)
+        hist_data <- graphics::hist(column, plot=FALSE, breaks=breaks)
+        list(
+          breaks = breaks,
+          mids = hist_data$mids,
+          density = hist_data$density,
+          counts = hist_data$counts
+        )
+      })
+      names(output$data) <- bins
+      output$plotComponent <- "DistributionHistogram"
+    } else {
+      return(get_message_output(output, "info", "Distribution is available only for numerical and categorical columns"))
+    }
+  }, error = function(e) {
+    stop("Failed to calculate variable distribution\n", e)
+  })
+  output
+}
+
+#' Internal function for calculating fairness
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param variable Name of variable
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_fairness <- function(explainer, variable, params) {
+  output <- NULL
+  tryCatch({
+    output <- list(
+      plotType = "Fairness",
+      plotCategory = "Dataset Level",
+      plotComponent = "Fairness",
+      name = "Fairness",
+      params = list(model = explainer$label, variable = variable)
+    )
+    if (explainer$model_info$type != 'classification') {
+      return(get_message_output(output, "info", "Fairness plot is only available for classificators"))
+    }
+    protected <- explainer$data[, variable]
+    if (!is.factor(protected)) {
+      return(get_message_output(output, "info", "Select categorical variable to check fairness"))
+    }
+    subgroups <- levels(protected)
+    # for every cutoff level get group metric matrix
+    gmm_list <- lapply(params$fairness_cutoffs, function(cutoff) {
+      # make cutoff a const list
+      cutoff_list <- as.list(rep(cutoff, length(subgroups)))
+      names(cutoff_list) <- subgroups
+      # calculate confusion matrices for each subgroup
+      stopifnot(is.logical(explainer$y) || is.numeric(explainer$y))
+      gm <- fairmodels::group_matrices(
+        protected = protected,
+        probs = explainer$y_hat,
+        preds = as.numeric(explainer$y),
+        cutoff = cutoff_list
+      )
+      # group metric matrix
+      gmm <- fairmodels::calculate_group_fairness_metrics(gm)
+      data.frame(
+        value = as.vector(gmm),
+        subgroup = rep(colnames(gmm), each=nrow(gmm)),
+        metric = rep(rownames(gmm), ncol(gmm)),
+        cutoff = cutoff
+      )
+    }) 
+    gmm <- do.call('rbind', gmm_list)
+    # Split data frame by subgroup names
+    gmm_transformed <- lapply(split(gmm, gmm$subgroup), function(x) {
+      # for each subgroup there is a list for each cutoff
+      lapply(split(x, x$cutoff), function(x) {
+        # the element for specified subgroup and cutoff
+        # is a named list with values for metrics
+        structure(as.list(x$value), names=x$metric)
+      })
+    })
+    output$data <- list(subgroups = gmm_transformed)
+  }, error = function(e) {
+    stop("Failed to calculate fairness\n", e)
+  })
+  output
+}
+
+
+#' Internal function for calculating subset performance
+#'
+#' @param explainer Explainer created using \code{DALEX::explain}
+#' @param params Params from arena object 
+#' @return Plot data in Arena's format
+get_subsets_performance <- function(explainer, params) {
+  output <- NULL
+  tryCatch({
+    # get loss function and its name based on model type
+    score_functions <- switch(
+      explainer$model_info$type,
+      regression = list(
+        RMSE=auditor::score_rmse,
+        MSE=auditor::score_mse,
+        R2=auditor::score_r2,
+        MAE=auditor::score_mae
+      ),
+      classification = list(
+        Accuracy=auditor::score_acc,
+        Recall=auditor::score_recall,
+        Precision=auditor::score_precision,
+        Specificity=auditor::score_specificity,
+        AUC=auditor::score_auc,
+        F1=auditor::score_f1
+      ),
+      stop(explainer$model_info$type, " is not recognized as task name")
+    )
+    scores <- calculate_subsets_performance(
+      explainer,
+      score_functions = score_functions,
+      nbins = params$fm_nbins,
+      cutoff = params$fm_cutoff,
+      factor_conversion_threshold = params$fm_factor_threshold
+    )
+    splited <- split(scores, scores$Variable)
+    output_data <- lapply(names(score_functions), function(score_name) {
+      list(
+        scoreValues = lapply(splited, function(x) structure(as.list(x[, score_name]), names=x$Label)),
+        base = score_functions[[score_name]](explainer)$score
+      )
+    })
+    names(output_data) <- names(score_functions)
+    output <- list(
+      plotComponent = "SubsetsPerformance",
+      plotType = "SubsetsPerformance",
+      plotCategory = "Model Performance",
+      name = "Subsets Performance",
+      params = list(
+        model = explainer$label
+      ),
+      data = output_data
+    )
+  }, error = function(e) {
+    stop("Failed to calculate subsets performance\n", e)
+  })
+  output
 }
 
 #' Internal function for calculating funnel measure
@@ -127,22 +444,21 @@ get_funnel_measure <- function(explainer, params) {
   output <- NULL
   tryCatch({
     # get loss function and its name based on model type
-    measure_function <- switch(
+    score_functions <- switch(
       explainer$model_info$type,
-      regression = list(DALEX::loss_root_mean_square, "MSE"),
-      classification = list(DALEX::loss_one_minus_auc, "1 - AUC"),
-      multiclass = list(DALEX::loss_cross_entropy, "Cross entropy"),
+      regression = list(MSE=auditor::score_mse),
+      classification = list("ONE_MINUS_AUC"=auditor::score_one_minus_auc),
       stop(explainer$model_info$type, " is not recognized as task name")
     )
-    measures <- funnel_measure(
+    scores <- calculate_subsets_performance(
       explainer,
-      measure_function = measure_function[[1]],
+      score_functions = score_functions,
       nbins = params$fm_nbins,
       cutoff = params$fm_cutoff,
       factor_conversion_threshold = params$fm_factor_threshold
     )
-    splited <- split(measures, measures$Variable)
-    transformed <- lapply(splited, function(x) structure(as.list(x$Measure), names=x$Label))
+    splited <- split(scores, scores$Variable)
+    transformed <- lapply(splited, function(x) structure(as.list(x[, names(score_functions)]), names=x$Label))
     output <- list(
       plotComponent = "FunnelMeasure",
       plotType = "FunnelMeasure",
@@ -153,11 +469,11 @@ get_funnel_measure <- function(explainer, params) {
       ),
       data = list(
         lossValues = transformed,
-        lossFunction = measure_function[[2]]
+        lossFunction = gsub("ONE_MINUS_", "1 - ", names(score_functions))
       )
     )
   }, error = function(e) {
-    stop("Failed to calculate Metrics\n", e)
+    stop("Failed to calculate funnel measure\n", e)
   })
   output
 }
@@ -196,7 +512,16 @@ get_metrics <- function(explainer, params) {
 get_roc <- function(explainer, params) {
   output <- NULL
   tryCatch({
-    if (explainer$model_info$type != 'classification') return(NULL)
+    output <- list(
+      plotComponent = "ROC",
+      plotType = "ROC",
+      plotCategory = "Model Performance",
+      name = "Receiver Operating Characterstic",
+      params = list(model = explainer$label)
+    )
+    if (explainer$model_info$type != 'classification') {
+      return(get_message_output(output, "info", "ROC plot is only available for classificators"))
+    }
     eva <- auditor::model_evaluation(explainer)
     if (nrow(eva) > params$roc_grid_points) {
       # take random points
@@ -204,20 +529,10 @@ get_roc <- function(explainer, params) {
       eva <- eva[points, ]
     }
     eva <- eva[order(eva$`_fpr_`, decreasing = TRUE), ]
-    
-    output <- list(
-      plotComponent = "ROC",
-      plotType = "ROC",
-      plotCategory = "Model Performance",
-      name = "Receiver Operating Characterstic",
-      params = list(
-        model = explainer$label
-      ),
-      data = list(
-        specifity = 1 - eva$`_fpr_`,
-        sensivity = eva$`_tpr_`,
-        cutoff = eva$`_cutoffs_`
-      )
+    output$data <- list(
+      specifity = 1 - eva$`_fpr_`,
+      sensivity = eva$`_tpr_`,
+      cutoff = eva$`_cutoffs_`
     )
   }, error = function(e) {
     stop("Failed to calculate ROC\n", e)
@@ -426,14 +741,14 @@ get_partial_dependence <- function(explainer, variable, params) {
 #' Internal function for calculating feature importance
 #'
 #' @param explainer Explainer created using \code{DALEX::explain}
-#' @param vars Variables names for which feature importance should be calculated
 #' @param params Params from arena object 
 #' @return Plot data in Arena's format
 #' @importFrom stats quantile
-get_feature_importance <- function(explainer, vars, params) {
+get_feature_importance <- function(explainer, params) {
   output <- NULL
-  params
   tryCatch({
+    is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
+    vars <- names(is_y[!is_y])
     fi <- ingredients::feature_importance(
       explainer,
       variables = vars,

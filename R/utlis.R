@@ -60,6 +60,36 @@ validate_new_observations <- function(arena, observations) {
   }
 }
 
+#' Checks if it is safe do add new dataset to the arena object
+#'
+#' @param arena live or static arena object
+#' @param dataset data frame for data analysis
+#' @param target name of target variable
+#' @param label name of dataset
+#' @return None
+#' @importFrom methods is
+validate_new_dataset <- function(arena, dataset, target, label) {
+  if (is.null(dataset) || !is(dataset, "data.frame")) {
+    stop("Invalid dataset argument")
+  }
+  if (is.null(target) || !is.character(target) || length(target) != 1) {
+    stop("Invalid target argument")
+  }
+  if (!(target %in% colnames(dataset))) {
+    stop("Target is not a valid column name")
+  }
+  if (sum(is.na(dataset) > 0)) {
+    stop("Dataset cannot contain NAs")
+  }
+  if (is.null(label) || !is.character(label) || length(label) != 1) {
+    stop("Invalid label argument")
+  }
+  labels <- sapply(arena$datasets, function(x) x$label)
+  if (label %in% labels) {
+    stop("Dataset must have unique label")
+  }
+}
+
 #' Checks if it is safe do add a new model to the arena object
 #'
 #' Function checks if explainer's label is not already used call stop if
@@ -87,15 +117,25 @@ get_observations_list <- function(arena) {
   as.list(unlist(lapply(arena$observations_batches, rownames)))
 }
 
-#' Generates list of unique variables(without target) from each explainer
+#' Generates list of unique variables(without target) from each explainer and dataset
 #'
 #' @param arena live or static arena object
 #' @return list of variables' names
 get_variables_list <- function(arena) {
-  as.list(unique(unlist(lapply(arena$explainers, function(expl) {
+  from_explainers <- unlist(lapply(arena$explainers, function(expl) {
     is_y <- sapply(expl$data, function(column) { identical(column, expl$y) })
     names(is_y[!is_y])
-  }))))
+  }))
+  from_datasets <- unlist(lapply(arena$datasets, function(x) x$variables))
+  as.list(unique(c(from_explainers, from_datasets)))
+}
+
+#' Generates list of datasets' labels
+#'
+#' @param arena live or static arena object
+#' @return list of datasets' labels
+get_datasets_list <- function(arena) {
+  lapply(arena$datasets, function(dataset) dataset$label)
 }
 
 #' Prepare object ready to change into json
@@ -115,10 +155,13 @@ get_json_structure.arena_static <- function(arena) {
     stop("Invalid arena argument")
   }
   list(
-    version = "1.0.0",
-    observations = get_observations_list(arena),
-    variables = get_variables_list(arena),
-    models = lapply(arena$explainers, function(x) x$label),
+    version = "1.1.0",
+    availableParams = list(
+      observation = get_observations_list(arena),
+      variable = get_variables_list(arena),
+      model = lapply(arena$explainers, function(x) { x$label }),
+      dataset = get_datasets_list(arena)
+    ),
     data = arena$plots_data
   )
 }
@@ -129,12 +172,15 @@ get_json_structure.arena_live <- function(arena) {
     stop("Invalid arena argument")
   }
   list(
-    version = "1.0.0",
+    version = "1.1.0",
     api = "arenar_api",
     timestamp = arena$timestamp*1000,
-    observations = get_observations_list(arena),
-    variables = get_variables_list(arena),
-    models = lapply(arena$explainers, function(x) { x$label }),
+    availableParams = list(
+      observation = get_observations_list(arena),
+      variable = get_variables_list(arena),
+      model = lapply(arena$explainers, function(x) { x$label }),
+      dataset = get_datasets_list(arena)
+    ),
     availablePlots = list(
       list(
         name = "Break Down",
@@ -191,10 +237,34 @@ get_json_structure.arena_live <- function(arena) {
         requiredParams = list("model")
       ),
       list(
+        name = "Subsets Performance",
+        plotType = "SubsetsPerformance",
+        plotCategory = "Model Performance",
+        requiredParams = list("model")
+      ),
+      list(
         name = "Metrics",
         plotType = "Metrics",
         plotCategory = "Model Performance",
         requiredParams = list("model")
+      ),
+      list(
+        name = "Fairness",
+        plotType = "Fairness",
+        plotCategory = "Dataset Level",
+        requiredParams = list("model", "variable")
+      ),
+      list(
+        name = "Variable Distribution",
+        plotType = "VariableDistribution",
+        plotCategory = "EDA",
+        requiredParams = list("dataset", "variable")
+      ),
+      list(
+        name = "Variable Against Another",
+        plotType = "VariableAgainstAnother",
+        plotCategory = "EDA",
+        requiredParams = list("dataset", "variable")
       )
     )
   )

@@ -50,6 +50,14 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     obs
   }
 
+  # helper function to find dataset for given name
+  get_dataset <- function(dataset_name) {
+    label_equals <- sapply(arena$datasets, function(x) x$label == dataset_name)
+    d_list <- arena$datasets[label_equals]
+    if (length(d_list) != 1) return(NULL)
+    d_list[[1]]
+  }
+
   pr$handle("GET", "/", function(req, res){
     json_structure
   }, serializer = plumber::serializer_unboxed_json())
@@ -61,9 +69,7 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
   pr$handle("GET", "/FeatureImportance", function(req, res, model = "") {
     explainer <- get_explainer(model)
     if (is.null(explainer)) return(res$status <- 404)
-    is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
-    vars <- names(is_y[!is_y])
-    get_feature_importance(explainer, vars, arena$params)
+    get_feature_importance(explainer, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
   pr$handle("GET", "/ROC", function(req, res, model = "") {
@@ -90,6 +96,12 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     get_funnel_measure(explainer, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
+  pr$handle("GET", "/SubsetsPerformance", function(req, res, model = "") {
+    explainer <- get_explainer(model)
+    if (is.null(explainer)) return(res$status <- 404)
+    get_subsets_performance(explainer, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+  
   pr$handle("GET", "/PartialDependence",
             function(req, res, model = "", variable = "") {
     explainer <- get_explainer(model)
@@ -98,6 +110,16 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     vars <- names(is_y[!is_y])
     if (!(variable %in% vars)) return(res$status <- 404)
     get_partial_dependence(explainer, variable, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+
+  pr$handle("GET", "/Fairness",
+            function(req, res, model = "", variable = "") {
+    explainer <- get_explainer(model)
+    if (is.null(explainer)) return(res$status <- 404)
+    is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
+    vars <- names(is_y[!is_y])
+    if (!(variable %in% vars)) return(res$status <- 404)
+    get_fairness(explainer, variable, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
 
   pr$handle("GET", "/AccumulatedDependence",
@@ -139,6 +161,22 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
     vars <- intersect(names(is_y[!is_y]), colnames(observation))
     get_ceteris_paribus(explainer, observation[, vars], variable, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+
+  pr$handle("GET", "/VariableDistribution",
+            function(req, res, dataset = "", variable = "") {
+    dataset <- get_dataset(dataset)
+    if (is.null(dataset)) return(res$status <- 404)
+    if (!(variable %in% dataset$variables)) return(res$status <- 404)
+    get_variable_distribution(dataset, variable, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+  
+  pr$handle("GET", "/VariableAgainstAnother",
+            function(req, res, dataset = "", variable = "") {
+    dataset <- get_dataset(dataset)
+    if (is.null(dataset)) return(res$status <- 404)
+    if (!(variable %in% dataset$variables)) return(res$status <- 404)
+    get_variable_against_another(dataset, variable, arena$params)
   }, serializer = plumber::serializer_unboxed_json())
   
   pr$filter("cors", function(req, res){
