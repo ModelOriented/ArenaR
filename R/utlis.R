@@ -172,7 +172,7 @@ get_json_structure.arena_live <- function(arena) {
     stop("Invalid arena argument")
   }
   list(
-    version = "1.1.0",
+    version = "1.2.0",
     api = "arenar_api",
     timestamp = arena$timestamp*1000,
     availableParams = list(
@@ -180,6 +180,10 @@ get_json_structure.arena_live <- function(arena) {
       variable = get_variables_list(arena),
       model = lapply(arena$explainers, function(x) { x$label }),
       dataset = get_datasets_list(arena)
+    ),
+    options = list(
+      attributes = TRUE,
+      customParams = FALSE
     ),
     availablePlots = list(
       list(

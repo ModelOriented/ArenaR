@@ -64,7 +64,7 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
 
   pr$handle("GET", "/timestamp", function(req, res) {
     list(timestamp = arena$timestamp*1000)
-  }, serializer = plumber::serializer_unboxed_json)
+  }, serializer = plumber::serializer_unboxed_json())
 
   pr$handle("GET", "/FeatureImportance", function(req, res, model = "") {
     explainer <- get_explainer(model)
@@ -177,6 +177,29 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     if (is.null(dataset)) return(res$status <- 404)
     if (!(variable %in% dataset$variables)) return(res$status <- 404)
     get_variable_against_another(dataset, variable, arena$params)
+  }, serializer = plumber::serializer_unboxed_json())
+
+  pr$handle("GET", "/attribute/<param_type>/<param_label>",
+            function(req, res, param_type = "", param_label = "") {
+    if (param_type == "model") {
+      explainer <- get_explainer(param_label)
+      if (is.null(explainer)) return(res$status <- 404)
+      get_model_attributes(arena, explainer)
+    } else if (param_type == "observation") {
+      observation <- get_observation(param_label)
+      if (is.null(observation)) return(res$status <- 404)
+      get_observation_attributes(arena, observation)
+    } else if (param_type == "variable") {
+      attrs <- get_variable_attributes(arena, param_label)
+      if (is.null(attrs)) return(res$status <- 404)
+      attrs
+    } else if (param_type == "dataset") {
+      dataset <- get_dataset(param_label)
+      if (is.null(dataset)) return(res$status <- 404)
+      get_dataset_attributes(arena, dataset)
+    } else {
+      return(res$status <- 404)
+    }
   }, serializer = plumber::serializer_unboxed_json())
   
   pr$filter("cors", function(req, res){
