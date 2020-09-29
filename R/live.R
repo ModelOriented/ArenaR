@@ -42,7 +42,27 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
   }
 
   # helper function to find observation row for given name
-  get_observation <- function(observation_name) {
+  # when explainer argument is provided, then function can
+  # return custom observation saved as JSON in observation_name
+  get_observation <- function(observation_name, explainer = NULL) {
+    if (!is.character(observation_name) || length(observation_name) != 1) return(NULL)
+    # if first char is '{' parse as custom observation
+    if (substring(observation_name, 1, 1) == "{" && !is.null(explainer) &&
+        arena$params$enable_custom_params) {
+      obs <- tryCatch({
+        # parse json to row (list)
+        obs_object <- jsonlite::fromJSON(observation_name)
+        # try to add this row to first row of exisiting data
+        # to validate column values
+        common_names <- intersect(colnames(explainer$data), names(obs_object))
+        df <- rbind(explainer$data[1, common_names], obs_object[common_names])
+        # try to predict created custom observation to check
+        # if it is valid
+        predict(explainer, df[2, ])
+        df[2, ]
+      }, error = function(cond) {})
+      if (!is.null(obs)) return(obs)
+    }
     if (length(arena$observations_batches) == 0) return(NULL)
     name_equals <- function(x) x[rownames(x) == observation_name, ]
     obs <- do.call('rbind', lapply(arena$observations_batches, name_equals))
@@ -135,7 +155,7 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
   pr$handle("GET", "/Breakdown",
             function(req, res, model = "", observation = "") {
     explainer <- get_explainer(model)
-    observation <- get_observation(observation)
+    observation <- get_observation(observation, explainer)
     if (is.null(explainer) || is.null(observation)) return(res$status <- 404)
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
     vars <- intersect(names(is_y[!is_y]), colnames(observation))
@@ -145,7 +165,7 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
   pr$handle("GET", "/SHAPValues",
             function(req, res, model = "", observation = "") {
     explainer <- get_explainer(model)
-    observation <- get_observation(observation)
+    observation <- get_observation(observation, explainer)
     if (is.null(explainer) || is.null(observation)) return(res$status <- 404)
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
     vars <- intersect(names(is_y[!is_y]), colnames(observation))
@@ -155,7 +175,7 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
   pr$handle("GET", "/CeterisParibus",
             function(req, res, model = "", observation = "", variable = "") {
     explainer <- get_explainer(model)
-    observation <- get_observation(observation)
+    observation <- get_observation(observation, explainer)
     if (is.null(explainer) || is.null(observation) ||
       !(variable %in% colnames(observation))) return(res$status <- 404)
     is_y <- sapply(explainer$data, function(v) identical(v, explainer$y))
@@ -181,6 +201,7 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
 
   pr$handle("GET", "/attribute/<param_type>/<param_label>",
             function(req, res, param_type = "", param_label = "") {
+    if (!arena$params$enable_attributes) return(res$status <- 404)
     if (param_type == "model") {
       explainer <- get_explainer(param_label)
       if (is.null(explainer)) return(res$status <- 404)

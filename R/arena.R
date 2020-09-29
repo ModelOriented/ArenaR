@@ -16,6 +16,8 @@
 #' @param fairness_cutoffs vector of available cutoff levels for fairness panel
 #' @param max_points_number maximum size of sample to plot scatter plots in variable against another panel
 #' @param distribution_bins vector of available bins count for histogram
+#' @param enable_attributes Switch for generating attributes of observations and variables. It is required for custom params. Attributes can increase size of static Arena.
+#' @param enable_custom_params Switch to allowing user to modify observations and generate plots for them.
 #' @param cl Cluster used to run parallel computations (Do not work in live Arena)
 #' @return Empty \code{arena_static} or \code{arena_live} class object.\cr
 #' \code{arena_static}:
@@ -61,6 +63,8 @@ create_arena <- function(live = FALSE,
                       fairness_cutoffs = seq(0.05, 0.95, 0.05),
                       max_points_number = 150,
                       distribution_bins = seq(5, 40, 5),
+                      enable_attributes = TRUE,
+                      enable_custom_params = TRUE,
                       cl = NULL) {
   if (live) return(
     structure(
@@ -85,7 +89,9 @@ create_arena <- function(live = FALSE,
           fm_factor_threshold = funnel_factor_threshold,
           fairness_cutoffs = fairness_cutoffs,
           vaa_points_number = max_points_number,
-          vd_bins = distribution_bins
+          vd_bins = distribution_bins,
+          enable_attributes = enable_attributes,
+          enable_custom_params = enable_custom_params
         ),
         timestamp = as.numeric(Sys.time())
       ),
@@ -116,6 +122,7 @@ create_arena <- function(live = FALSE,
           fairness_cutoffs = fairness_cutoffs,
           vaa_points_number = max_points_number,
           vd_bins = distribution_bins,
+          enable_attributes = enable_attributes,
           cl = cl
         ),
         plots_data = list()
@@ -362,6 +369,7 @@ upload_arena <- function (arena, open_browser = TRUE, append_data = FALSE,
   json <- jsonlite::toJSON(
     get_json_structure(arena),
     auto_unbox = TRUE,
+    null = "null",
     pretty = pretty
   )
   # upload json to gist
@@ -400,6 +408,7 @@ save_arena <- function (arena, filename="data.json", pretty=FALSE) {
   json <- jsonlite::toJSON(
     get_json_structure(arena),
     auto_unbox = TRUE,
+    null = "null",
     pretty = pretty
   )
   write(json, file = filename)
