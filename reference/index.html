@@ -96,19 +96,13 @@
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.1.9</span>
+          <span class="version version-default">0.2.0</span>
         </div>
       </div>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -192,6 +186,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="push_dataset.html">push_dataset()</a></code> </p>
+        </td>
+        <td><p>Adds new datasets to Arena</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="push_observations.html">push_observations()</a></code> </p>
         </td>
         <td><p>Adds new observations to arena</p></td>
@@ -235,6 +235,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="push_dataset.html">push_dataset()</a></code> </p>
+        </td>
+        <td><p>Adds new datasets to Arena</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="push_observations.html">push_observations()</a></code> </p>
         </td>
         <td><p>Adds new observations to arena</p></td>
@@ -250,6 +256,12 @@
           <p><code><a href="upload_arena.html">upload_arena()</a></code> </p>
         </td>
         <td><p>Upload generated json file from static arena</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="save_arena.html">save_arena()</a></code> </p>
+        </td>
+        <td><p>Save generated json file from static arena</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -275,6 +287,12 @@
           <p><code><a href="get_local_plots.html">get_local_plots()</a></code> </p>
         </td>
         <td><p>Internal function for calculating local plots for all observations</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_dataset_plots.html">get_dataset_plots()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating exploratory data anaylysis plots</p></td>
       </tr><tr>
         
         <td>
@@ -335,6 +353,36 @@
           <p><code><a href="get_roc.html">get_roc()</a></code> </p>
         </td>
         <td><p>Internal function for calculating receiver operating curve</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_fairness.html">get_fairness()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating fairness</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_message_output.html">get_message_output()</a></code> </p>
+        </td>
+        <td><p>Internal function for returning message as plot data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_subsets_performance.html">get_subsets_performance()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating subset performance</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_variable_against_another.html">get_variable_against_another()</a></code> </p>
+        </td>
+        <td><p>Internal function for variable against another plot</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_variable_distribution.html">get_variable_distribution()</a></code> </p>
+        </td>
+        <td><p>Internal function for variable distribution</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -369,6 +417,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="get_datasets_list.html">get_datasets_list()</a></code> </p>
+        </td>
+        <td><p>Generates list of datasets' labels</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="validate_new_model.html">validate_new_model()</a></code> </p>
         </td>
         <td><p>Checks if it is safe do add a new model to the arena object</p></td>
@@ -381,9 +435,57 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="validate_new_dataset.html">validate_new_dataset()</a></code> </p>
+        </td>
+        <td><p>Checks if it is safe do add new dataset to the arena object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="calculate_subsets_performance.html">calculate_subsets_performance()</a></code> </p>
+        </td>
+        <td><p>Internal function for calculating data for funnel plot</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="split_multiclass_explainer.html">split_multiclass_explainer()</a></code> </p>
         </td>
         <td><p>Splits multiclass explainer into multiple classification explainers</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="truncate_vector.html">truncate_vector()</a></code> </p>
+        </td>
+        <td><p>Internal function for pretty truncationg params list</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_attributes.html">get_attributes()</a></code> </p>
+        </td>
+        <td><p>Returns attributes for all params</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_dataset_attributes.html">get_dataset_attributes()</a></code> </p>
+        </td>
+        <td><p>Generates list with attributes of a dataset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_model_attributes.html">get_model_attributes()</a></code> </p>
+        </td>
+        <td><p>Generates list with attributes of a model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_observation_attributes.html">get_observation_attributes()</a></code> </p>
+        </td>
+        <td><p>Generates list with attributes of an observation</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_variable_attributes.html">get_variable_attributes()</a></code> </p>
+        </td>
+        <td><p>Generates list with attributes of an variable</p></td>
       </tr>
     </tbody>
     </table>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare object ready to change into json — get_json_structure • arenar</title>
+<title>Returns attributes for all params — get_attributes • arenar</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -52,9 +52,13 @@
 
 
 
-<meta property="og:title" content="Prepare object ready to change into json — get_json_structure" />
-<meta property="og:description" content="Function converts object with class arena_live or arena_static
-to object with structure accepted by Arena. See list of schemas." />
+<meta property="og:title" content="Returns attributes for all params — get_attributes" />
+<meta property="og:description" content="When param_type is not NULL, then function returns list of objects.
+Each object represents one of available attribute for specified param type.
+Field name is attribute name and field values is mapped list
+of available params to list of value of this attribute for that param.
+When param_type is NULL, then function returns list with keys for
+each param type and values are lists described above." />
 
 
 
@@ -150,17 +154,21 @@ to object with structure accepted by Arena. See list of schemas." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prepare object ready to change into json</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/utlis.R'><code>R/utlis.R</code></a></small>
-    <div class="hidden name"><code>get_json_structure.Rd</code></div>
+    <h1>Returns attributes for all params</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/ArenaR/blob/master/R/attributes.R'><code>R/attributes.R</code></a></small>
+    <div class="hidden name"><code>get_attributes.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Function converts object with class <code>arena_live</code> or <code>arena_static</code>
-to object with structure accepted by Arena. See <a href='https://github.com/ModelOriented/Arena/tree/master/src/store/schemas'>list of schemas</a>.</p>
+    <p>When <code>param_type</code> is not NULL, then function returns list of objects.
+Each object represents one of available attribute for specified param type.
+Field <code>name</code> is attribute name and field <code>values</code> is mapped list
+of available params to list of value of this attribute for that param.
+When <code>param_type</code> is NULL, then function returns list with keys for
+each param type and values are lists described above.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_json_structure</span><span class='op'>(</span><span class='va'>arena</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_attributes</span><span class='op'>(</span><span class='va'>arena</span>, param_type <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,11 +177,20 @@ to object with structure accepted by Arena. See <a href='https://github.com/Mode
       <th>arena</th>
       <td><p>live or static arena object</p></td>
     </tr>
+    <tr>
+      <th>param_type</th>
+      <td><p>Type of param. One of</p><ul>
+<li><p>model</p></li>
+<li><p>variable</p></li>
+<li><p>dataset</p></li>
+<li><p>observation</p></li>
+</ul></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Object for direct conversion into json</p>
+    <p>List of attributes or named list of lists of attributes for each param type.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
