@@ -8,6 +8,7 @@ reference:
     contents:
       - create_arena
       - push_model
+      - push_dataset
       - push_observations
       - print.arena_live
       - run_server
@@ -16,14 +17,17 @@ reference:
     contents:
       - create_arena
       - push_model
+      - push_dataset
       - push_observations
       - print.arena_static
       - upload_arena
+      - save_arena
   - title: Plots
     desc: Internal functions for generating plot's data.
     contents:
       - get_global_plots
       - get_local_plots
+      - get_dataset_plots
       - get_feature_importance
       - get_accumulated_dependence
       - get_break_down
@@ -34,13 +38,26 @@ reference:
       - get_partial_dependence
       - get_rec
       - get_roc
+      - get_fairness
+      - get_message_output
+      - get_subsets_performance
+      - get_variable_against_another
+      - get_variable_distribution
   - title: Misc
     desc: Supplementary functions
     contents:
       - get_json_structure
       - get_observations_list
       - get_variables_list
+      - get_datasets_list
       - validate_new_model
       - validate_new_observations
-      - funnel_measure
+      - validate_new_dataset
+      - calculate_subsets_performance
       - split_multiclass_explainer
+      - truncate_vector
+      - get_attributes
+      - get_dataset_attributes
+      - get_model_attributes
+      - get_observation_attributes
+      - get_variable_attributes
