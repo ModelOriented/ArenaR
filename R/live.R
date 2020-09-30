@@ -31,6 +31,8 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
     stop("Invalid arena argument")
   }
   pr <- plumber::Plumber$new()
+  pr$setDocs(FALSE)
+  pr$setDebug(FALSE)
   json_structure <- get_json_structure(arena)
 
   # helper function to find explainer for given name
@@ -236,5 +238,5 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
   } else if (open_browser) {
     utils::browseURL(paste0(arena_url, "?data=", url))
   }
-  pr$run(port = port, host = host, swagger = FALSE, debug = FALSE)
+  pr$run(port = port, host = host)
 }
