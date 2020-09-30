@@ -203,13 +203,12 @@ run_server <- function(arena, port = 8181, host = "127.0.0.1",
             function(req, res, param_type = "", param_label = "") {
     if (!arena$params$enable_attributes) return(res$status <- 404)
     # replace %20 with space etc.
-    param_label <- URLdecode(param_label)
+    param_label <- utils::URLdecode(param_label)
     if (param_type == "model") {
       explainer <- get_explainer(param_label)
       if (is.null(explainer)) return(res$status <- 404)
       get_model_attributes(arena, explainer)
     } else if (param_type == "observation") {
-      print(param_label)
       observation <- get_observation(param_label)
       if (is.null(observation)) return(res$status <- 404)
       get_observation_attributes(arena, observation)
