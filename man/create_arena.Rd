@@ -17,6 +17,8 @@ create_arena(
   fairness_cutoffs = seq(0.05, 0.95, 0.05),
   max_points_number = 150,
   distribution_bins = seq(5, 40, 5),
+  enable_attributes = TRUE,
+  enable_custom_params = TRUE,
   cl = NULL
 )
 }
@@ -45,6 +47,10 @@ in feature importance}
 \item{max_points_number}{maximum size of sample to plot scatter plots in variable against another panel}
 
 \item{distribution_bins}{vector of available bins count for histogram}
+
+\item{enable_attributes}{Switch for generating attributes of observations and variables. It is required for custom params. Attributes can increase size of static Arena.}
+
+\item{enable_custom_params}{Switch to allowing user to modify observations and generate plots for them.}
 
 \item{cl}{Cluster used to run parallel computations (Do not work in live Arena)}
 }

@@ -58,6 +58,9 @@ validate_new_observations <- function(arena, observations) {
   if (length(intersect(get_observations_list(arena), rownames(observations)))) {
     stop("Observations rownames must be unique")
   }
+  if (any(substring(rownames(observations), 1, 1) == "{")) {
+    stop("Rownames of observations cannot start with '{'")
+  }
 }
 
 #' Checks if it is safe do add new dataset to the arena object
@@ -155,13 +158,14 @@ get_json_structure.arena_static <- function(arena) {
     stop("Invalid arena argument")
   }
   list(
-    version = "1.1.0",
+    version = "1.2.0",
     availableParams = list(
       observation = get_observations_list(arena),
       variable = get_variables_list(arena),
       model = lapply(arena$explainers, function(x) { x$label }),
       dataset = get_datasets_list(arena)
     ),
+    paramsAttributes = get_attributes(arena),
     data = arena$plots_data
   )
 }
@@ -172,7 +176,7 @@ get_json_structure.arena_live <- function(arena) {
     stop("Invalid arena argument")
   }
   list(
-    version = "1.1.0",
+    version = "1.2.0",
     api = "arenar_api",
     timestamp = arena$timestamp*1000,
     availableParams = list(
@@ -180,6 +184,10 @@ get_json_structure.arena_live <- function(arena) {
       variable = get_variables_list(arena),
       model = lapply(arena$explainers, function(x) { x$label }),
       dataset = get_datasets_list(arena)
+    ),
+    options = list(
+      attributes = arena$params$enable_attributes,
+      customParams = arena$params$enable_custom_params
     ),
     availablePlots = list(
       list(

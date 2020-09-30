@@ -1,3 +1,9 @@
+arenar 0.2.0
+----------------------------------------------------------------
+* Add params' attributes.
+* Add support for using custom observations
+* Update generated data version to 1.2.0
+
 arenar 0.1.9
 ----------------------------------------------------------------
 * Add EDA plots
